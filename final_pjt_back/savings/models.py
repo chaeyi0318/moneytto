@@ -5,15 +5,15 @@ from django.db import models
 # 적금상품
 class SavingProduct(models.Model):
     bank_name = models.CharField(max_length=50, null=False)         # 금융회사
-    product_name = models.CharField(max_length=100)     # 상품명
-    saving_method = models.CharField(max_length=20)     # 적립방식(정액적립식/자유적립식)
-    pre_tax_interest_rate = models.FloatField()  # 세전이자율
-    post_tax_interest_rate = models.FloatField() # 세후이자율
-    max_preference_rate = models.FloatField()    # 최고우대금리
-    eligibility = models.CharField(max_length=20)      # 가입대상(제한없음/../ )
+    product_name = models.CharField(max_length=100)                 # 상품명
+    saving_method = models.CharField(max_length=20)                 # 적립방식(정액적립식/자유적립식)
+    pre_tax_interest_rate = models.FloatField()                     # 세전이자율
+    post_tax_interest_rate = models.FloatField()                    # 세후이자율
+    max_preference_rate = models.FloatField()                       # 최고우대금리
+    eligibility = models.CharField(max_length=20)                   # 가입대상(제한없음/../ )
     interest_calculation_method = models.CharField(max_length=10)   # 이자계산방식(단리/복리)
     inquiry_info = models.CharField(max_length=200)                 # 금융상품문의
-    comparison_disclosure_date = models.DateField()                 # 비교공시일
+    comparison_disclosure_date = models.CharField(max_length=100)   # 비교공시일
     department_contact = models.CharField(max_length=200)           # 담당부서 및 연락처
     preferential_conditions = models.TextField()                    # 우대조건
     detailed_eligibility = models.TextField()                       # 상세 가입대상
