@@ -1,6 +1,5 @@
 import CalendarView from "@/views/CalendarView.vue";
 import FortuneView from "@/views/FortuneView.vue";
-import LoginView from "@/views/LoginView.vue";
 import MainView from "@/views/MainView.vue";
 import MyPageView from "@/views/MyPageView.vue";
 import PostPageView from "@/views/PostPageView.vue";
@@ -46,11 +45,6 @@ const router = createRouter({
       path: "/mypage",
       name: "MyPageView",
       component: MyPageView,
-    },
-    {
-      path: "/login",
-      name: "LoginView",
-      component: LoginView,
     },
     {
       path: '/post-page',
