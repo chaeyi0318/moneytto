@@ -1,16 +1,22 @@
-from django.db.models import Q
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from rest_framework import status
 
-from django.http import JsonResponse
+from django.db.models import Q
+from django.db.models import Count
 from django.shortcuts import render
+from django.http import JsonResponse
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, get_list_or_404
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+from .serializers import SavingListSerializer, SavingRecommendSerializer
 from .models import SavingProduct, SavingPeriod, SavingAmount, SavingInterest
-from .serializers import SavingListSerializer
+
+from datetime import date
+
+
+User = get_user_model()
 
 @api_view(['GET'])
 def search_savings(request):
@@ -100,3 +106,71 @@ def likes(request, saving_pk):
         'is_liked': is_liked,
     }
     return JsonResponse(context)
+
+# @permission_classes([IsAuthenticated])
+@api_view(['POST'])
+def owns(request, saving_pk):
+    saving = get_object_or_404(SavingProduct, pk=saving_pk)
+    
+    # 보유 / 보유 취소 구분
+    if request.user in saving.owned_by.all():
+        saving.owned_by.remove(request.user)
+        is_owned = False
+    else:
+        saving.owned_by.add(request.user)
+        is_owned = True
+    context = {
+        'is_owned': is_owned,
+    }
+    return JsonResponse(context)
+
+
+def calculate_age(birth_date):
+    today = date.today()
+    return today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+
+def get_recommended_savings(user, limit=6):
+    if not user.birth_date or not user.income:
+        return SavingProduct.objects.none()
+
+    user_age = calculate_age(user.birth_date)
+
+    similar_users = User.objects.filter(
+        birth_date__year__range=(user.birth_date.year - 5, user.birth_date.year + 5),
+        income__range=(user.income * 0.8, user.income * 1.2)
+    ).exclude(id=user.id)
+
+    recommended_savings = SavingProduct.objects.filter(
+        owned_by__in=similar_users
+    ).annotate(
+        ownership_count=Count('owned_by')
+    ).order_by('-ownership_count')
+
+    recommended_savings = recommended_savings.exclude(owned_by=user)
+
+    return recommended_savings[:limit]
+
+@api_view(['GET'])
+def recommend_savings(request):
+    user = request.user
+    recommended_savings = get_recommended_savings(user, limit=10)
+    serializer = SavingRecommendSerializer(recommended_savings, many=True)
+    return Response(serializer.data)
+
+# from rest_framework.decorators import api_view, permission_classes
+# from rest_framework.permissions import AllowAny
+
+# @api_view(['GET'])
+# @permission_classes([AllowAny])
+# def recommend_savings(request):
+#     # 테스트를 위해 ID가 5인 사용자를 가져옵니다.
+#     user = User.objects.filter(pk=5).first()
+#     if not user:
+#         return Response({"error": "User with ID 5 not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+#     if not user.birth_date or not user.income:
+#         return Response({"error": "User does not have birth date or income information"}, status=status.HTTP_400_BAD_REQUEST)
+    
+#     recommended_savings = get_recommended_savings(user, limit=6)
+#     serializer = SavingRecommendSerializer(recommended_savings, many=True)
+#     return Response(serializer.data)

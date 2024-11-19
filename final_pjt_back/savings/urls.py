@@ -5,4 +5,6 @@ app_name = 'savings'
 urlpatterns = [
     path('search/', views.search_savings),
     path('likes/<int:saving_pk>/', views.likes),
+    path('owns/<int:saving_pk>/', views.owns),
+    path('recommend/', views.recommend_savings),
 ]

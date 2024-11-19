@@ -2,13 +2,14 @@
   <div class="saving-view">
     <h2>적금 상품 검색</h2>
     <Search @search="performSearch" />
-    <div v-if="store.loading">검색 중...</div>
+    <div v-if="store.loading">잠시만 기다려주세요!</div>
     <SavingList
       v-else
       :products="store.products"
       :error="store.error"
       :showPostTaxInterest="hasSearched"
     />
+    <!-- <Recommend /> -->
   </div>
 </template>
 
@@ -17,6 +18,7 @@ import { ref, onMounted } from "vue";
 import { useSavingStore } from "@/stores/counter";
 import Search from "@/components/savings/Search.vue";
 import SavingList from "@/components/savings/SavingList.vue";
+import Recommend from "@/components/savings/Recommend.vue";
 
 const store = useSavingStore();
 const hasSearched = ref(false);

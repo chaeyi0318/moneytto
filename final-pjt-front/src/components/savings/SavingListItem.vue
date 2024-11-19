@@ -13,7 +13,7 @@
     <td>{{ product.max_preference_rate }}%</td>
     <td>{{ product.eligibility }}</td>
     <td>{{ product.interest_calculation_method }}</td>
-    <td v-if="showPostTaxInterest">{{ product.post_tax_interest }}</td>
+    <td v-if="showPostTaxInterest">{{ formatNumber(product.post_tax_interest) }}</td>
     <td>
       <button @click="$emit('show-details', product)">상세보기</button>
     </td>
@@ -26,6 +26,10 @@ defineProps({
   showPostTaxInterest: Boolean
 });
 defineEmits(['show-details']);
+
+const formatNumber = (num) => {
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
 </script>
 
 <style scoped></style>
