@@ -2,7 +2,18 @@
 <template>
   <div class="modal">
     <div class="modal-content">
-      <h3>{{ product.product_name }} 상세 정보</h3>
+      <div class="modal-top">
+        <button
+          @click="toggleLike"
+          class="star-button"
+          :class="{ starred: product.is_liked }"
+        >
+          {{ product.is_liked ? "★" : "☆" }}
+        </button>
+        <h2>{{ product.product_name }}</h2>
+        <h4>{{ product.bank_name }}</h4>
+        <hr />
+      </div>
       <div class="detail-info">
         <p>
           <strong>비교공시일:</strong> {{ product.comparison_disclosure_date }}
@@ -29,8 +40,16 @@
 </template>
 
 <script setup>
-defineProps(["product"]);
-defineEmits(["close"]);
+import { useSavingStore } from "@/stores/counter";
+
+const props = defineProps(["product"]);
+const emit = defineEmits(["close"]);
+
+const savingStore = useSavingStore();
+
+const toggleLike = () => {
+  savingStore.toggleLike(props.product.id);
+};
 </script>
 
 <style scoped>
@@ -53,10 +72,28 @@ defineEmits(["close"]);
   width: 80%;
   max-width: 600px;
   border-radius: 5px;
+  position: relative;
 }
 
-h3 {
+.star-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 50px;
+  cursor: pointer;
+  color: #ccc;
+  transition: color 0.3s ease;
+}
+
+.star-button.starred {
+  color: gold;
+}
+
+.modal-top {
   color: #333;
+  margin-top: 0;
   border-bottom: 1px solid #ddd;
   padding-bottom: 10px;
 }

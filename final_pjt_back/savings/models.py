@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 # Create your models here.
 
@@ -22,6 +23,8 @@ class SavingProduct(models.Model):
     other_considerations = models.TextField()                       # 기타 유의사항
     product_link = models.URLField()                                # 상품 링크
     institution_type = models.CharField(max_length=10)              # 금융권역(은행/저축은행/신협조합)
+    owned_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='owned_savings', blank=True)       # 해당 적금을 보유한 유저
+    liked_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_savings', blank=True)       # 해당 적금을 찜한 유저
     
     def __str__(self):
         return f"{self.bank_name} - {self.product_name} - {self.saving_method}"

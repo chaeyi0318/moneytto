@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404, get_list_or_404
 
@@ -82,3 +83,20 @@ def search_savings(request):
         return Response(result, status=status.HTTP_200_OK)
     else:
         return Response({"message": "검색 결과가 없습니다."}, status=status.HTTP_200_OK)
+    
+# @permission_classes([IsAuthenticated])
+@api_view(['POST'])
+def likes(request, saving_pk):
+    saving = get_object_or_404(SavingProduct, pk=saving_pk)
+    
+    # 찜하기 / 찜하기 취소 구분
+    if request.user in saving.liked_by.all():
+        saving.liked_by.remove(request.user)
+        is_liked = False
+    else:
+        saving.liked_by.add(request.user)
+        is_liked = True
+    context = {
+        'is_liked': is_liked,
+    }
+    return JsonResponse(context)

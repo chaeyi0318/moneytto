@@ -4,4 +4,5 @@ from . import views
 app_name = 'savings'
 urlpatterns = [
     path('search/', views.search_savings),
+    path('likes/<int:saving_pk>/', views.likes),
 ]

@@ -36,6 +36,33 @@ export const useSavingStore = defineStore("saving", {
         this.loading = false;
       }
     },
+    async toggleLike(savingPk) {
+      try {
+        const response = await axios.post(
+          `${this.API_URL}/likes/${savingPk}/`,
+          {},
+          {
+            headers: {
+              "X-CSRFToken": this.getCsrfToken(),
+            },
+          }
+        );
+        // 찜하기 상태 업데이트
+        const productIndex = this.products.findIndex((p) => p.id === savingPk);
+        if (productIndex !== -1) {
+          this.products[productIndex].is_liked = response.data.is_liked;
+        }
+      } catch (error) {
+        console.error("Error toggling like:", error);
+        this.error = "찜하기 처리 중 오류가 발생했습니다.";
+      }
+    },
+    getCsrfToken() {
+      return document.cookie
+        .split(";")
+        .find((cookie) => cookie.trim().startsWith("csrftoken="))
+        .split("=")[1];
+    },
   },
 });
 
