@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_spectacular',
     'django.contrib.admin',
+    'django_extensions',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
