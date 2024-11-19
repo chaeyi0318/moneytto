@@ -3,6 +3,7 @@ import FortuneView from "@/views/FortuneView.vue";
 import LoginView from "@/views/LoginView.vue";
 import MainView from "@/views/MainView.vue";
 import MyPageView from "@/views/MyPageView.vue";
+import PostPageView from "@/views/PostPageView.vue";
 import QuizView from "@/views/QuizView.vue";
 import SavingView from "@/views/SavingView.vue";
 import SignupView from "@/views/SignupView.vue";
@@ -51,6 +52,11 @@ const router = createRouter({
       name: "LoginView",
       component: LoginView,
     },
+    {
+      path: '/post-page',
+      name: 'PostPageView',
+      component: PostPageView,
+    }
   ],
 });
 

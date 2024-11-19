@@ -2,11 +2,16 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 
-export const useCalendarStore = defineStore(
-  "calendar",
-  () => {}
-  // return {}
-);
+export const useCalendarStore = defineStore("dateStore", {
+  state: () => ({
+    selectedDate: ref('')
+  }),
+  actions: {
+    setSelectedDate(date) {
+      this.selectedDate = date
+    }
+  }
+});
 
 export const useSavingStore = defineStore("saving", {
   state: () => ({
@@ -33,3 +38,10 @@ export const useSavingStore = defineStore("saving", {
     },
   },
 });
+
+export const useAccountStore = defineStore('account', {
+  state: () => ({
+    API_URL: 'http://127.0.0.1:8000/'
+  })
+})
+
