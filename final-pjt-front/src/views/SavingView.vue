@@ -9,7 +9,8 @@
       :error="store.error"
       :showPostTaxInterest="hasSearched"
     />
-    <!-- <Recommend /> -->
+    <h1>적금 추천</h1>
+    <Recommend />
   </div>
 </template>
 

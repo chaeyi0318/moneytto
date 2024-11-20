@@ -1,10 +1,11 @@
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
-from django.db.models import Q
-from django.db.models import Count
+from django.utils import timezone
 from django.shortcuts import render
+from django.db.models import Q, Count
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, get_list_or_404
@@ -89,13 +90,12 @@ def search_savings(request):
         return Response(result, status=status.HTTP_200_OK)
     else:
         return Response({"message": "검색 결과가 없습니다."}, status=status.HTTP_200_OK)
-    
-# @permission_classes([IsAuthenticated])
+
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def likes(request, saving_pk):
     saving = get_object_or_404(SavingProduct, pk=saving_pk)
     
-    # 찜하기 / 찜하기 취소 구분
     if request.user in saving.liked_by.all():
         saving.liked_by.remove(request.user)
         is_liked = False
@@ -107,12 +107,11 @@ def likes(request, saving_pk):
     }
     return JsonResponse(context)
 
-# @permission_classes([IsAuthenticated])
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def owns(request, saving_pk):
     saving = get_object_or_404(SavingProduct, pk=saving_pk)
     
-    # 보유 / 보유 취소 구분
     if request.user in saving.owned_by.all():
         saving.owned_by.remove(request.user)
         is_owned = False
@@ -124,38 +123,59 @@ def owns(request, saving_pk):
     }
     return JsonResponse(context)
 
-
 def calculate_age(birth_date):
-    today = date.today()
+    today = timezone.now().date()
     return today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
 
-def get_recommended_savings(user, limit=6):
-    if not user.birth_date or not user.income:
-        return SavingProduct.objects.none()
-
+def get_age_based_recommendations(user, limit=5):
     user_age = calculate_age(user.birth_date)
+    similar_age_users = User.objects.filter(
+        birth_date__year__range=(user.birth_date.year - 5, user.birth_date.year + 5)
+    ).exclude(id=user.id)
 
-    similar_users = User.objects.filter(
-        birth_date__year__range=(user.birth_date.year - 5, user.birth_date.year + 5),
+    age_based_recommendations = SavingProduct.objects.filter(
+        owned_by__in=similar_age_users
+    ).annotate(
+        ownership_count=Count('owned_by')
+    ).order_by('-ownership_count')[:limit]
+
+    return age_based_recommendations
+
+def get_income_based_recommendations(user, limit=5):
+    if user.income == 0:
+        return SavingProduct.objects.order_by('-max_preference_rate')[:limit]
+    
+    similar_income_users = User.objects.filter(
         income__range=(user.income * 0.8, user.income * 1.2)
     ).exclude(id=user.id)
 
-    recommended_savings = SavingProduct.objects.filter(
-        owned_by__in=similar_users
+    income_based_recommendations = SavingProduct.objects.filter(
+        owned_by__in=similar_income_users
     ).annotate(
         ownership_count=Count('owned_by')
-    ).order_by('-ownership_count')
+    ).order_by('-ownership_count')[:limit]
 
-    recommended_savings = recommended_savings.exclude(owned_by=user)
+    return income_based_recommendations
 
-    return recommended_savings[:limit]
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def recommend_savings(request):
     user = request.user
-    recommended_savings = get_recommended_savings(user, limit=10)
-    serializer = SavingRecommendSerializer(recommended_savings, many=True)
-    return Response(serializer.data)
+    
+    if not user.birth_date:
+        return Response({"message": "생년월일 정보가 필요합니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+    age_based_recommendations = get_age_based_recommendations(user)
+    income_based_recommendations = get_income_based_recommendations(user)
+
+    serializer_age = SavingRecommendSerializer(age_based_recommendations, many=True)
+    serializer_income = SavingRecommendSerializer(income_based_recommendations, many=True)
+
+    return Response({
+        "age_based": serializer_age.data,
+        "income_based": serializer_income.data
+    })
 
 # from rest_framework.decorators import api_view, permission_classes
 # from rest_framework.permissions import AllowAny
