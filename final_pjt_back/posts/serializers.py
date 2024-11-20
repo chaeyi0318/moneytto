@@ -18,7 +18,7 @@ class PostSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at']
 
     def validate_price(self, value):
-        if value < 0:
+        if value <= 0:
             raise serializers.ValidationError("가격은 음수일 수 없습니다.")
         return value
 

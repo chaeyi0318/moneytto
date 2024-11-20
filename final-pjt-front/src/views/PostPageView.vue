@@ -5,9 +5,9 @@
     <!-- 소비한 날짜 -->
     <form @submit.prevent="createPost">
       <div style="margin-bottom: 10px;">
-        <p id="expenses_date">소비한 날짜 : {{ selectedDate }}</p>
+        <p id="expenses_date">소비한 날짜 : {{ expenses_date }}</p>
         <label for="privacy_setting">공개범위 : </label>
-        <select name="privacy_setting" v-model.trim="privacy_setting" id="privacy_setting">
+        <select name="privacy_setting" v-model.trim="privacySetting" id="privacy_setting">
           <option value="public">전체공개</option>
           <option value="subscriber">구독자공개</option>
           <option value="private">비공개</option>
@@ -17,7 +17,7 @@
       <!-- 카테고리 선택 -->
       <div style="margin-bottom: 10px;">
         <label for="category_id">카테고리 :</label>
-        <select name="category_id" v-model.trim="category_id" id="category_id">
+        <select name="category_id" v-model.trim="category" id="category_id">
           <option value="">선택바람</option>
           <option value="1">식비</option>
           <option value="2">문화</option>
@@ -48,14 +48,12 @@
       </div>
   
       <!-- 내용 입력 -->
-
-          <label for="content">내용 :</label>
-          <input type="text" v-model.trim="content" name="content" id="content">
+      <label for="content">내용 :</label>
+      <input type="text" v-model.trim="content" name="content" id="content">
   
-        <!-- 버튼 -->
-        <input type="button" @click.prevent="cancel" value="취소">
-        <input type="submit" value="저장">
-
+      <!-- 버튼 -->
+      <input type="button" @click.prevent="cancel" value="취소">
+      <input type="submit" value="저장">
     </form>
   </div>
 </template>
@@ -64,14 +62,13 @@
 import { ref } from 'vue'
 import { useCalendarStore } from '@/stores/counter'
 import { useRouter } from 'vue-router'
-import CalendarView from './CalendarView.vue';
 
 const router = useRouter()
 const dateStore = useCalendarStore()
 
-const selectedDate = ref(dateStore.selectedDate)   // expenses_date
-const privacy_setting = ref('')
-const category_id = ref('')
+const expenses_date = ref(dateStore.expenses_date)   // expenses_date
+const privacySetting = ref('')
+const category = ref('')
 const price = ref('')
 const content = ref('')
 const imageFile = ref(null)
@@ -93,28 +90,34 @@ const onFileChange = (event) => {
 }
 
 const createPost = async function () {
+  // 필수 값 체크
+  if (!expenses_date.value || !category.value || !price.value || !content.value) {
+    console.log("필수 항목이 누락되었습니다.");
+    return;
+  }
+
   const payload = {
-    selectedDate: selectedDate.value,
-    privacy_setting: privacy_setting.value,
-    category_id: category_id.value,
-    price: price.value,
+    expenses_date: expenses_date.value, // 소비한 날짜
+    privacy_setting: privacySetting.value, // 공개 범위
+    category: parseInt(category.value), // 카테고리 ID를 정수로 변환
+    price: parseInt(price.value), // 가격을 정수로 변환
     content: content.value,
-    image: imageFile.value
+    image: imageFile.value // 이미지 파일
   }
 
   try {
     console.log('작성된 게시글 데이터: ', payload)
-    dateStore.submitPost(payload)
+    await dateStore.submitPost(payload) // 비동기 함수 호출 시 await 추가
     router.push({name: 'CalendarView'})
   } catch (error) {
     console.log('게시글 작성 중 오류 발생: ', error)
   }
+}
 
-  const cancel = () => {
+const cancel = () => {
+  dateStore.clearState()
   router.push({name: 'CalendarView'})
 }
-}
-
 </script>
 
 <style scoped>

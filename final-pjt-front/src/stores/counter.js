@@ -1,62 +1,66 @@
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import api from "./api"; // 새로 만든 api 인스턴스 import
 
 export const useCalendarStore = defineStore("dateStore", () => {
-  // const API_URL = "http://127.0.0.1:8000";
+  const expenses_date = ref(localStorage.getItem('expenses_date') || '')
 
-  const selectedDate = ref(""); // 소비한 날짜
-  const privacySetting = ref("public"); // 공개 범위
-  const categoryId = ref(""); // 카테고리
-  const price = ref(""); // 가격
-  const content = ref(""); // 내용
-  const imageFile = ref(null); // 이미지 파일
-  const isPostSubmitted = ref(false); // 게시글 제출 성공 여부
-
-  // 선택된 날짜 설정
   const setSelectedDate = (date) => {
-    selectedDate.value = date;
+    expenses_date.value = date;
   };
 
+  watch(expenses_date, (newDate) => {
+    localStorage.setItem('expenses_date', newDate)
+  })
+
+  const clearState = () => {
+    localStorage.removeItem('expenses_date')
+    expenses_date.value = ''
+  }
+
   const submitPost = async ({
-    selectedDate,
-    privacySetting,
-    categoryId,
+    expenses_date,
+    privacy_setting,
+    category,
     price,
     content,
-    imageFile,
+    image,
   }) => {
-    try {
-      const response = await api.post("/posts/create-post/", {
-        selectedDate,
-        privacySetting,
-        categoryId,
-        price,
-        content,
-        imageFile,
+    try { 
+      const formData = new FormData();
+      
+      formData.append('expenses_date', expenses_date); // 소비한 날짜
+      formData.append('privacy_setting', privacy_setting); // 공개 범위
+      formData.append('category', parseInt(category)); // 카테고리 ID를 정수로 변환
+      formData.append('price', parseInt(price)); // 가격을 정수로 변환
+      formData.append('content', content);
+
+      if (image) {
+        formData.append('image', image); // 이미지 파일 추가
+      }
+
+      // API 요청 전송
+      const response = await api.post("/posts/create-post/", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       if (response.status === 200) {
-        isPostSubmitted.value = true;
+        console.log("게시글 작성 완료");
       }
     } catch (error) {
       console.error("게시글 작성 실패:", error);
-      isPostSubmitted.value = false;
     }
   };
 
   return {
-    selectedDate,
-    privacySetting,
-    categoryId,
-    price,
-    content,
-    imageFile,
-    isPostSubmitted,
+    expenses_date,
     setSelectedDate,
     submitPost,
+    clearState
   };
 });
 
@@ -182,6 +186,7 @@ export const useAccountStore = defineStore("accountStore", () => {
   const logOut = async function () {
     try {
       await api.post("/accounts/logout/");
+      dateStore.clearState()
       token.value = null;
       user.value = null;
       localStorage.removeItem("token");
