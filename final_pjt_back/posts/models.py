@@ -7,6 +7,13 @@ class Category(models.Model):
     category_name = models.CharField(max_length=20)
 
 
+PRIVACY_CHOICES = [
+    ('public', 'Public'),
+    ('private', 'Private'),
+    ('subscriber', 'Subscriber'),
+]
+
+
 class Post(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
@@ -14,7 +21,7 @@ class Post(models.Model):
     content = models.TextField(null=False)
     image = models.ImageField(upload_to='images/posts/', null=True)
     price = models.IntegerField()
-    privacy_setting = models.CharField(max_length=50)
+    privacy_setting = models.CharField(max_length=20, choices=PRIVACY_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

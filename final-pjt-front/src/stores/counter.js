@@ -3,15 +3,53 @@ import { defineStore } from "pinia";
 import axios from "axios";
 import { useRouter } from "vue-router";
 
-export const useCalendarStore = defineStore("dateStore", {
-  state: () => ({
-    selectedDate: ref('')
-  }),
-  actions: {
-    setSelectedDate(date) {
-      this.selectedDate = date
+export const useCalendarStore = defineStore("dateStore", () => {
+  const API_URL = 'http://127.0.0.1:8000'
+
+  const selectedDate = ref('');  // 소비한 날짜
+  const privacySetting = ref('public');  // 공개 범위
+  const categoryId = ref('');  // 카테고리
+  const price = ref('');  // 가격
+  const content = ref('');  // 내용
+  const imageFile = ref(null);  // 이미지 파일
+  const isPostSubmitted = ref(false);  // 게시글 제출 성공 여부
+
+  // 선택된 날짜 설정
+  const setSelectedDate = (date) => {
+    selectedDate.value = date;
+  };
+
+  const submitPost = async ({ selectedDate, privacySetting, categoryId, price, content, imageFile }) => {
+    try {
+      const response = await axios.post(`${API_URL}/posts/create-post/`, {
+        selectedDate,
+        privacySetting,
+        categoryId,
+        price,
+        content,
+        imageFile
+      });
+  
+      if (response.status === 200) {
+        isPostSubmitted.value = true;  // 게시글 제출 성공 시 상태 업데이트
+      }
+    } catch (error) {
+      console.error('게시글 작성 실패:', error);
+      isPostSubmitted.value = false;  // 실패 시 상태 업데이트
     }
-  }
+  };
+
+  return {
+    selectedDate,
+    privacySetting,
+    categoryId,
+    price,
+    content,
+    imageFile,
+    isPostSubmitted,
+    setSelectedDate,
+    submitPost,
+  };
 });
 
 

@@ -17,6 +17,11 @@ class PostSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'category', 'expenses_date', 'content', 'image', 'price', 'privacy_setting', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
+    def validate_price(self, value):
+        if value < 0:
+            raise serializers.ValidationError("가격은 음수일 수 없습니다.")
+        return value
+
 
 class PostLikeSerializer(serializers.ModelSerializer):
     post = PostSerializer(read_only=True)

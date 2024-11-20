@@ -4,10 +4,13 @@ from rest_framework import status
 from .serializers import PostSerializer
 from django.shortcuts import get_object_or_404, get_list_or_404
 from .models import Post
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 
 # Create your views here.
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def create_post(request):
     if request.method == 'POST':
         serializer = PostSerializer(data=request.data)
