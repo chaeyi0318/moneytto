@@ -1,26 +1,36 @@
 <template>
   <div class="calendar">
+    <!-- 달력 네비게이션 -->
     <nav>
       <h3>{{ cal.yearText }} - {{ cal.monthText }}</h3>
       <div class="navs">
-        <button @click="prevMonth">prev</button>
-        <button @click="nextMonth">next</button>
+        <button @click="prevMonth">이전</button>
+        <button @click="nextMonth">다음</button>
       </div>
     </nav>
 
+    <!-- 요일 표시 -->
     <section class="dow">
       <div v-for="day in days" :key="day" class="day">{{ day }}</div>
     </section>
 
+    <!-- 달력 본문 -->
     <section class="body">
       <div v-for="week in cal.getWeeks()" :key="week" class="week">
-        <div v-for="date in week.days()" :key="date.ymdText" class="cell"
+        <div
+          v-for="date in week.days()"
+          :key="date.ymdText"
+          class="cell"
           :class="{ oob: !cal.containsDate(date), today: cal.isToday(date), sunday: date.weekOffset === 0, saturday: date.weekOffset === 6 }"
-          @click="goToNewPost(date)">
-          <span class="date">{{ date.date }}</span>
+          @click.prevent="toggleDetailModal(date)"
+        >
+          <span class="date" @click.stop="goToNewPost(date)">{{ date.date }}</span> <!-- 날짜 클릭 시 게시글 작성 -->
         </div>
       </div>
     </section>
+
+    <!-- 모달 컴포넌트 -->
+    <Modal v-if="isModalOpen" :date="selectedDateTitle" @closeModal="toggleDetailModal()" />
   </div>
 </template>
 
@@ -28,9 +38,10 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Calendar } from '@/components/calendar/Calendar';
+import Modal from '@/components/calendar/Modal.vue'; // 모달 컴포넌트 가져오기
 import { useCalendarStore } from '@/stores/counter';
 
-const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const days = ['일', '월', '화', '수', '목', '금', '토']
 const currentYear = new Date().getFullYear()
 const currentMonth = new Date().getMonth() + 1
 
@@ -38,23 +49,40 @@ let cal = ref(Calendar.fromYm(currentYear, currentMonth))
 const router = useRouter()
 const dateStore = useCalendarStore()
 
+// 이전 달로 이동
 const prevMonth = () => {
-  cal.value = cal.value.prevMonth()
+    cal.value = cal.value.prevMonth()
 }
 
+// 다음 달로 이동
 const nextMonth = () => {
-  cal.value = cal.value.nextMonth()
+    cal.value = cal.value.nextMonth()
 }
 
-// 날짜 클릭 시 호출되는 함수
-const goToNewPost = (date) => {
-  const formattedDate = `${date.year}-${String(date.month).padStart(2, '0')}-${String(date.date).padStart(2, '0')}`
-  
-  dateStore.setSelectedDate(formattedDate);
+// 모달 상태 및 선택된 날짜 제목 관리
+const isModalOpen = ref(false)
+let selectedDateTitle = ref('');
 
-  router.push({
-    name: 'PostPageView'
-  })
+// 모달 토글 (열기/닫기)
+const toggleDetailModal = (date) => {
+    if (date) {
+        selectedDateTitle.value = `${date.year}-${String(date.month).padStart(2, '0')}-${String(date.date).padStart(2, '0')}`;
+    }
+    isModalOpen.value = !isModalOpen.value; // 현재 상태에 따라 토글
+}
+
+// 날짜 클릭 시 게시글 작성 페이지로 이동
+const goToNewPost = (date) => {
+    const formattedDate = `${date.year}-${String(date.month).padStart(2, '0')}-${String(date.date).padStart(2, '0')}`
+    
+    // 선택한 날짜 저장
+    dateStore.setSelectedDate(formattedDate);
+
+    // 게시글 작성 페이지로 이동
+    router.push({
+        name: 'PostPageView',
+        params: { date: formattedDate }
+    })
 }
 </script>
 
@@ -62,7 +90,6 @@ const goToNewPost = (date) => {
 .calendar {
   display: flex;
   flex-direction: column;
-  height: auto;
 }
 
 .navs {

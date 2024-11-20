@@ -14,7 +14,6 @@ from rest_framework.permissions import IsAuthenticated
 def create_post(request):
     if request.method == 'POST':
         serializer = PostSerializer(data=request.data)
-        print(request.data)
 
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user)
@@ -43,6 +42,14 @@ def detail_post(request, post_pk):
             return Response({'msg' : '게시글 삭제 완료'}, status=status.HTTP_200_OK)
     else:
         return Response({'msg': '게시글 주인이 아님'})
+
+@api_view(['GET'])
+def post_list(request):
+    user_post = Post.objects.filter(user=request.user)
+
+    serializer = PostSerializer(user_post, many=True)
+
+    return Response(serializer.data)
 
 
 def is_post_owner(login_user, post_owner):
