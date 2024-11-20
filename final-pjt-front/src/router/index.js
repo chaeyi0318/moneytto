@@ -47,10 +47,10 @@ const router = createRouter({
       component: MyPageView,
     },
     {
-      path: '/post-page',
-      name: 'PostPageView',
+      path: "/post-page",
+      name: "PostPageView",
       component: PostPageView,
-    }
+    },
   ],
 });
 

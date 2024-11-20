@@ -1,17 +1,19 @@
 from django.shortcuts import render
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import update_session_auth_hash, authenticate, get_user_model
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
-from rest_framework.decorators import api_view, authentication_classes
-from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.authtoken.models import Token
-from .serializers import UserSerializer, LoginSerializer, CustomRegisterSerializer
+from rest_framework import status, generics, permissions
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from dj_rest_auth.registration.views import RegisterView
-from django.contrib.auth import authenticate
+
+from .serializers import UserSerializer, LoginSerializer, CustomRegisterSerializer, UserAdditionalInfoSerializer, UserUpdateSerializer, UserDeleteSerializer
+
+User = get_user_model()
+
 
 class CustomRegisterView(RegisterView):
     serializer_class = CustomRegisterSerializer
@@ -64,3 +66,31 @@ def logout(request):
         return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
     except Token.DoesNotExist:
         return Response({"detail": "Invalid token or user not logged in."}, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+class UserAdditionalInfoView(generics.UpdateAPIView):
+    serializer_class = UserAdditionalInfoSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+@api_view(['PUT'])
+@permission_classes([permissions.IsAuthenticated])
+def update_user(request):
+    user = request.user
+    serializer = UserUpdateSerializer(user, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@permission_classes([permissions.IsAuthenticated])
+def delete_user(request):
+    user = request.user
+    serializer = UserDeleteSerializer(data=request.data, context={'request': request})
+    if serializer.is_valid():
+        user.delete()
+        return Response({"detail": "사용자 계정이 성공적으로 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -197,8 +197,58 @@ export const useAccountStore = defineStore("accountStore", () => {
     }
   };
 
+  const updateUserInfo = async (payload) => {
+    try {
+      const response = await api.put("/accounts/update/", payload);
+      user.value = { ...user.value, ...response.data };
+      console.log("사용자 정보 업데이트 성공");
+    } catch (error) {
+      console.error(
+        "사용자 정보 업데이트 실패:",
+        error.response?.data || error.message
+      );
+    }
+  };
+
+  const updateAdditionalInfo = async (payload) => {
+    try {
+      const response = await api.put("/accounts/additional-info/", payload);
+      user.value = { ...user.value, ...response.data };
+      console.log("추가 정보 업데이트 성공");
+    } catch (error) {
+      console.error(
+        "추가 정보 업데이트 실패:",
+        error.response?.data || error.message
+      );
+    }
+  };
+
+  const deleteAccount = async (password) => {
+    try {
+      await api.delete("/accounts/delete/", { data: { password } });
+      token.value = null;
+      user.value = null;
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      router.push({ name: "MainView" });
+      console.log("계정 삭제 성공");
+    } catch (error) {
+      console.error("계정 삭제 실패:", error.response?.data || error.message);
+    }
+  };
+
   // 스토어 초기화 시 로그인 상태 확인
   checkLoginStatus();
 
-  return { token, user, isLogin, login, signup, logOut };
+  return {
+    token,
+    user,
+    isLogin,
+    login,
+    signup,
+    logOut,
+    updateUserInfo,
+    updateAdditionalInfo,
+    deleteAccount,
+  };
 });

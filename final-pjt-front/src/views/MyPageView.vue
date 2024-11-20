@@ -1,13 +1,28 @@
+<!-- views/MyPageView.vue -->
 <template>
-  <div>
-    <h1>마이페이지</h1>
+  <div class="my-page">
+    <h1>마이 페이지</h1>
+    <UserProfile />
+    <AdditionalInfoModal />
+    <DeleteAccount />
   </div>
 </template>
 
 <script setup>
+import UserProfile from "@/components/mypage/UserProfile.vue";
+import AdditionalInfoModal from "@/components/mypage/AdditionalInfo.vue";
+import DeleteAccount from "@/components/mypage/DeleteAccount.vue";
+import { useAccountStore } from "@/stores/counter";
+import { onMounted } from "vue";
 
+const accountStore = useAccountStore();
+
+onMounted(() => {
+  if (!accountStore.isLogin) {
+    // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
+    router.push({ name: "Login" });
+  }
+});
 </script>
 
-<style lang="scss" scoped>
-
-</style>
+<style scoped></style>

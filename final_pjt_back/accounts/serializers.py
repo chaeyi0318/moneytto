@@ -65,3 +65,29 @@ class CustomRegisterSerializer(RegisterSerializer):
         user.profile_image = self.cleaned_data.get('profile_image', None)
         user.save()
         return user
+    
+class UserAdditionalInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['birth_date', 'assets', 'income']
+
+    def update(self, instance, validated_data):
+        instance.birth_date = validated_data.get('birth_date', instance.birth_date)
+        instance.assets = validated_data.get('assets', instance.assets)
+        instance.income = validated_data.get('income', instance.income)
+        instance.save()
+        return instance
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'nickname', 'profile_image']
+
+class UserDeleteSerializer(serializers.Serializer):
+    password = serializers.CharField(write_only=True, required=True)
+
+    def validate_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("비밀번호가 일치하지 않습니다.")
+        return value
