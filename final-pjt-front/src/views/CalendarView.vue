@@ -40,10 +40,14 @@ import { useRouter } from 'vue-router'
 import { Calendar } from '@/components/calendar/Calendar';
 import Modal from '@/components/calendar/Modal.vue'; // 모달 컴포넌트 가져오기
 import { useCalendarStore } from '@/stores/counter';
+import api from '@/stores/api';
 
 const days = ['일', '월', '화', '수', '목', '금', '토']
 const currentYear = new Date().getFullYear()
 const currentMonth = new Date().getMonth() + 1
+
+console.log(currentMonth, ' 월입니다')
+console.log(currentYear, ' 년 입니다.')
 
 let cal = ref(Calendar.fromYm(currentYear, currentMonth))
 const router = useRouter()
@@ -51,12 +55,24 @@ const dateStore = useCalendarStore()
 
 // 이전 달로 이동
 const prevMonth = () => {
-    cal.value = cal.value.prevMonth()
+    cal.value = cal.value.prevMonth();
+    const yearMonth = cal.value.yearText + '-' + cal.value.monthText
+    console.log(`${yearMonth}`);
+
+    api.get('/posts/post-list/', {
+      params: { yearMonth }
+    }).then ((response) => {
+      console.log(response.data)
+    }).catch ((error) => {
+      console.log(error)
+    })
 }
 
 // 다음 달로 이동
 const nextMonth = () => {
     cal.value = cal.value.nextMonth()
+    const yearMonth = cal.value.yearText + '-' + cal.value.monthText
+    console.log(`다음 달: ${yearMonth}`);
 }
 
 // 모달 상태 및 선택된 날짜 제목 관리

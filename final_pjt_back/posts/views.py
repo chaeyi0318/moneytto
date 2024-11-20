@@ -14,7 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 def create_post(request):
     if request.method == 'POST':
         serializer = PostSerializer(data=request.data)
-
+        print(request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -45,6 +45,7 @@ def detail_post(request, post_pk):
 
 @api_view(['GET'])
 def post_list(request):
+    print(request.query_params.get('yearMonth'))
     user_post = Post.objects.filter(user=request.user)
 
     serializer = PostSerializer(user_post, many=True)
