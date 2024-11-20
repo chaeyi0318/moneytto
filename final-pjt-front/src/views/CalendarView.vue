@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Calendar } from '@/components/calendar/Calendar';
 import Modal from '@/components/calendar/Modal.vue'; // 모달 컴포넌트 가져오기
@@ -100,6 +100,10 @@ const goToNewPost = (date) => {
         params: { date: formattedDate }
     })
 }
+
+onMounted(() => {
+  const yearMonth = 0
+})
 </script>
 
 <style scoped>
