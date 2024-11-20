@@ -14,8 +14,10 @@ import AdditionalInfoModal from "@/components/mypage/AdditionalInfo.vue";
 import DeleteAccount from "@/components/mypage/DeleteAccount.vue";
 import { useAccountStore } from "@/stores/counter";
 import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 
 const accountStore = useAccountStore();
+const router = useRouter()
 
 onMounted(() => {
   if (!accountStore.isLogin) {

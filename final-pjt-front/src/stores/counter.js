@@ -186,7 +186,8 @@ export const useAccountStore = defineStore("accountStore", () => {
   const logOut = async function () {
     try {
       await api.post("/accounts/logout/");
-      dateStore.clearState()
+      const calendarStore = useCalendarStore(); // 여기서 스토어를 초기화합니다
+      calendarStore.clearState(); // clearState 메서드 호출
       token.value = null;
       user.value = null;
       localStorage.removeItem("token");

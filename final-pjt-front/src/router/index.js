@@ -1,3 +1,4 @@
+import Login from "@/components/accounts/Login.vue";
 import CalendarView from "@/views/CalendarView.vue";
 import FortuneView from "@/views/FortuneView.vue";
 import MainView from "@/views/MainView.vue";
@@ -50,6 +51,11 @@ const router = createRouter({
       path: "/post-page",
       name: "PostPageView",
       component: PostPageView,
+    },
+    {
+      path: "/login",
+      name: "Login",
+      component: Login,
     },
   ],
 });
