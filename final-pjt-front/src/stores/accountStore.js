@@ -16,8 +16,12 @@ export const useAccountStore = defineStore("accountStore", () => {
     try {
       const response = await api.post("/accounts/signup/", payload);
       console.log("회원가입 완료");
+      await login({
+        username: payload.username,
+        password: payload.password1
+      })
       // router.push({ name: "MainView" });
-      router.push({ name: "MainView" });
+      router.push({ name: "AdditionalInfo" });
     } catch (error) {
       console.error("회원가입 실패:", error.response?.data || error.message);
     }
