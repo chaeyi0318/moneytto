@@ -32,8 +32,9 @@ class PostLike(models.Model):
 
 
 class Comment(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='comments')        # 댓글 작성자
+    expenses_date = models.DateField()
     content = models.CharField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    # 게시글 주인 필드 빠짐!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 악!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

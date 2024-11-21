@@ -34,11 +34,11 @@ class PostLikeSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    post = PostSerializer(read_only=True)
 
     class Meta:
         model = Comment
-        fields = '__all__'
+        fields = ['id', 'user', 'expenses_date', 'content', 'created_at', 'updated_at']
+
 
 class CalendarMainSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()

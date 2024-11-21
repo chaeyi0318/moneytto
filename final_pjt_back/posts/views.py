@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import PostSerializer, CalendarMainSerializer, PostDetailSerializer
+from .serializers import PostSerializer, CalendarMainSerializer, PostDetailSerializer, CommentSerializer
 from django.shortcuts import get_object_or_404, get_list_or_404
 from .models import Post
 from rest_framework.decorators import permission_classes
@@ -14,7 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 def create_post(request):
     if request.method == 'POST':
         serializer = PostSerializer(data=request.data)
-        print(request.data)
+        # print(request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -45,6 +45,7 @@ def detail_post(request):
     else:
         return Response({'msg': '게시글 주인이 아님'})
 
+
 @api_view(['GET'])
 def post_list(request):
     year_month = request.query_params.get('yearMonth')
@@ -57,7 +58,18 @@ def post_list(request):
 
 @api_view(['POST'])
 def create_comment(request):
-    pass
+    date = request.data.get('date')  # 클라이언트가 'date' 키로 전달
+    # content = request.data.get('content')
+    print(request.data)
+    # print(date)
+    # print(content)
+    # post = get_list_or_404(Post, expenses_date=date)
+    
+    serializer = CommentSerializer(data=request.data)
+
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 def is_post_owner(login_user, post_owner):
     if login_user == post_owner:

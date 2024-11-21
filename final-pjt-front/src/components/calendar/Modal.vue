@@ -24,6 +24,7 @@
           </li>
         </ul>
       </main>
+      <Comment :date="props.date"/>
     </div>
   </div>
 </template>
@@ -31,7 +32,7 @@
 <script setup>
 import { defineProps, defineEmits, ref, onMounted } from "vue";
 import api from "@/stores/api";
-// import { Comment } from "@/Comment"
+import Comment from "@/components/calendar/Comment.vue";
 
 const props = defineProps({
   date: String
