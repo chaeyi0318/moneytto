@@ -27,12 +27,14 @@
             sunday: date.weekOffset === 0,
             saturday: date.weekOffset === 6,
           }"
-          @click.prevent="toggleDetailModal(date)"
         >
-          <span class="date" @click.stop="goToNewPost(date)">{{
-            date.date
-          }}</span>
-          <!-- 날짜 클릭 시 게시글 작성 -->
+          <!-- 날짜 표시 -->
+          <span class="date" @click.stop="goToNewPost(date)">
+            {{ date.date }}
+          </span>
+          <div v-if="getImageForDate(date)" class="post-image">
+            <img :src="getImageForDate(date)" alt="Post Image" @click.prevent="toggleDetailModal(date)"/>
+          </div>
         </div>
       </div>
     </section>
@@ -58,73 +60,89 @@ const days = ["일", "월", "화", "수", "목", "금", "토"];
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
 
-console.log(currentMonth, " 월입니다");
-console.log(currentYear, " 년 입니다.");
+// console.log(currentMonth, " 월입니다");
+// console.log(currentYear, " 년 입니다.");
 
 let cal = ref(Calendar.fromYm(currentYear, currentMonth));
 const router = useRouter();
 const dateStore = useCalendarStore();
 
+const posts = ref([])   // 게시글 데이터
+
 // 이전 달로 이동
 const prevMonth = () => {
-  cal.value = cal.value.prevMonth();
-  const yearMonth = cal.value.yearText + "-" + cal.value.monthText;
-  console.log(`${yearMonth}`);
+    cal.value = cal.value.prevMonth();
+    const yearMonth = cal.value.yearText + '-' + cal.value.monthText;
+    console.log(`${yearMonth}`);
 
-  api
-    .get("/posts/post-list/", {
-      params: { yearMonth },
-    })
-    .then((response) => {
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+    fetchPosts(yearMonth); // API 호출
 };
+
 
 // 다음 달로 이동
 const nextMonth = () => {
-  cal.value = cal.value.nextMonth();
-  const yearMonth = cal.value.yearText + "-" + cal.value.monthText;
-  console.log(`다음 달: ${yearMonth}`);
-};
+    cal.value = cal.value.nextMonth();
+    const yearMonth = cal.value.yearText + '-' + cal.value.monthText
+    console.log(`다음 달: ${yearMonth}`)
+
+    fetchPosts(yearMonth)
+}
 
 // 모달 상태 및 선택된 날짜 제목 관리
-const isModalOpen = ref(false);
-let selectedDateTitle = ref("");
+const isModalOpen = ref(false)
+let selectedDateTitle = ref("")
 
 // 모달 토글 (열기/닫기)
 const toggleDetailModal = (date) => {
   if (date) {
-    selectedDateTitle.value = `${date.year}-${String(date.month).padStart(
-      2,
-      "0"
-    )}-${String(date.date).padStart(2, "0")}`;
+    selectedDateTitle.value = `${date.year}-${String(date.month).padStart(2, "0")}-${String(date.date).padStart(2, "0")}`
   }
-  isModalOpen.value = !isModalOpen.value; // 현재 상태에 따라 토글
-};
+  isModalOpen.value = !isModalOpen.value // 현재 상태에 따라 토글
+}
 
 // 날짜 클릭 시 게시글 작성 페이지로 이동
 const goToNewPost = (date) => {
-  const formattedDate = `${date.year}-${String(date.month).padStart(
-    2,
-    "0"
-  )}-${String(date.date).padStart(2, "0")}`;
+  const formattedDate = `${date.year}-${String(date.month).padStart(2, "0")}-${String(date.date).padStart(2, "0")}`
 
   // 선택한 날짜 저장
-  dateStore.setSelectedDate(formattedDate);
+  dateStore.setSelectedDate(formattedDate)
 
   // 게시글 작성 페이지로 이동
   router.push({
     name: "PostPageView",
     params: { date: formattedDate },
-  });
-};
+  })
+}
+
+const fetchPosts = (yearMonth) => {
+    api.get('/posts/post-list/', {
+        params: { yearMonth }
+    })
+    .then((response) => {
+        console.log('게시글 데이터:', response.data)
+        posts.value = response.data // 게시글 데이터를 상태에 저장
+    })
+    .catch((error) => {
+        console.error('API 요청 실패:', error)
+    })
+}
+
+const baseURL = "http://localhost:8000"
+
+const getImageForDate = (date) => {
+  const formattedDate = `${date.year}-${String(date.month).padStart(2, "0")}-${String(date.date).padStart(2, "0")}`
+
+  // posts 데이터에서 해당 날짜의 게시글 찾기
+  const post = posts.value.find(post => post.expenses_date === formattedDate);
+
+  // API 응답의 경로를 그대로 사용
+  return post ? `${baseURL}${post.image}` : null;
+}
 
 onMounted(() => {
-  const yearMonth = 0;
-});
+    const yearMonth = `${cal.value.yearText}-${cal.value.monthText}`
+    fetchPosts(yearMonth)
+})
 </script>
 
 <style scoped>
@@ -199,5 +217,11 @@ onMounted(() => {
 /* 마우스 오버 시 날짜 셀 강조 */
 .cell:hover .date {
   background-color: rgba(0, 0, 255, 0.1);
+}
+
+.post-image img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
 }
 </style>

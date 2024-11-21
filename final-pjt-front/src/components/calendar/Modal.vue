@@ -6,23 +6,60 @@
         <p>{{ date }}</p>
         <button @click="closeModal">X</button> 
       </header>
-      <slot></slot> 
+      <main v-if="isLoading">
+        <p>로딩 중...</p>
+      </main>
+      <main v-else-if="error">
+        <p>{{ error }}</p>
+      </main>
+      <main v-else>
+        <ul v-if="posts.length > 0">
+          <li v-for="(post, index) in posts" :key="index">
+            <p>{{ post.content }}</p>
+          </li>
+        </ul>
+        <p v-else>해당 날짜에 게시글이 없습니다.</p>
+      </main>
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from "vue";
+import { defineProps, defineEmits, ref } from "vue";
+import api from "@/stores/api";
 
 const props = defineProps({
-  date : String,
-});
+  date: String
+})
 
 const emit = defineEmits(["closeModal"]); // closeModal 이벤트 정의
 
 const closeModal = () => {
   emit("closeModal"); // 부모 컴포넌트에 closeModal 이벤트 전달
+}
+
+const posts = ref([])
+const isLoading = ref(false)
+const error = ref(null)
+
+const fetchPosts = async () => {
+  isLoading.value = true; // 로딩 시작
+  error.value = null; // 에러 상태 초기화
+
+  try {
+    const response = await api.get(`/posts?date=${props.date}`); // 실제 API 엔드포인트로 요청
+    posts.value = response.data; // API 응답 데이터를 posts에 저장
+  } catch (err) {
+    error.value = "게시글을 불러오는 데 실패했습니다. 다시 시도해주세요."; // 에러 처리
+  } finally {
+    isLoading.value = false; // 로딩 종료
+  }
 };
+
+// 컴포넌트가 마운트될 때 데이터 가져오기
+// onMounted(() => {
+//   fetchPosts()
+// })
 </script>
 
 <style scoped>
@@ -51,5 +88,12 @@ header{
   display:flex ; 
   justify-content :space-between ; 
   align-items:center ;
+}
+main ul {
+  list-style-type: none;
+}
+
+main li {
+  margin-bottom: 16px;
 }
 </style>

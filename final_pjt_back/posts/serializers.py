@@ -39,3 +39,16 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Commnet
         fields = '__all__'
+
+class CalendarMainSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    username = serializers.CharField(source='user.username', read_only=True)
+
+    class Meta:
+        model = Post
+        fields = ['id', 'username', 'expenses_date', 'image']
+
+    def get_image(self, obj):
+        if obj.image and hasattr(obj.image, 'url'):
+            return obj.image.url
+        return None
