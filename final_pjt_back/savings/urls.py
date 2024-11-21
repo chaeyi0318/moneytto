@@ -7,4 +7,6 @@ urlpatterns = [
     path('likes/<int:saving_pk>/', views.likes),
     path('owns/<int:saving_pk>/', views.owns),
     path('recommend/', views.recommend_savings),
+    path('liked-savings/', views.liked_savings, name='liked-savings'),
+
 ]

@@ -177,20 +177,10 @@ def recommend_savings(request):
         "income_based": serializer_income.data
     })
 
-# from rest_framework.decorators import api_view, permission_classes
-# from rest_framework.permissions import AllowAny
-
-# @api_view(['GET'])
-# @permission_classes([AllowAny])
-# def recommend_savings(request):
-#     # 테스트를 위해 ID가 5인 사용자를 가져옵니다.
-#     user = User.objects.filter(pk=5).first()
-#     if not user:
-#         return Response({"error": "User with ID 5 not found"}, status=status.HTTP_404_NOT_FOUND)
-    
-#     if not user.birth_date or not user.income:
-#         return Response({"error": "User does not have birth date or income information"}, status=status.HTTP_400_BAD_REQUEST)
-    
-#     recommended_savings = get_recommended_savings(user, limit=6)
-#     serializer = SavingRecommendSerializer(recommended_savings, many=True)
-#     return Response(serializer.data)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def liked_savings(request):
+    user = request.user
+    liked_savings = user.liked_savings.all()
+    serializer = SavingListSerializer(liked_savings, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)

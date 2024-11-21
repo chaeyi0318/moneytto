@@ -1,4 +1,5 @@
 ﻿// src/stores/savingStore.js
+import { ref, watch, computed } from "vue";
 import { defineStore } from "pinia";
 import api from "./api"; // API 인스턴스 import
 
@@ -64,6 +65,21 @@ export const useSavingStore = defineStore("saving", {
       } catch (error) {
         console.error("Error fetching recommended savings:", error);
         this.error = "추천 적금 상품을 불러오는데 실패했습니다.";
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async fetchLikedSavings() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const response = await api.get(`${this.API_URL}/liked-savings/`);
+        return response.data; // 데이터를 반환합니다.
+      } catch (error) {
+        console.error("Error fetching liked savings:", error);
+        this.error = "찜한 적금 상품을 불러오는데 실패했습니다.";
+        return []; // 에러 시 빈 배열 반환
       } finally {
         this.loading = false;
       }
