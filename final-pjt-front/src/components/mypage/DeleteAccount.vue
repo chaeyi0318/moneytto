@@ -26,6 +26,7 @@ const deleteAccount = async () => {
     try {
       await accountStore.deleteAccount(password.value);
       alert("계정이 성공적으로 삭제되었습니다.");
+      router.push({ name: "MainView" })
       // 로그아웃 처리는 deleteAccount 함수 내에서 이미 처리되므로 여기서는 추가 작업 불필요
     } catch (error) {
       alert("계정 삭제에 실패했습니다.");

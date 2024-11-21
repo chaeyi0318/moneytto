@@ -16,6 +16,7 @@ export const useAccountStore = defineStore("accountStore", () => {
     try {
       const response = await api.post("/accounts/signup/", payload);
       console.log("회원가입 완료");
+      // router.push({ name: "MainView" });
       router.push({ name: "MainView" });
     } catch (error) {
       console.error("회원가입 실패:", error.response?.data || error.message);

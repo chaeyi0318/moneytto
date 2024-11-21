@@ -4,7 +4,8 @@
       <div class="col-md-6">
         <div class="card">
           <div class="card-body">
-            <h2 class="card-title text-center mb-4">추가 정보</h2>
+            <h2 class="card-title text-center mb-4">가입을 환영합니다!</h2>
+            <p class="text-center">맞춤형 금융 서비스 제공을 위해 아래 정보를 입력해주세요.</p>
             <form @submit.prevent="updateAdditionalInfo">
               <div class="mb-3">
                 <label for="birthDate" class="form-label">생년월일:</label>

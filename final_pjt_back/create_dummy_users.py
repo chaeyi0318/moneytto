@@ -1,10 +1,10 @@
-﻿import os
+import os
 import django
 import random
 from datetime import datetime, timedelta
 
 # Django 설정 파일 지정
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "your_project.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "final_pjt_back.settings")
 django.setup()
 
 from django.contrib.auth import get_user_model

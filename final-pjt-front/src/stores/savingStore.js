@@ -42,6 +42,21 @@ export const useSavingStore = defineStore("saving", {
       }
     },
 
+    updateSort(field) {
+      if (this.sortField === field) {
+        this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortField = field;
+        this.sortOrder = 'desc';
+      }
+
+      this.getSavings({
+        ...this.currentSearchParams,
+        sort_by: this.sortField,
+        sort_order: this.sortOrder
+      });
+    },
+
     async toggleLike(savingPk) {
       try {
         const response = await api.post(`${this.API_URL}/likes/${savingPk}/`);
