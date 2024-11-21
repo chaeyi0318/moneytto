@@ -1,4 +1,4 @@
-﻿<template>
+﻿﻿<template>
   <div class="modal-backdrop">
     <div class="modal">
       <section class="additional-info-section">
@@ -8,7 +8,7 @@
             <label for="birthDate">생년월일:</label>
             <input
               id="birthDate"
-              v-model="additionalInfo.birthDate"
+              v-model="additionalInfo.birth_date"
               type="date"
               required
             />
@@ -49,14 +49,14 @@ const router = useRouter();
 const emit = defineEmits(["close", "skip"]);
 
 const additionalInfo = ref({
-  birthDate: "",
+  birth_date: "",
   assets: 0,
   income: 0,
 });
 
 onMounted(() => {
   if (accountStore.user) {
-    additionalInfo.value.birthDate = accountStore.user.birthDate || "";
+    additionalInfo.value.birth_date = accountStore.user.birthDate || "";
     additionalInfo.value.assets = accountStore.user.assets || 0;
     additionalInfo.value.income = accountStore.user.income || 0;
   }

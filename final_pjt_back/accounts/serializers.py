@@ -71,18 +71,15 @@ class UserAdditionalInfoSerializer(serializers.ModelSerializer):
         model = User
         fields = ['birth_date', 'assets', 'income']
 
-    def update(self, instance, validated_data):
-        instance.birth_date = validated_data.get('birth_date', instance.birth_date)
-        instance.assets = validated_data.get('assets', instance.assets)
-        instance.income = validated_data.get('income', instance.income)
-        instance.save()
-        return instance
-
 class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'nickname', 'profile_image']
-
+        fields = ['username', 'profile_image', 'nickname', 'birth_date', 'income', 'assets', 'point']
+        extra_kwargs = {
+            'username': {'read_only': True},
+            'point': {'read_only': True}
+        }
+        
 class UserDeleteSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True, required=True)
 

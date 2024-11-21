@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_list_or_404, get_object_or_404
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import update_session_auth_hash, authenticate, get_user_model
@@ -9,6 +9,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status, generics, permissions
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from dj_rest_auth.registration.views import RegisterView
+from rest_framework.permissions import IsAuthenticated
 
 from .serializers import UserSerializer, LoginSerializer, CustomRegisterSerializer, UserAdditionalInfoSerializer, UserUpdateSerializer, UserDeleteSerializer
 
@@ -75,14 +76,46 @@ class UserAdditionalInfoView(generics.UpdateAPIView):
     def get_object(self):
         return self.request.user
 
+    def update(self, request, *args, **kwargs):
+        # 디버깅을 위한 수신 데이터 로그
+        print("Received data:", request.data)
+        
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data)
+        else:
+            # 유효성 검사 오류 출력
+            print("Validation errors:", serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 @api_view(['PUT'])
+@permission_classes([permissions.IsAuthenticated])
+def add_info(request):
+    user = request.user
+    serializer = UserAdditionalInfoSerializer(user, data=request.data, partial=True)
+    print("Received data:", request.data)
+    if serializer.is_valid(raise_exception=True):
+        # print(serializer)
+        serializer.save()
+        return Response(serializer.data)
+
+
+@api_view(['GET', 'PUT'])
 @permission_classes([permissions.IsAuthenticated])
 def update_user(request):
     user = request.user
-    serializer = UserUpdateSerializer(user, data=request.data, partial=True)
-    if serializer.is_valid():
-        serializer.save()
+    if request.method == 'GET':
+        serializer = UserUpdateSerializer(user)
         return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = UserUpdateSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
@@ -94,3 +127,14 @@ def delete_user(request):
         user.delete()
         return Response({"detail": "사용자 계정이 성공적으로 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def profile(request, username):
+    if request.user.username != username:
+        return Response()({'error': 'You are not authorized to view this profile.'}, status=status.HTTP_403_FORBIDDEN)
+    
+    user = get_object_or_404(User, username=username)
+    serializer= UserSerializer(user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+

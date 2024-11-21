@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 import api from "./api"; // API 인스턴스 import
+import { useCalendarStore } from "./calendarStore";
 
 export const useAccountStore = defineStore("accountStore", () => {
   const router = useRouter();
@@ -11,9 +12,9 @@ export const useAccountStore = defineStore("accountStore", () => {
 
   const isLogin = computed(() => token.value !== null);
 
-  const signup = async (payload) => {
+  const signup = async function (payload) {
     try {
-      await api.post("/accounts/signup/", payload);
+      const response = await api.post("/accounts/signup/", payload);
       console.log("회원가입 완료");
       router.push({ name: "MainView" });
     } catch (error) {
@@ -21,7 +22,7 @@ export const useAccountStore = defineStore("accountStore", () => {
     }
   };
 
-  const login = async (payload) => {
+  const login = async function (payload) {
     try {
       const response = await api.post("/accounts/login/", payload);
       token.value = response.data.token;
@@ -30,10 +31,8 @@ export const useAccountStore = defineStore("accountStore", () => {
         username: response.data.user.username,
         nickname: response.data.user.nickname,
       };
-
       localStorage.setItem("token", token.value);
       localStorage.setItem("user", JSON.stringify(user.value));
-
       console.log("로그인 성공");
     } catch (error) {
       console.error("로그인 실패:", error.response?.data || error.message);
@@ -43,37 +42,97 @@ export const useAccountStore = defineStore("accountStore", () => {
   const checkLoginStatus = () => {
     const storedToken = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
-
     if (storedToken && storedUser) {
       token.value = storedToken;
       user.value = JSON.parse(storedUser);
-
       console.log("로그인 상태 유지 중");
     } else {
       console.log("로그인 필요");
     }
   };
 
-  const logOut = async () => {
+  const logOut = async function () {
     try {
       await api.post("/accounts/logout/");
-
+      const calendarStore = useCalendarStore(); // 여기서 스토어를 초기화합니다
+      calendarStore.clearState(); // clearState 메서드 호출
       token.value = null;
       user.value = null;
-
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-
       router.push({ name: "MainView" });
-
-      console.log("로그아웃 성공");
     } catch (error) {
       console.error("로그아웃 실패:", error.response?.data || error.message);
+    }
+  };
+
+  const fetchUserProfile = async () => {
+    try {
+      const response = await api.get("/accounts/update/");
+      user.value = response.data;
+      return response.data;
+    } catch (error) {
+      console.error(
+        "프로필 정보 불러오기 실패:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  };
+
+  const updateUserInfo = async (payload) => {
+    try {
+      const response = await api.put("/accounts/update/", payload);
+      user.value = { ...user.value, ...response.data };
+      console.log("사용자 정보 업데이트 성공");
+    } catch (error) {
+      console.error(
+        "사용자 정보 업데이트 실패:",
+        error.response?.data || error.message
+      );
+    }
+  };
+
+  const updateAdditionalInfo = async (payload) => {
+    try {
+      const response = await api.put("/accounts/additional-info/", payload);
+      user.value = { ...user.value, ...response.data };
+      console.log("추가 정보 업데이트 성공");
+    } catch (error) {
+      console.error(
+        "추가 정보 업데이트 실패:",
+        error.response?.data || error.message
+      );
+    }
+  };
+
+  const deleteAccount = async (password) => {
+    try {
+      await api.delete("/accounts/delete/", { data: { password } });
+      token.value = null;
+      user.value = null;
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      router.push({ name: "MainView" });
+      console.log("계정 삭제 성공");
+    } catch (error) {
+      console.error("계정 삭제 실패:", error.response?.data || error.message);
     }
   };
 
   // 스토어 초기화 시 로그인 상태 확인
   checkLoginStatus();
 
-  return { token, user, isLogin, login, signup, logOut };
+  return {
+    token,
+    user,
+    isLogin,
+    login,
+    signup,
+    logOut,
+    updateUserInfo,
+    updateAdditionalInfo,
+    deleteAccount,
+    fetchUserProfile,
+  };
 });
