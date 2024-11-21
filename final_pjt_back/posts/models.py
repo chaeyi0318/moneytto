@@ -37,4 +37,4 @@ class Comment(models.Model):
     content = models.CharField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    # 게시글 주인 필드 빠짐!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 악!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    author_user_pk = models.IntegerField()
