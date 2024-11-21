@@ -1,5 +1,6 @@
 <template>
   <div class="saving-view">
+    <RouterLink :to="{ name: 'Recommend' }"><h3>추천 적금 상품</h3></RouterLink>
     <h2>적금 상품 검색</h2>
     <Search @search="performSearch" />
     <div v-if="store.loading">잠시만 기다려주세요!</div>
@@ -9,12 +10,11 @@
       :error="store.error"
       :showPostTaxInterest="hasSearched"
     />
-    <h1>적금 추천</h1>
-    <Recommend />
   </div>
 </template>
 
 <script setup>
+import { RouterLink } from "vue-router";
 import { ref, onMounted } from "vue";
 import { useSavingStore } from "@/stores/savingStore";
 import Search from "@/components/savings/Search.vue";

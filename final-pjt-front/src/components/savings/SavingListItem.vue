@@ -2,7 +2,11 @@
   <tr>
     <td>{{ product.bank_name }}</td>
     <td>
-      <a v-if="product.product_link" :href="product.product_link" target="_blank">
+      <a
+        v-if="product.product_link"
+        :href="product.product_link"
+        target="_blank"
+      >
         {{ product.product_name }}
       </a>
       <span v-else>{{ product.product_name }}</span>
@@ -13,9 +17,16 @@
     <td>{{ product.max_preference_rate }}%</td>
     <td>{{ product.eligibility }}</td>
     <td>{{ product.interest_calculation_method }}</td>
-    <td v-if="showPostTaxInterest">{{ formatNumber(product.post_tax_interest) }}</td>
+    <td v-if="showPostTaxInterest">
+      {{ formatNumber(product.post_tax_interest) }}
+    </td>
     <td>
-      <button @click="$emit('show-details', product)">상세보기</button>
+      <button
+        @click="$emit('show-details', product)"
+        class="btn btn-sm btn-success"
+      >
+        상세보기
+      </button>
     </td>
   </tr>
 </template>
@@ -23,9 +34,9 @@
 <script setup>
 defineProps({
   product: Object,
-  showPostTaxInterest: Boolean
+  showPostTaxInterest: Boolean,
 });
-defineEmits(['show-details']);
+defineEmits(["show-details"]);
 
 const formatNumber = (num) => {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

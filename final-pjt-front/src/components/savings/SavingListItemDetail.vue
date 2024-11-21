@@ -1,48 +1,99 @@
 ﻿<!-- SavingListItemDetail.vue -->
 <template>
-  <div class="modal">
-    <div class="modal-content">
-      <div class="modal-top">
-        <button
-          @click="toggleLike"
-          class="star-button"
-          :class="{ starred: product.is_liked }"
-        >
-          {{ product.is_liked ? "★" : "☆" }}
-        </button>
-        <h2>{{ product.product_name }}</h2>
-        <h4>{{ product.bank_name }}</h4>
-        <hr />
+  <div
+    class="modal fade show"
+    tabindex="-1"
+    role="dialog"
+    style="display: block"
+  >
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ product.product_name }}</h5>
+        </div>
+        <div class="modal-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0">{{ product.bank_name }}</h6>
+            <button
+              @click="toggleLike"
+              class="btn btn-light star-button"
+              :class="{ 'btn-warning': product.is_liked }"
+            >
+              {{ product.is_liked ? "★" : "☆" }}
+            </button>
+          </div>
+          <hr />
+          <div class="detail-info">
+            <p>
+              <strong>적립방식:</strong>
+              {{ product.saving_method }}
+            </p>
+            <p>
+              <strong>세전이자율:</strong>
+              {{ product.pre_tax_interest_rate }}%
+            </p>
+            <p>
+              <strong>세후이자율:</strong>
+              {{ product.post_tax_interest_rate }}%
+            </p>
+            <p>
+              <strong>최고우대금리:</strong>
+              {{ product.max_preference_rate }}%
+            </p>
+            <p>
+              <strong>이자계산방식:</strong>
+              {{ product.interest_calculation_method }}
+            </p>
+            <!-- <p v-if="showPostTaxInterest">
+              <strong>세후이자: 예시</strong>
+              {{ formatNumber(product.post_tax_interest) }}
+            </p> -->
+            <p>
+              <strong>비교공시일:</strong>
+              {{ product.comparison_disclosure_date }}
+            </p>
+            <p>
+              <strong>담당부서 및 연락처:</strong>
+              {{ product.department_contact }}
+            </p>
+            <p>
+              <strong>우대조건:</strong> {{ product.preferential_conditions }}
+            </p>
+            <p>
+              <strong>상세 가입대상:</strong> {{ product.detailed_eligibility }}
+            </p>
+            <p><strong>가입방법:</strong> {{ product.application_method }}</p>
+            <p>
+              <strong>만기 후 이자율:</strong>
+              {{ product.post_maturity_interest_rate }}
+            </p>
+            <p>
+              <strong>기타 유의사항:</strong> {{ product.other_considerations }}
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            @click="$emit('close')"
+          >
+            닫기
+          </button>
+        </div>
       </div>
-      <div class="detail-info">
-        <p>
-          <strong>비교공시일:</strong> {{ product.comparison_disclosure_date }}
-        </p>
-        <p>
-          <strong>담당부서 및 연락처:</strong> {{ product.department_contact }}
-        </p>
-        <p><strong>우대조건:</strong> {{ product.preferential_conditions }}</p>
-        <p>
-          <strong>상세 가입대상:</strong> {{ product.detailed_eligibility }}
-        </p>
-        <p><strong>가입방법:</strong> {{ product.application_method }}</p>
-        <p>
-          <strong>만기 후 이자율:</strong>
-          {{ product.post_maturity_interest_rate }}
-        </p>
-        <p>
-          <strong>기타 유의사항:</strong> {{ product.other_considerations }}
-        </p>
-      </div>
-      <button @click="$emit('close')" class="close-button">닫기</button>
     </div>
   </div>
+  <div class="modal-backdrop fade show"></div>
 </template>
 
 <script setup>
 import { useSavingStore } from "@/stores/savingStore";
 
-const props = defineProps(["product"]);
+const props = defineProps({
+  product: Object,
+  showPostTaxInterest: Boolean,
+});
 const emit = defineEmits(["close"]);
 
 const savingStore = useSavingStore();
@@ -54,65 +105,17 @@ const toggleLike = () => {
 
 <style scoped>
 .modal {
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
-}
-
-.modal-content {
-  background-color: #fefefe;
-  margin: 15% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 600px;
-  border-radius: 5px;
-  position: relative;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .star-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 50px;
-  cursor: pointer;
-  color: #ccc;
-  transition: color 0.3s ease;
-}
-
-.star-button.starred {
-  color: gold;
-}
-
-.modal-top {
-  color: #333;
-  margin-top: 0;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
+  font-size: 1.5rem;
+  padding: 0.25rem 0.5rem;
+  line-height: 1;
+  color: green;
 }
 
 .detail-info p {
-  margin: 10px 0;
-}
-
-.close-button {
-  background-color: #f44336;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  float: right;
-}
-
-.close-button:hover {
-  background-color: #d32f2f;
+  margin-bottom: 0.5rem;
 }
 </style>

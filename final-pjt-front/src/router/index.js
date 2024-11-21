@@ -2,6 +2,7 @@ import AdditionalInfo from "@/components/mypage/AdditionalInfo.vue";
 import DeleteAccount from "@/components/mypage/DeleteAccount.vue";
 import LikedSavings from "@/components/mypage/likedSavings.vue";
 import UserProfile from "@/components/mypage/UserProfile.vue";
+import Recommend from "@/components/savings/Recommend.vue";
 import { useAccountStore } from "@/stores/accountStore";
 import CalendarView from "@/views/CalendarView.vue";
 import FortuneView from "@/views/FortuneView.vue";
@@ -74,6 +75,11 @@ const routes = [
     path: "/delete-account",
     name: "DeleteAccount",
     component: DeleteAccount,
+  },
+  {
+    path: "/recommend",
+    name: "Recommend",
+    component: Recommend,
   },
 ];
 
