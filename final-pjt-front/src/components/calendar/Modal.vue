@@ -15,18 +15,23 @@
       <main v-else>
         <ul v-if="posts.length > 0">
           <li v-for="(post, index) in posts" :key="index">
-            <p>{{ post.content }}</p>
+            <img v-if="post.image" :src="post.image" alt="">
+            <p>카테고리 : {{ post.category_name }}</p>
+            <p>가격 : {{ post.price }}</p>
+            <p>소비내용 : {{ post.content }}</p>
+            <button>수정</button>
+            <button>삭제</button>
           </li>
         </ul>
-        <p v-else>해당 날짜에 게시글이 없습니다.</p>
       </main>
     </div>
   </div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref } from "vue";
+import { defineProps, defineEmits, ref, onMounted } from "vue";
 import api from "@/stores/api";
+// import { Comment } from "@/Comment"
 
 const props = defineProps({
   date: String
@@ -43,23 +48,27 @@ const isLoading = ref(false)
 const error = ref(null)
 
 const fetchPosts = async () => {
-  isLoading.value = true; // 로딩 시작
-  error.value = null; // 에러 상태 초기화
+  isLoading.value = true
+  error.value = null
 
   try {
-    const response = await api.get(`/posts?date=${props.date}`); // 실제 API 엔드포인트로 요청
-    posts.value = response.data; // API 응답 데이터를 posts에 저장
+    const response = await api.get(`/posts/detail-post/`, {
+      params: { date: props.date }
+    })
+    posts.value = response.data;
+
+    // console.log(posts.value)
   } catch (err) {
-    error.value = "게시글을 불러오는 데 실패했습니다. 다시 시도해주세요."; // 에러 처리
+    error.value = "게시글을 불러오는 데 실패했습니다. 다시 시도해주세요."
   } finally {
     isLoading.value = false; // 로딩 종료
   }
 };
 
 // 컴포넌트가 마운트될 때 데이터 가져오기
-// onMounted(() => {
-//   fetchPosts()
-// })
+onMounted(() => {
+  fetchPosts()
+})
 </script>
 
 <style scoped>
@@ -89,11 +98,15 @@ header{
   justify-content :space-between ; 
   align-items:center ;
 }
-main ul {
+/* main ul {
   list-style-type: none;
-}
+} */
 
 main li {
   margin-bottom: 16px;
+}
+
+img {
+  width: 50%;
 }
 </style>

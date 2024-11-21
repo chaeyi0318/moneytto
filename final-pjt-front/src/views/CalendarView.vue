@@ -119,7 +119,7 @@ const fetchPosts = (yearMonth) => {
         params: { yearMonth }
     })
     .then((response) => {
-        console.log('게시글 데이터:', response.data)
+        // console.log('게시글 데이터:', response.data)
         posts.value = response.data // 게시글 데이터를 상태에 저장
     })
     .catch((error) => {

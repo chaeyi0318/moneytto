@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import PostSerializer, CalendarMainSerializer
+from .serializers import PostSerializer, CalendarMainSerializer, PostDetailSerializer
 from django.shortcuts import get_object_or_404, get_list_or_404
 from .models import Post
 from rest_framework.decorators import permission_classes
@@ -21,28 +21,29 @@ def create_post(request):
         
 
 @api_view(['GET', 'DELETE', 'PUT'])
-def detail_post(request, date):
-    post = get_object_or_404(Post, expenses_date=date)
-    print(date)
+def detail_post(request):
+    date = request.GET.get('date')
+    # print(date)
+    post = get_list_or_404(Post, expenses_date=date)
 
     if request.method == 'GET':
-        serializer = PostSerializer(post)
+        serializer = PostDetailSerializer(post, many=True, context={'request': request})
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # if is_post_owner(request.user, post.user):
-    #     if request.method == 'PUT':
-    #         serializer = PostSerializer(post, data=request.data, partial=True)
+    if is_post_owner(request.user, post.user):
+        if request.method == 'PUT':
+            serializer = PostDetailSerializer(post, data=request.data, partial=True)
 
-    #         if serializer.is_valid(raise_exception=True):
-    #             serializer.save(user=request.user)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(user=request.user)
 
-    #             return Response(serializer.data, status=status.HTTP_200_OK)
-    #     elif request.method == 'DELETE':
-    #         post.delete()
-    #         return Response({'msg' : '게시글 삭제 완료'}, status=status.HTTP_200_OK)
-    # else:
-    #     return Response({'msg': '게시글 주인이 아님'})
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        elif request.method == 'DELETE':
+            post.delete()
+            return Response({'msg' : '게시글 삭제 완료'}, status=status.HTTP_200_OK)
+    else:
+        return Response({'msg': '게시글 주인이 아님'})
 
 @api_view(['GET'])
 def post_list(request):
@@ -53,6 +54,10 @@ def post_list(request):
 
     return Response(serializer.data)
 
+
+@api_view(['POST'])
+def create_comment(request):
+    pass
 
 def is_post_owner(login_user, post_owner):
     if login_user == post_owner:

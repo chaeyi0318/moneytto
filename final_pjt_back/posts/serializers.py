@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, Post, PostLike, Commnet
+from .models import Category, Post, PostLike, Comment
 from accounts.serializers import UserSerializer
 
 
@@ -37,7 +37,7 @@ class CommentSerializer(serializers.ModelSerializer):
     post = PostSerializer(read_only=True)
 
     class Meta:
-        model = Commnet
+        model = Comment
         fields = '__all__'
 
 class CalendarMainSerializer(serializers.ModelSerializer):
@@ -51,4 +51,21 @@ class CalendarMainSerializer(serializers.ModelSerializer):
     def get_image(self, obj):
         if obj.image and hasattr(obj.image, 'url'):
             return obj.image.url
+        return None
+    
+
+class PostDetailSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+    category_name = serializers.ReadOnlyField(source='category.category_name')
+    username = serializers.CharField(source='user.username', read_only=True)
+
+    class Meta:
+        model = Post
+        fields = ['id', 'username', 'expenses_date', 'image', 'content', 'category_name', 'created_at', 'updated_at']
+
+    def get_image(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+
+            return request.build_absolute_uri(obj.image.url)
         return None
