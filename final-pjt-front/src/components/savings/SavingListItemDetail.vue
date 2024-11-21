@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { useSavingStore } from "@/stores/counter";
+import { useSavingStore } from "@/stores/savingStore";
 
 const props = defineProps(["product"]);
 const emit = defineEmits(["close"]);

@@ -14,7 +14,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { useAccountStore } from "@/stores/counter";
+import { useAccountStore } from "@/stores/accountStore";
 
 const accountStore = useAccountStore();
 const password = ref("");

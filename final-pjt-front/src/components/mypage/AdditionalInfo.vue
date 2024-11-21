@@ -41,7 +41,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useAccountStore } from "@/stores/counter";
+import { useAccountStore } from "@/stores/accountStore";
 import { useRouter } from "vue-router";
 
 const accountStore = useAccountStore();

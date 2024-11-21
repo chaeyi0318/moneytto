@@ -12,12 +12,12 @@
 import UserProfile from "@/components/mypage/UserProfile.vue";
 import AdditionalInfoModal from "@/components/mypage/AdditionalInfo.vue";
 import DeleteAccount from "@/components/mypage/DeleteAccount.vue";
-import { useAccountStore } from "@/stores/counter";
+import { useAccountStore } from "@/stores/accountStore";
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
 
 const accountStore = useAccountStore();
-const router = useRouter()
+const router = useRouter();
 
 onMounted(() => {
   if (!accountStore.isLogin) {

@@ -22,7 +22,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useAccountStore } from "@/stores/counter";
+import { useAccountStore } from "@/stores/accountStore";
 
 const accountStore = useAccountStore();
 

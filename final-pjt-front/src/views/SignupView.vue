@@ -25,7 +25,7 @@
 <script setup>
 import { ref } from 'vue'
 import { RouterView, RouterLink } from 'vue-router'
-import { useAccountStore } from '@/stores/counter'
+import { useAccountStore } from "@/stores/accountStore";
 
 const accountStore = useAccountStore()
 

@@ -16,7 +16,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useSavingStore } from "@/stores/counter";
+import { useSavingStore } from "@/stores/savingStore";
 import Search from "@/components/savings/Search.vue";
 import SavingList from "@/components/savings/SavingList.vue";
 import Recommend from "@/components/savings/Recommend.vue";

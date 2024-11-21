@@ -36,7 +36,7 @@
 <script setup>
 import { ref } from "vue";
 import { RouterLink, RouterView } from "vue-router";
-import { useAccountStore } from "@/stores/counter";
+import { useAccountStore } from "@/stores/accountStore";
 import Login from "@/components/accounts/Login.vue";
 import LoginUsername from "@/components/accounts/LoginUsername.vue";
 

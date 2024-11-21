@@ -33,7 +33,8 @@
 
 <script>
 import { ref, onMounted, computed } from "vue";
-import { useSavingStore, useAccountStore } from "@/stores/counter";
+import { useSavingStore } from "@/stores/savingStore";
+import { useAccountStore } from "@/stores/accountStore";
 import RecommendItem from "./RecommendItem.vue";
 
 export default {
