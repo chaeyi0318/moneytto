@@ -18,8 +18,8 @@ export const useAccountStore = defineStore("accountStore", () => {
       console.log("회원가입 완료");
       await login({
         username: payload.username,
-        password: payload.password1
-      })
+        password: payload.password1,
+      });
       // router.push({ name: "MainView" });
       router.push({ name: "AdditionalInfo" });
     } catch (error) {
@@ -87,7 +87,11 @@ export const useAccountStore = defineStore("accountStore", () => {
 
   const updateUserInfo = async (payload) => {
     try {
-      const response = await api.put("/accounts/update/", payload);
+      const response = await api.put("/accounts/update/", payload, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       user.value = { ...user.value, ...response.data };
       console.log("사용자 정보 업데이트 성공");
     } catch (error) {
@@ -95,6 +99,7 @@ export const useAccountStore = defineStore("accountStore", () => {
         "사용자 정보 업데이트 실패:",
         error.response?.data || error.message
       );
+      throw error; // 에러를 다시 던져서 컴포넌트에서 처리할 수 있게 함
     }
   };
 

@@ -10,6 +10,8 @@ from rest_framework import status, generics, permissions
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from dj_rest_auth.registration.views import RegisterView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import parser_classes
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from .serializers import UserSerializer, LoginSerializer, CustomRegisterSerializer, UserAdditionalInfoSerializer, UserUpdateSerializer, UserDeleteSerializer
 
@@ -104,8 +106,11 @@ def add_info(request):
         return Response(serializer.data)
 
 
+from rest_framework.parsers import MultiPartParser, FormParser
+
 @api_view(['GET', 'PUT'])
 @permission_classes([permissions.IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser])
 def update_user(request):
     user = request.user
     if request.method == 'GET':
@@ -113,7 +118,9 @@ def update_user(request):
         return Response(serializer.data)
     elif request.method == 'PUT':
         serializer = UserUpdateSerializer(user, data=request.data, partial=True)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
+            if 'profile_image' in request.FILES:
+                user.profile_image = request.FILES['profile_image']
             serializer.save()
             return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -123,10 +130,10 @@ def update_user(request):
 def delete_user(request):
     user = request.user
     serializer = UserDeleteSerializer(data=request.data, context={'request': request})
-    if serializer.is_valid():
+    if serializer.is_valid(raise_exception=True):
         user.delete()
         return Response({"detail": "사용자 계정이 성공적으로 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

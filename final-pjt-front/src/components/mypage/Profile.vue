@@ -1,44 +1,59 @@
 <template>
-    <div class="container mt-5">
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="card-title text-center mb-4">내 정보</h2>
-                    <RouterLink class="text-end" :to="{ name: 'profile-update' }"><p>프로필 수정</p></RouterLink>
-                    <div class="mb-3">
-                    <div>
-                        <img
-                            v-if="profile.previewImage"
-                            :src="profile.previewImage"
-                            alt="프로필 이미지"
-                            style="max-width: 100px; max-height: 100px"
-                        />
-                    </div>
-                  <!-- <p>프로필: {{ profile.previewImage }}</p> -->
-                  <div>
-                      <p>아이디: {{ profile.username }}</p>
-                      <p>닉네임: {{ profile.nickname }}</p>
-                      <p>생년월일: {{ profile.birth_date }}</p>
-                      <p>월 수입: {{ profile.income }}원</p>
-                      <p>보유 자산: {{ profile.assets }}원</p>
-                      <p>보유 포인트: {{ profile.point }}P</p>
-                  </div>
-                  <RouterLink class="text-end" :to="{ name: 'DeleteAccount' }"><p>탈퇴</p></RouterLink>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title text-center mb-4">내 정보</h2>
+            <RouterLink class="text-end" :to="{ name: 'profile-update' }"
+              ><p>프로필 수정</p></RouterLink
+            >
+            <div class="mb-3">
+              <div class="mb-3">
+                <div
+                  v-if="profile.previewImage"
+                  class="profile-image-container"
+                >
+                  <img
+                    :src="getImageUrl(profile.previewImage)"
+                    alt="프로필 이미지"
+                    class="profile-image"
+                  />
                 </div>
+                <div v-else>
+                  <img
+                    :src="getImageUrl(defaultProfile)"
+                    alt="프로필 이미지"
+                    class="profile-image"
+                  />
+                </div>
+              </div>
+              <!-- <p>프로필: {{ profile.previewImage }}</p> -->
+              <div>
+                <p>아이디: {{ profile.username }}</p>
+                <p>닉네임: {{ profile.nickname }}</p>
+                <p>생년월일: {{ formatDate(profile.birth_date) }}</p>
+                <p>월 수입: {{ formatCurrency(profile.income) }}원</p>
+                <p>보유 자산: {{ formatCurrency(profile.assets) }}원</p>
+                <p>보유 포인트: {{ profile.point }}P</p>
+              </div>
+              <RouterLink class="text-end" :to="{ name: 'DeleteAccount' }"
+                ><p>탈퇴</p></RouterLink
+              >
             </div>
           </div>
         </div>
       </div>
     </div>
-  </template>
+  </div>
+</template>
 
 <script setup>
-import { RouterLink } from 'vue-router';
-import { ref, onMounted } from 'vue';
-import { useAccountStore } from '@/stores/accountStore';
+import { RouterLink } from "vue-router";
+import { ref, onMounted } from "vue";
+import { useAccountStore } from "@/stores/accountStore";
 
-const accountStore = useAccountStore()
+const accountStore = useAccountStore();
 
 const profile = ref({
   username: "",
@@ -54,6 +69,7 @@ const profile = ref({
 const loadUserProfile = async () => {
   try {
     const response = await accountStore.fetchUserProfile();
+    console.log(response);
     profile.value.username = response.username;
     profile.value.email = response.email;
     profile.value.nickname = response.nickname;
@@ -61,10 +77,26 @@ const loadUserProfile = async () => {
     profile.value.income = response.income;
     profile.value.assets = response.assets;
     profile.value.point = response.point;
-    profile.value.previewImage = response.profile_image;
+    profile.value.previewImage = response.profile_image || null;
   } catch (error) {
     console.error("프로필 정보를 불러오지 못했습니다:", error);
   }
+};
+
+const baseURL = "http://localhost:8000";
+const defaultProfile = `${baseURL}/media/profile_images/default_profile.jpg`;
+
+const getImageUrl = (previewImage) => {
+  // API 응답의 경로를 그대로 사용
+  return previewImage ? `${baseURL}${previewImage}` : null;
+};
+
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString("ko-KR");
+};
+
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat("ko-KR").format(amount);
 };
 
 onMounted(() => {
@@ -73,5 +105,18 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.profile-image-container {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto;
+}
 
+.profile-image {
+  /* width: 100%; */
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
 </style>
