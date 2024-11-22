@@ -8,12 +8,13 @@
   >
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ product.product_name }}</h5>
+        <div class="modal-header d-flex justify-content-between">
+          <h3 class="modal-title">{{ product.product_name }}</h3>
+          <h6 class="mb-0">{{ product.bank_name }}</h6>
         </div>
         <div class="modal-body">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="mb-0">{{ product.bank_name }}</h6>
+          <div class="d-flex justify-content-end align-items-center mb-3">
+            <!-- <button class="btn btn-light">이미 보유하고 있어요!</button> -->
             <button
               @click="toggleLike"
               class="btn btn-light star-button"
@@ -21,6 +22,13 @@
             >
               <i :class="product.is_liked ? 'bi-star-fill' : 'bi-star'"></i>
             </button>
+            <!-- <button>
+              <i
+                :class="
+                  product.is_owned ? 'plus-square-fill' : 'plus-square-dotted'
+                "
+              ></i>
+            </button> -->
           </div>
           <hr />
           <div class="detail-info">
@@ -73,12 +81,13 @@
           </div>
         </div>
         <div class="modal-footer">
+          <button class="btn btn-light">이미 보유하고 있어요!</button>
           <a
             v-if="product.product_link"
             :href="product.product_link"
             target="_blank"
           >
-            <button class="btn btn-primary">가입하러 가기</button>
+            <button class="btn btn-success">가입하러 가기</button>
           </a>
           <button
             type="button"
