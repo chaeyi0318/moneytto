@@ -2,6 +2,7 @@ import AdditionalInfo from "@/components/mypage/AdditionalInfo.vue";
 import DeleteAccount from "@/components/mypage/DeleteAccount.vue";
 import LikedSavings from "@/components/mypage/LikedSavings.vue";
 import ProfileUpdate from "@/components/mypage/ProfileUpdate.vue";
+import SolvedQuizzes from "@/components/quiz/SolvedQuizzes.vue";
 import Recommend from "@/components/savings/Recommend.vue";
 import { useAccountStore } from "@/stores/accountStore";
 import CalendarView from "@/views/CalendarView.vue";
@@ -80,6 +81,16 @@ const routes = [
     path: "/recommend",
     name: "Recommend",
     component: Recommend,
+  },
+  {
+    path: "/quiz",
+    name: "Quiz",
+    component: QuizView,
+  },
+  {
+    path: "/solved-quizzes",
+    name: "SolvedQuizzes",
+    component: SolvedQuizzes,
   },
 ];
 
