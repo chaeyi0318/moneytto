@@ -69,7 +69,7 @@ const profile = ref({
 const loadUserProfile = async () => {
   try {
     const response = await accountStore.fetchUserProfile();
-    console.log(response);
+    // console.log(response);
     profile.value.username = response.username;
     profile.value.email = response.email;
     profile.value.nickname = response.nickname;
