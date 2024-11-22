@@ -19,7 +19,7 @@
               class="btn btn-light star-button"
               :class="{ 'btn-warning': product.is_liked }"
             >
-              {{ product.is_liked ? "★" : "☆" }}
+              <i :class="product.is_liked ? 'bi-star-fill' : 'bi-star'"></i>
             </button>
           </div>
           <hr />
@@ -73,6 +73,13 @@
           </div>
         </div>
         <div class="modal-footer">
+          <a
+            v-if="product.product_link"
+            :href="product.product_link"
+            target="_blank"
+          >
+            <button class="btn btn-primary">가입하러 가기</button>
+          </a>
           <button
             type="button"
             class="btn btn-secondary"
