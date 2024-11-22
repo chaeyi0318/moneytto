@@ -62,7 +62,7 @@ const profile = ref({
   birth_date: "",
   income: 0,
   assets: 0.0,
-  point: "",
+  point: 0,
   previewImage: null,
 });
 
