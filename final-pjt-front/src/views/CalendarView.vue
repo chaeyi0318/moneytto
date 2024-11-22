@@ -8,6 +8,14 @@
         <input type="submit" value="설정">
       </form>
       <span>{{ cal.monthText }}월 총 소비 금액 : {{ total_price }}</span>
+      <div v-for="categoryValue in categorySumValue" :key="categoryValue.id">
+        <p>{{ categoryValue.category_name }} : {{ categoryValue.total_price }}
+          <br>
+          비율 : {{ total_price === 0 ? 0  : (Math.round((categoryValue.total_price / total_price) * 100 * 100) / 100).toFixed(2)}}%
+        </p>
+      </div>
+
+
       <h3>{{ cal.yearText }} - {{ cal.monthText }}</h3>
       <div class="navs">
         <button @click="prevMonth">이전</button>
@@ -77,14 +85,15 @@ const dateStore = useCalendarStore();
 
 const posts = ref([])   // 게시글 데이터
 const calendarOwnerId = ref(0)    // 캘린더 주인 pk
-const amount = ref(null)
+const amount = ref(0)
 const total_price = ref(0)
+const categorySumValue = ref([])
 
 // 이전 달로 이동
 const prevMonth = () => {
     cal.value = cal.value.prevMonth();
     const yearMonth = cal.value.yearText + '-' + cal.value.monthText;
-    console.log(`${yearMonth}`);
+    // console.log(`${yearMonth}`);
 
     fetchPosts(yearMonth); // API 호출
 };
@@ -93,7 +102,7 @@ const prevMonth = () => {
 const nextMonth = () => {
     cal.value = cal.value.nextMonth();
     const yearMonth = cal.value.yearText + '-' + cal.value.monthText
-    console.log(`다음 달: ${yearMonth}`)
+    // console.log(`다음 달: ${yearMonth}`)
 
     fetchPosts(yearMonth)
 }
@@ -129,20 +138,32 @@ const fetchPosts = (yearMonth) => {
         params: { yearMonth }
     })
     .then((response) => {
-        // console.log('게시글 데이터:', response.data)
-        // console.log('게시글 데이터:', response.data[0].calendar_ownerId)
-        // console.log(response.data.posts)
-        console.log(response.data.total_price)
-        posts.value = response.data.posts // 게시글 데이터를 상태에 저장
+        // console.log(response.data)
+        const categoryData = response.data.category_totals
+        const postsData = response.data.posts || []
+        // console.log(response.data.category_totals)
 
-        // console.log(response.posts)
-        // console.log(response.total_price)
-        calendarOwnerId.value = response.data.posts[0].owner
-        amount.value = response.data.posts[0].amount
-        total_price.value = response.data.total_price
+        posts.value = postsData
+        categorySumValue.value = categoryData
+
+        // console.log(categorySumValue.value)
+
+        if (postsData.length > 0) {
+        calendarOwnerId.value = postsData[0].owner || 0
+        amount.value = postsData[0].amount || 0
+      } else {
+        calendarOwnerId.value = 0
+        amount.value = 0
+      }
+
+      total_price.value = response.data.total_price || 0
     })
     .catch((error) => {
-        console.error('API 요청 실패:', error)
+      console.error('API 요청 실패:', error)
+      posts.value = []
+      calendarOwnerId.value = 0
+      amount.value = 0
+      total_price.value = 0
     })
 }
 
@@ -163,8 +184,8 @@ const getImageForDate = (date) => {
 
 const submitBudget = async () => {
   try {
-    console.log("현재 연도:", cal.value.yearText);
-    console.log("현재 월:", cal.value.monthText);
+    // console.log("현재 연도:", cal.value.yearText);
+    // console.log("현재 월:", cal.value.monthText);
     const data= {
       year: parseInt(cal.value.yearText),
       month: parseInt(cal.value.monthText),
@@ -175,7 +196,7 @@ const submitBudget = async () => {
     if (response.status === 201 || response.status === 200) {
       alert("예산 저장 성공")
       amount.value = response.data.amount
-      console.log(response.data)
+      // console.log(response.data)
     } else {
       alert("예산 저장 실패")
     }

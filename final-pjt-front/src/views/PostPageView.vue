@@ -10,8 +10,8 @@
         <select
           name="privacy_setting"
           v-model.trim="privacySetting"
-          id="privacy_setting"
-        >
+          id="privacy_setting">
+          <option value="">공개범위설정</option>
           <option value="public">전체공개</option>
           <option value="subscriber">구독자공개</option>
           <option value="private">비공개</option>
@@ -23,9 +23,9 @@
         <label for="category_id">카테고리 :</label>
         <select name="category_id" v-model.trim="category" id="category_id">
           <option value="">선택바람</option>
-          <option value="1">식비</option>
-          <option value="2">문화</option>
-          <option value="3">생활비</option>
+          <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+            {{ cat.category_name }}
+          </option>
         </select>
       </div>
 
@@ -62,13 +62,15 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useCalendarStore } from "@/stores/calendarStore";
 import { useRouter } from "vue-router";
+import api from "@/stores/api";
 
 const router = useRouter();
 const dateStore = useCalendarStore();
 
+const categories = ref([])
 const expenses_date = ref(dateStore.expenses_date); // expenses_date
 const privacySetting = ref("");
 const category = ref("");
@@ -126,6 +128,20 @@ const cancel = () => {
   dateStore.clearState();
   router.push({ name: "CalendarView" });
 };
+
+onMounted(async () => {
+  try {
+    const response = await api.get("/posts/categories/"); // Django API 호출
+    if (response.status === 200) { // 상태 코드가 200인지 확인
+      console.log("Fetched categories:", response.data); // 응답 데이터 출력
+      categories.value = response.data; // JSON 데이터를 Vue 데이터에 저장
+    } else {
+      console.error(`Failed to fetch categories: ${response.status}`); // 상태 코드 출력
+    }
+  } catch (error) {
+    console.error("Error fetching categories:", error); // 네트워크 오류 출력
+  }
+});
 </script>
 
 <style scoped>

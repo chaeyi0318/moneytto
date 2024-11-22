@@ -3,10 +3,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import PostSerializer, CalendarMainSerializer, PostDetailSerializer, CommentSerializer
 from django.shortcuts import get_object_or_404, get_list_or_404
-from .models import Post, Comment
+from .models import Post, Comment, Category
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum
+from django.http import JsonResponse
 
 
 # Create your views here.
@@ -64,36 +65,38 @@ def detail_post(request):
 def post_list(request):
     # GET 요청으로 전달받은 yearMonth 값
     year_month = request.query_params.get('yearMonth')
+    # print("현재 날짜!!!!!!!!!!!!! ", year_month)
     if not year_month:
         return Response({"error": "yearMonth parameter is required"}, status=400)
 
     # 현재 유저의 Post 중 expenses_date가 year_month로 시작하는 데이터 필터링
     user_posts = Post.objects.filter(user=request.user, expenses_date__startswith=year_month)
 
-    # price 칼럼 값 합산
+    # 전체 price 칼럼 값 합산
     total_price = user_posts.aggregate(total_price=Sum('price'))['total_price'] or 0
+
+    # 모든 카테고리를 가져옴
+    all_categories = Category.objects.all()
+
+    # 카테고리별 price 합산 (없으면 기본값 0)
+    category_totals = []
+    for category in all_categories:
+        category_total = user_posts.filter(category=category).aggregate(total_price=Sum('price'))['total_price'] or 0
+        category_totals.append({
+            "category_name": category.category_name,
+            "total_price": category_total
+        })
 
     # 직렬화된 데이터 반환
     serializer = CalendarMainSerializer(user_posts, many=True)
+
     response_data = {
         "posts": serializer.data,
-        "total_price": total_price  # 합산된 가격 추가
+        "total_price": total_price,  # 전체 합산된 가격 추가
+        "category_totals": category_totals,  # 모든 카테고리 포함한 합계 추가
     }
     
     return Response(response_data)
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def post_list_expense(request):
-    year_month = request.query_params.get('yearMonth')
-    print(year_month)
-    user_post = Post.objects.filter(user=request.user, expenses_date__startswith=year_month)
-
-    serializer = CalendarMainExpenseSerializer(user_post, many=True)
-
-    return Response(serializer.data)
-    
-    pass
 
 
 @api_view(['POST'])
@@ -187,6 +190,10 @@ def delete_post(request, post_id):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+def category_list(request):
+    categories = Category.objects.all().values('id', 'category_name')  # 필요한 필드만 가져오기
+    return JsonResponse(list(categories), safe=False)  # JSON 데이터 반환
 
 def is_owner(login_user, post_owner):
     if login_user == post_owner:
