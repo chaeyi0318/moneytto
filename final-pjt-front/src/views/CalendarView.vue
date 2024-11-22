@@ -7,6 +7,7 @@
         <input type="number" v-model="amount" placeholder="예산 입력"/>
         <input type="submit" value="설정">
       </form>
+      <span>{{ cal.monthText }}월 총 소비 금액 : {{ total_price }}</span>
       <h3>{{ cal.yearText }} - {{ cal.monthText }}</h3>
       <div class="navs">
         <button @click="prevMonth">이전</button>
@@ -77,6 +78,7 @@ const dateStore = useCalendarStore();
 const posts = ref([])   // 게시글 데이터
 const calendarOwnerId = ref(0)    // 캘린더 주인 pk
 const amount = ref(null)
+const total_price = ref(0)
 
 // 이전 달로 이동
 const prevMonth = () => {
@@ -127,11 +129,17 @@ const fetchPosts = (yearMonth) => {
         params: { yearMonth }
     })
     .then((response) => {
-        console.log('게시글 데이터:', response.data)
+        // console.log('게시글 데이터:', response.data)
         // console.log('게시글 데이터:', response.data[0].calendar_ownerId)
-        posts.value = response.data // 게시글 데이터를 상태에 저장
-        calendarOwnerId.value = response.data[0].owner
-        amount.value = response.data[0].amount
+        // console.log(response.data.posts)
+        console.log(response.data.total_price)
+        posts.value = response.data.posts // 게시글 데이터를 상태에 저장
+
+        // console.log(response.posts)
+        // console.log(response.total_price)
+        calendarOwnerId.value = response.data.posts[0].owner
+        amount.value = response.data.posts[0].amount
+        total_price.value = response.data.total_price
     })
     .catch((error) => {
         console.error('API 요청 실패:', error)

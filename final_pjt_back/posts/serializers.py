@@ -69,26 +69,26 @@ class CalendarMainSerializer(serializers.ModelSerializer):
         budget = Budget.objects.filter(user=obj.user, year=year, month=month).first()
         return budget.amount if budget else 0  # 예산이 없으면 0 반환
     
-class CalendarMainExpenseSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
-    username = serializers.CharField(source='user.username', read_only=True)
-    owner = serializers.IntegerField(source='user.pk', read_only=True)
-    amount = serializers.SerializerMethodField()        # 예산
+# class CalendarMainExpenseSerializer(serializers.ModelSerializer):
+#     image = serializers.SerializerMethodField()
+#     username = serializers.CharField(source='user.username', read_only=True)
+#     owner = serializers.IntegerField(source='user.pk', read_only=True)
+#     amount = serializers.SerializerMethodField()        # 예산
     
-    class Meta:
-        model = Post
-        fields = ['id', 'username', 'owner', 'expenses_date', 'image', 'amount', 'price']
+#     class Meta:
+#         model = Post
+#         fields = ['id', 'username', 'owner', 'expenses_date', 'image', 'amount', 'price']
 
-    def get_image(self, obj):
-        if obj.image and hasattr(obj.image, 'url'):
-            return obj.image.url
-        return None
+#     def get_image(self, obj):
+#         if obj.image and hasattr(obj.image, 'url'):
+#             return obj.image.url
+#         return None
     
-    def get_amount(self, obj):
-        year = obj.expenses_date.year
-        month = obj.expenses_date.month
-        budget = Budget.objects.filter(user=obj.user, year=year, month=month).first()
-        return budget.amount if budget else 0  # 예산이 없으면 0 반환
+#     def get_amount(self, obj):
+#         year = obj.expenses_date.year
+#         month = obj.expenses_date.month
+#         budget = Budget.objects.filter(user=obj.user, year=year, month=month).first()
+#         return budget.amount if budget else 0  # 예산이 없으면 0 반환
     
 
 class PostDetailSerializer(serializers.ModelSerializer):
