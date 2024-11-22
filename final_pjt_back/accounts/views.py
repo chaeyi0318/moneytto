@@ -13,8 +13,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import parser_classes
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from .serializers import UserSerializer, LoginSerializer, CustomRegisterSerializer, UserAdditionalInfoSerializer, UserUpdateSerializer, UserDeleteSerializer
-
+from .serializers import UserSerializer, LoginSerializer, CustomRegisterSerializer, UserAdditionalInfoSerializer, UserUpdateSerializer, UserDeleteSerializer, BudgetSerializer
+from .models import Budget
 User = get_user_model()
 
 
@@ -145,3 +145,45 @@ def profile(request, username):
     serializer= UserSerializer(user)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])  # 로그인된 사용자만 접근 가능
+def update_budget(request):
+    try:
+        data = request.data
+        print("Received data:", data)
+
+        # 요청 데이터에서 month와 year를 가져옴
+        month = data.get('month')
+        year = data.get('year')
+
+        if not month or not year:
+            return Response({"error": "Month and Year are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 현재 로그인된 사용자의 기존 Budget 데이터 검색
+        budget_instance = Budget.objects.filter(user=request.user, month=month, year=year).first()
+
+        if budget_instance:
+            # 기존 데이터가 있으면 업데이트
+            serializer = BudgetSerializer(budget_instance, data=data, partial=True)
+            if serializer.is_valid():
+                print("Serializer is valid for update.")
+                serializer.save()  # 기존 인스턴스 업데이트
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                print("Serializer errors during update:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            # 기존 데이터가 없으면 새로 생성
+            serializer = BudgetSerializer(data=data)
+            if serializer.is_valid():
+                print("Serializer is valid for creation.")
+                serializer.save(user=request.user)  # 새 인스턴스 생성
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                print("Serializer errors during creation:", serializer.errors)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        print("Exception occurred:", str(e))  # 에러 메시지 출력
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

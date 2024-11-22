@@ -2,6 +2,11 @@
   <div class="calendar">
     <!-- 달력 네비게이션 -->
     <nav>
+      <form v-if="calendarOwnerId === loginUser" @submit.prevent="submitBudget">
+        <span>{{ cal.yearText }} - {{ cal.monthText }} 예산 </span>
+        <input type="number" v-model="amount" placeholder="예산 입력"/>
+        <input type="submit" value="설정">
+      </form>
       <h3>{{ cal.yearText }} - {{ cal.monthText }}</h3>
       <div class="navs">
         <button @click="prevMonth">이전</button>
@@ -49,17 +54,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { Calendar } from "@/components/calendar/Calendar";
 import Modal from "@/components/calendar/Modal.vue"; // 모달 컴포넌트 가져오기
 import { useCalendarStore } from "@/stores/calendarStore";
+import { useAccountStore } from "@/stores/accountStore";
 import api from "@/stores/api";
 
+const accountStore = useAccountStore()
 const days = ["일", "월", "화", "수", "목", "금", "토"];
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
-
+const loginUser = accountStore.user.id
 // console.log(currentMonth, " 월입니다");
 // console.log(currentYear, " 년 입니다.");
 
@@ -68,6 +75,8 @@ const router = useRouter();
 const dateStore = useCalendarStore();
 
 const posts = ref([])   // 게시글 데이터
+const calendarOwnerId = ref(0)    // 캘린더 주인 pk
+const amount = ref(null)
 
 // 이전 달로 이동
 const prevMonth = () => {
@@ -77,7 +86,6 @@ const prevMonth = () => {
 
     fetchPosts(yearMonth); // API 호출
 };
-
 
 // 다음 달로 이동
 const nextMonth = () => {
@@ -119,8 +127,11 @@ const fetchPosts = (yearMonth) => {
         params: { yearMonth }
     })
     .then((response) => {
-        // console.log('게시글 데이터:', response.data)
+        console.log('게시글 데이터:', response.data)
+        // console.log('게시글 데이터:', response.data[0].calendar_ownerId)
         posts.value = response.data // 게시글 데이터를 상태에 저장
+        calendarOwnerId.value = response.data[0].owner
+        amount.value = response.data[0].amount
     })
     .catch((error) => {
         console.error('API 요청 실패:', error)
@@ -139,10 +150,39 @@ const getImageForDate = (date) => {
   return post ? `${baseURL}${post.image}` : null;
 }
 
+
+
+
+const submitBudget = async () => {
+  try {
+    console.log("현재 연도:", cal.value.yearText);
+    console.log("현재 월:", cal.value.monthText);
+    const data= {
+      year: parseInt(cal.value.yearText),
+      month: parseInt(cal.value.monthText),
+      amount: amount.value,
+    }
+    const response = await api.post('/accounts/update-budget/', data)
+    
+    if (response.status === 201 || response.status === 200) {
+      alert("예산 저장 성공")
+      amount.value = response.data.amount
+      console.log(response.data)
+    } else {
+      alert("예산 저장 실패")
+    }
+  } catch (error) {
+    console.error("오류 : ", error)
+    alert("서버와 통신 중 문제가 발생했습니다.")
+  }
+}
+
 onMounted(() => {
     const yearMonth = `${cal.value.yearText}-${cal.value.monthText}`
     fetchPosts(yearMonth)
+    amount
 })
+
 </script>
 
 <style scoped>

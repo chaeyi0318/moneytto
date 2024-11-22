@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from dj_rest_auth.registration.serializers import RegisterSerializer
-from .models import User
+from .models import User, Budget, Expense
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
 
@@ -104,3 +104,21 @@ class UserDeleteSerializer(serializers.Serializer):
         if not user.check_password(value):
             raise serializers.ValidationError("비밀번호가 일치하지 않습니다.")
         return value
+    
+
+class BudgetSerializer(serializers.ModelSerializer):
+    # user_pk = serializers.IntegerField(source='user.id', read_only=True)
+
+    class Meta:
+        model = Budget
+        fields = ['id', 'amount', 'year', 'month', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at', 'user']
+
+
+class ExpenseSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Expense
+        fields = ['user', 'amount', 'year', 'month', 'created_at', 'updated_at']
+        read_only_fields = ['created_at', 'updated_at']

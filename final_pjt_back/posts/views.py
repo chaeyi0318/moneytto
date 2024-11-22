@@ -1,11 +1,12 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import PostSerializer, CalendarMainSerializer, PostDetailSerializer, CommentSerializer
+from .serializers import PostSerializer, CalendarMainSerializer, PostDetailSerializer, CommentSerializer, CalendarMainExpenseSerializer
 from django.shortcuts import get_object_or_404, get_list_or_404
 from .models import Post, Comment
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
+from django.db.models import Sum
 
 
 # Create your views here.
@@ -14,7 +15,7 @@ from rest_framework.permissions import IsAuthenticated
 def create_post(request):
     if request.method == 'POST':
         serializer = PostSerializer(data=request.data)
-        # print(request.data)
+        print(request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -50,11 +51,49 @@ def detail_post(request):
 @permission_classes([IsAuthenticated])
 def post_list(request):
     year_month = request.query_params.get('yearMonth')
+    print(year_month)
     user_post = Post.objects.filter(user=request.user, expenses_date__startswith=year_month)
 
     serializer = CalendarMainSerializer(user_post, many=True)
 
     return Response(serializer.data)
+
+
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def post_list(request):
+#     # GET 요청으로 전달받은 yearMonth 값
+#     year_month = request.query_params.get('yearMonth')
+#     if not year_month:
+#         return Response({"error": "yearMonth parameter is required"}, status=400)
+
+#     # 현재 유저의 Post 중 expenses_date가 year_month로 시작하는 데이터 필터링
+#     user_posts = Post.objects.filter(user=request.user, expenses_date__startswith=year_month)
+
+#     # price 칼럼 값 합산
+#     total_price = user_posts.aggregate(total_price=Sum('price'))['total_price'] or 0
+
+#     # 직렬화된 데이터 반환
+#     serializer = CalendarMainSerializer(user_posts, many=True)
+#     response_data = {
+#         "posts": serializer.data,
+#         "total_price": total_price  # 합산된 가격 추가
+#     }
+    
+#     return Response(response_data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def post_list_expense(request):
+    year_month = request.query_params.get('yearMonth')
+    print(year_month)
+    user_post = Post.objects.filter(user=request.user, expenses_date__startswith=year_month)
+
+    serializer = CalendarMainExpenseSerializer(user_post, many=True)
+
+    return Response(serializer.data)
+    
+    pass
 
 
 @api_view(['POST'])
