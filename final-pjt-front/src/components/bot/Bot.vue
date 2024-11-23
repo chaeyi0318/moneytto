@@ -22,31 +22,28 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
-import axios from "axios";
+import { ref, watch } from "vue"
+import axios from "axios"
 
-// Props 선언
 const props = defineProps({
   amount: {
     type: Number,
-    required: true, // amount는 필수 prop
+    required: true,
   },
 });
 
-// 상태 변수
-const itemName = ref(""); // 물건 이름
-const itemCost = ref(null); // 물건 가격
-const budget = ref(props.amount); // 총 예산
-const result = ref(null); // 결과 메시지
+const itemName = ref("")
+const itemCost = ref(null)
+const budget = ref(props.amount)
+const result = ref(null)
 
 watch(
   () => props.amount,
   (newAmount) => {
     budget.value = newAmount;
   }
-);
+)
 
-// 폼 제출 핸들러
 const handleFormSubmit = async () => {
   const prompt = `
     당신은 "머니또"입니다. 사용자가 물건 구매 여부를 묻습니다.  
@@ -89,13 +86,13 @@ const handleFormSubmit = async () => {
     - 물건 이름: "${itemName.value}"  
     - 물건 가격: ${itemCost.value}원  
     - 사용자 총 예산: ${budget.value}원
-  `;
+  `
 
   try {
     const response = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
-        model: "gpt-4o-mini", // 모델 설정
+        model: "gpt-4o-mini",
         messages: [{ role: "user", content: prompt }],
         max_tokens: 1000,
         temperature: 0.7,
@@ -106,15 +103,14 @@ const handleFormSubmit = async () => {
           Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
         }
       }
-    );
-    
-    // 결과 저장
+    )
+
     result.value = response.data.choices[0].message.content;
   } catch (error) {
     console.error("Error fetching data from OpenAI:", error);
-    result.value = "OpenAI와 통신 중 문제가 발생했습니다. 다시 시도해주세요.";
+    result.value = "OpenAI와 통신 중 문제가 발생했습니다. 다시 시도해주세요."
   }
-};
+}
 </script>
 
 <style scoped>
