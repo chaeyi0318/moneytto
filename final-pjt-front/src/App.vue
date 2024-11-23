@@ -55,6 +55,10 @@ const logOut = () => {
 </script>
 
 <style scoped>
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
 .nav-container {
   padding: 20px;
   background-color: #ffffff;

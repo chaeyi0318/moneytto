@@ -12,7 +12,7 @@
         <div class="profile-image-section">
           <div class="profile-image-wrapper">
             <img
-              :src="getImageUrl(profile.previewImage || defaultProfile)"
+              :src="getImageUrl(profile.previewImage)"
               alt="프로필 이미지"
             />
           </div>
@@ -95,7 +95,7 @@ const defaultProfile = `${baseURL}/static/profile/default_profile.jpg`;
 
 const getImageUrl = (previewImage) => {
   // API 응답의 경로를 그대로 사용
-  return previewImage ? `${baseURL}${previewImage}` : null;
+  return previewImage ? `${baseURL}${previewImage}` : defaultProfile;
 };
 
 const formatDate = (date) => {

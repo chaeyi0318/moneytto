@@ -23,7 +23,7 @@ for i in range(1, 501):
     User.objects.create_user(
         username=username,
         password='user1234',  # 보안을 위해 실제 사용 시 변경 필요
-        profile_image=f'https://example.com/image_{i}.jpg',
+        profile_image='',
         nickname=nickname,
         birth_date=birth_date.date(),
         income=income,
