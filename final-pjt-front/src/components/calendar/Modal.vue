@@ -1,41 +1,58 @@
 <template>
-  <!-- 오버레이 클릭 시 closeModal 호출 -->
   <div class="modal-overlay" @click.self="closeModal">
     <div class="modal-content">
-      <header>
-        <p>{{ date }}</p>
-        <button @click="closeModal">X</button> 
+      <header class="modal-header">
+        <p class="date-text">{{ formattedDate }}의 소비기록</p>
+        <button class="close-button" @click="closeModal">×</button>
       </header>
-      <main v-if="isLoading">
-        <p>로딩 중...</p>
-      </main>
-      <main v-else-if="error">
-        <p>{{ error }}</p>
-      </main>
-      <main v-else>
-        <!-- 게시글 슬라이드 -->
-        <div class="image-container" v-if="posts.length > 0">
-          <!-- 이전 버튼 -->
-          <button class="nav-button left" @click="showPreviousPost" :disabled="currentIndex === 0">이전</button>
-
-          <!-- 현재 게시글 이미지 -->
-          <img v-if="currentPost.image" :src="currentPost.image" alt="게시글 이미지" />
-
-          <!-- 다음 버튼 -->
-          <button class="nav-button right" @click="showNextPost" :disabled="currentIndex === posts.length - 1">다음</button>
+      
+      <main class="modal-main">
+        <div v-if="isLoading" class="loading-state">
+          <p>로딩 중...</p>
         </div>
+        
+        <div v-else-if="error" class="error-state">
+          <p>{{ error }}</p>
+        </div>
+        
+        <div v-else class="content-container">
+          <div class="image-slider" v-if="posts.length > 0">
+            <button class="slider-button left" @click="showPreviousPost" :disabled="currentIndex === 0">
+              <span class="arrow">←</span>
+            </button>
+            <div class="image-wrapper">
+              <img v-if="currentPost.image" :src="currentPost.image" alt="게시글 이미지" class="post-image" />
+            </div>
+            <button class="slider-button right" @click="showNextPost" :disabled="currentIndex === posts.length - 1">
+              <span class="arrow">→</span>
+            </button>
+          </div>
 
-        <!-- 현재 게시글 정보 -->
-        <div v-if="currentPost">
-          <p>카테고리 : {{ currentPost.category_name }}</p>
-          <p>가격 : {{ currentPost.price }}원</p>
-          <p>소비내용 : {{ currentPost.content }}</p>
-          <button @click.prevent="updatePost">수정</button>
-          <button @click.prevent="deletePost">삭제</button> <!-- 삭제 버튼 -->
+          <div v-if="currentPost" class="post-details">
+            <div class="info-row">
+              <span class="label">카테고리:</span>
+              <span class="value">{{ currentPost.category_name }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">가격:</span>
+              <span class="value">{{ currentPost.price }}원</span>
+            </div>
+            <div class="info-row">
+              <span class="label">소비내용:</span>
+              <span class="value">{{ currentPost.content }}</span>
+            </div>
+            <div class="button-group">
+              <button class="action-button update" @click.prevent="updatePost">
+                <i class="fas fa-edit"></i> 수정
+              </button>
+              <button class="action-button delete" @click.prevent="deletePost">
+                <i class="fas fa-trash"></i> 삭제
+              </button>
+            </div>
+          </div>
         </div>
       </main>
 
-      <!-- 댓글 컴포넌트 -->
       <Comment v-if="posts.length > 0" :date="props.date" :author_user_pk="posts[0]?.user_pk"/>
     </div>
   </div>
@@ -98,6 +115,12 @@ const fetchPosts = async () => {
   }
 };
 
+const formattedDate = computed(() => {
+  if (!props.date) return '';
+  const [year, month, day] = props.date.split('-');
+  return `${year}년 ${parseInt(month)}월 ${parseInt(day)}일`;
+});
+
 // 게시글 삭제
 const deletePost = async () => {
   if (!currentPost.value) return;
@@ -153,65 +176,205 @@ const updatePost = () => {
 </script>
 
 <style scoped>
+:root {
+  --primary-green: #2D8B57;
+  --secondary-green: #3CB371;
+  --light-green: #E8F5E9;
+  --hover-green: #1B5E20;
+  --error-red: #FF5252;
+  --text-dark: #333333;
+  --text-light: #666666;
+  --white: #FFFFFF;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 .modal-overlay {
-  position: fixed; 
-  top: 0; 
-  left: 0; 
-  width: 100vw; 
-  height: 100vh; 
-  background-color: rgba(0,0,0,.5); /* 배경 어둡게 처리 */
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  z-index: 1000; /* 화면 위에 고정 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
 }
 
 .modal-content {
-  background-color: white; 
-  padding: 20px; 
-  border-radius: 8px; 
-  max-width: 650px; 
+  background-color: #FFFFFF;
+  width: 100%;
+  max-height: 90vh; /* 뷰포트 높이의 90%로 제한 */
+  max-width: 650px;
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
 }
 
-header {
-  display: flex ; 
-  justify-content: space-between ; 
-  align-items: center ;
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 2px solid var(--primary-green);
 }
 
-.image-container {
-  position: relative;
+.date-text {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary-green);
 }
 
-img {
-  width: auto;
-  max-width: calc(100% - 120px); /* 양쪽 버튼 공간 확보 */
-}
-
-/* 이전/다음 버튼 스타일 */
-.nav-button {
-  position: absolute;
-  top: calc(50% - 20px); /* 중앙 정렬 */
-  transform: translateY(-50%);
-  background-color: rgba(0,0,0,0.5);
-  color: white;
+.close-button {
+  background: none;
   border: none;
-  padding: 10px;
+  font-size: 1.8rem;
+  color: var(--primary-green);
+  cursor: pointer;
+  transition: color 0.3s ease;
 }
 
-.nav-button.left {
-   left: -60px;
+.close-button:hover {
+  color: var(--hover-green);
 }
 
-.nav-button.right {
-   right: -60px;
+.modal-main {
+  padding: 2rem;
+  flex: 1;
 }
 
-.nav-button:hover {
-   background-color: rgba(0,0,0,0.8);
+.loading-state, .error-state {
+  text-align: center;
+  padding: 2rem;
 }
 
-button[disabled] {
-   opacity: .5;
+.error-state {
+  color: var(--error-red);
+}
+
+.image-slider {
+  position: relative;
+  margin: 2rem 0;
+  padding: 0 3rem;
+}
+
+.slider-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--primary-green);
+  color: var(--white);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slider-button:hover:not([disabled]) {
+  background-color: var(--hover-green);
+}
+
+.slider-button.left { left: 0; }
+.slider-button.right { right: 0; }
+
+.slider-button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.image-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.post-image {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.post-details {
+  padding: 1.5rem;
+  background-color: var(--light-green);
+  border-radius: 12px;
+}
+
+.info-row {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: baseline;
+}
+
+.label {
+  font-weight: 600;
+  color: var(--text-dark);
+  min-width: 100px;
+}
+
+.value {
+  color: var(--text-light);
+  flex: 1;
+}
+
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.action-button {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.action-button.update {
+  background-color: var(--primary-green);
+  color: var(--white);
+}
+
+.action-button.delete {
+  background-color: var(--error-red);
+  color: var(--white);
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    margin: 1rem;
+  }
+  
+  .post-details {
+    padding: 1rem;
+  }
+  
+  .info-row {
+    flex-direction: column;
+  }
+  
+  .label {
+    margin-bottom: 0.5rem;
+  }
 }
 </style>

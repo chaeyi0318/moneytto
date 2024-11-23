@@ -196,8 +196,8 @@ const goToRecommend = function() {
   flex-grow: 1;
   margin: 2px;
   padding: 1px 25px;
-  /* display: flex; */
-  /* flex-direction: column; */
+  display: flex;
+  flex-direction: column;
   /* justify-content: center; */
 }
 
@@ -226,7 +226,6 @@ input[type="number"] {
 .option-btn.active {
   background-color: #2E8B57;
   color: white;
-  display: 
 }
 
 .search-button {
