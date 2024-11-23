@@ -52,7 +52,8 @@
         </div>
       </div>
     </section>
-
+    <Bot :amount="amount"/>
+    
     <!-- 모달 컴포넌트 -->
     <Modal
       v-if="isModalOpen"
@@ -70,6 +71,7 @@ import Modal from "@/components/calendar/Modal.vue"; // 모달 컴포넌트 가�
 import { useCalendarStore } from "@/stores/calendarStore";
 import { useAccountStore } from "@/stores/accountStore";
 import api from "@/stores/api";
+import Bot from "@/components/bot/Bot.vue";
 
 const accountStore = useAccountStore()
 const days = ["일", "월", "화", "수", "목", "금", "토"];
