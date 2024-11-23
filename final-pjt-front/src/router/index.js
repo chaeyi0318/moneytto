@@ -1,6 +1,7 @@
 import AdditionalInfo from "@/components/mypage/AdditionalInfo.vue";
 import DeleteAccount from "@/components/mypage/DeleteAccount.vue";
 import LikedSavings from "@/components/mypage/LikedSavings.vue";
+import Profile from "@/components/mypage/Profile.vue";
 import ProfileUpdate from "@/components/mypage/ProfileUpdate.vue";
 import SolvedQuizzes from "@/components/quiz/SolvedQuizzes.vue";
 import Recommend from "@/components/savings/Recommend.vue";
@@ -51,32 +52,46 @@ const routes = [
     name: "MyPageView",
     component: MyPageView,
     meta: { requiresAuth: true },
+    children: [
+      {
+        path: "/profile",
+        name: "profile",
+        component: Profile,
+      },
+      {
+        path: "/profile-update",
+        name: "profile-update",
+        component: ProfileUpdate,
+      },
+      {
+        path: "/liked-savings",
+        name: "LikedSavings",
+        component: LikedSavings,
+      },
+      {
+        path: "/delete-account",
+        name: "DeleteAccount",
+        component: DeleteAccount,
+      },
+      {
+        path: "/solved-quizzes",
+        name: "SolvedQuizzes",
+        component: SolvedQuizzes,
+      },
+    ]
   },
   {
     path: "/post-page",
     name: "PostPageView",
     component: PostPageView,
   },
-  {
-    path: "/profile-update",
-    name: "profile-update",
-    component: ProfileUpdate,
-  },
+  
   {
     path: "/additional-info",
     name: "AdditionalInfo",
     component: AdditionalInfo,
   },
-  {
-    path: "/liked-savings",
-    name: "LikedSavings",
-    component: LikedSavings,
-  },
-  {
-    path: "/delete-account",
-    name: "DeleteAccount",
-    component: DeleteAccount,
-  },
+  
   {
     path: "/recommend",
     name: "Recommend",
@@ -86,11 +101,6 @@ const routes = [
     path: "/quiz",
     name: "Quiz",
     component: QuizView,
-  },
-  {
-    path: "/solved-quizzes",
-    name: "SolvedQuizzes",
-    component: SolvedQuizzes,
   },
 ];
 

@@ -1,91 +1,102 @@
 ﻿<template>
   <form @submit.prevent="search" class="search-form">
+    <!-- 첫 번째 열: 월 저축 금액, 저축 예정 기간, 총 저축 금액 -->
     <div class="search-row">
-      <div class="amount-input">
-        <label>월 저축 금액</label>
-        <div class="input-wrapper">
-          <input v-model="amount" type="number" placeholder="금액 입력" />
-          <span class="unit">원</span>
+      <div class="search-col">
+        <div class="amount-input">
+          <label>월 저축 금액</label>
+          <span class="hint">(최소: 1만원)</span>
+          <div class="input-wrapper">
+            <input v-model="amount" type="number" placeholder="금액 입력" />
+            <span class="unit">원</span>
+          </div>
         </div>
-        <span class="hint">(최소: 1만원)</span>
+
+        <div class="period-input">
+          <label>저축 예정 기간</label>
+          <div class="period-buttons">
+            <button
+              v-for="p in periods"
+              :key="p.value"
+              type="button"
+              :class="['period-btn', { active: period === p.value }]"
+              @click="period = p.value"
+            >
+              {{ p.label }}
+            </button>
+          </div>
+        </div>
+
+        <div v-if="totalAmount > 0" class="total-amount">
+          <label>총 저축 금액</label>
+          <div class="amount-display">{{ formatNumber(totalAmount) }}원</div>
+        </div>
+      </div>
+
+      <!-- 두 번째 열: 적립 방식, 금융 권역, 이자 계산 방식 -->
+      <div class="search-col">
+        <div class="saving-method">
+          <label>적립 방식</label>
+          <div class="option-buttons">
+            <button
+              v-for="method in savingMethods"
+              :key="method.value"
+              type="button"
+              :class="['option-btn', { active: savingMethod === method.value }]"
+              @click="savingMethod = method.value"
+            >
+              {{ method.label }}
+            </button>
+          </div>
+        </div>
+
+        <div class="cal-method">
+          <label>이자 계산 방식</label>
+          <div class="option-buttons">
+            <button
+              v-for="method in interestMethods"
+              :key="method.value"
+              type="button"
+              :class="
+                ['option-btn', { active: interestCalculationMethod === method.value }]"
+              @click="interestCalculationMethod = method.value"
+            >
+              {{ method.label }}
+            </button>
+          </div>
+        </div>
+
+        <div class="institution-type">
+          <label>금융 권역</label>
+          <div class="option-buttons">
+            <button
+              v-for="type in institutionTypes"
+              :key="type.value"
+              type="button"
+              :class="
+                ['option-btn', { active: institutionType === type.value }]"
+              @click="institutionType = type.value"
+            >
+              {{ type.label }}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="search-row">
-      <label>저축 예정기간을 선택하세요</label>
-      <div class="period-buttons">
-        <button
-          v-for="p in periods"
-          :key="p.value"
-          type="button"
-          :class="['period-btn', { active: period === p.value }]"
-          @click="period = p.value"
-        >
-          {{ p.label }}
-        </button>
-      </div>
-    </div>
-
-    <!-- 총 저축 금액 표시 -->
-    <div v-if="totalAmount > 0" class="total-amount">
-      <label>총 저축 금액</label>
-      <div class="amount-display">{{ formatNumber(totalAmount) }}원</div>
-    </div>
-
-    <div class="search-row">
-      <label>적립방식</label>
-      <div class="option-buttons">
-        <button
-          v-for="method in savingMethods"
-          :key="method.value"
-          type="button"
-          :class="['option-btn', { active: savingMethod === method.value }]"
-          @click="savingMethod = method.value"
-        >
-          {{ method.label }}
-        </button>
-      </div>
-    </div>
-
-    <div class="search-row">
-      <label>금융권역</label>
-      <div class="option-buttons">
-        <button
-          v-for="type in institutionTypes"
-          :key="type.value"
-          type="button"
-          :class="['option-btn', { active: institutionType === type.value }]"
-          @click="institutionType = type.value"
-        >
-          {{ type.label }}
-        </button>
-      </div>
-    </div>
-
-    <div class="search-row">
-      <label>이자계산방식</label>
-      <div class="option-buttons">
-        <button
-          v-for="method in interestMethods"
-          :key="method.value"
-          type="button"
-          :class="[
-            'option-btn',
-            { active: interestCalculationMethod === method.value },
-          ]"
-          @click="interestCalculationMethod = method.value"
-        >
-          {{ method.label }}
-        </button>
-      </div>
-    </div>
-
-    <button type="submit" class="search-button">검색</button>
+    <!-- 검색 버튼 -->
+     <div class="search-row">
+       <button @click.prevent="goToRecommend" class="search-button">내게 맞는 상품 추천받기</button>
+       <button type="submit" class="search-button">검색</button>
+     </div>
   </form>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter()
 
 const amount = ref("");
 const period = ref("");
@@ -157,114 +168,89 @@ const search = () => {
 
   emit("search", searchParams);
 };
+
+const goToRecommend = function() {
+  router.push({name:'Recommend'})
+}
 </script>
 
 <style scoped>
 .search-form {
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 5px;
-  margin-bottom: 20px;
-}
-
-.search-row {
-  margin-bottom: 20px;
-}
-
-.amount-input {
-  position: relative;
-}
-
-.input-wrapper {
   display: flex;
-  align-items: center;
-  gap: 5px;
+  flex-direction: column;
+  background-color: #f8f9fa;
+  padding: 25px;
+  border-radius: 15px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 행 스타일 */
+.search-row {
+  display: flex;
+  /* justify-content: center; */
+  /* align-items: center; */
+}
+
+.search-col {
+  flex-grow: 1;
+  margin: 2px;
+  padding: 1px 25px;
+  /* display: flex; */
+  /* flex-direction: column; */
+  /* justify-content: center; */
 }
 
 input[type="number"] {
   width: 200px;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.unit {
-  color: #666;
-}
-
-.hint {
-  font-size: 0.8em;
-  color: #666;
-  margin-left: 5px;
-}
-
-.period-buttons,
-.option-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 8px;
+  padding: 10px;
+  border: 2px solid #2E8B57;
+  border-radius: 8px;
+  font-size: 1em;
 }
 
 .period-btn,
 .option-btn {
-  padding: 8px 16px;
-  border: 1px solid #ddd;
+  margin: 2px;
+  padding: 10px 20px;
+  border: 2px solid #2E8B57;
   background-color: white;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  color: #2E8B57;
+  flex-grow: 1; /* 버튼이 공간을 최대한 채움 */
 }
 
 .period-btn.active,
 .option-btn.active {
-  background-color: #bedc74;
+  background-color: #2E8B57;
   color: white;
-  border-color: #bedc74;
-}
-
-.period-btn:hover,
-.option-btn:hover {
-  background-color: #e9ecef;
-}
-
-.period-btn.active:hover,
-.option-btn.active:hover {
-  background-color: #bedc74;
-}
-
-.total-amount {
-  margin: 20px 0;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-}
-
-.amount-display {
-  font-size: 1.2em;
-  font-weight: bold;
-  color: #333;
-  margin-top: 5px;
+  display: 
 }
 
 .search-button {
-  background-color: #bedc74;
+  text-align: center;
+  background-color: #2E8B57;
   color: white;
-  padding: 10px 20px;
+  padding: 12px 24px;
+  margin: 10px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  width: 100%;
+  width: 60%;
   font-size: 1.1em;
+  transition: all 0.3s ease;
 }
 
 .search-button:hover {
-  background-color: #bedc74;
+  background-color: #1a5235;
+  transform: translateY(-2px);
 }
 
 label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
+  color: #2E8B57;
+  font-weight: 600;
+  margin-bottom: 10px;
 }
 </style>

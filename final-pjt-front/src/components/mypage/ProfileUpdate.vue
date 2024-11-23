@@ -1,87 +1,79 @@
 ﻿﻿<template>
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-body">
-            <h2 class="card-title text-center mb-4">프로필 정보</h2>
-            <form @submit.prevent="updateProfile">
-              <div class="mb-3">
-                <label for="profile_image" class="form-label"
-                  >프로필 사진:</label
-                >
-                <input
-                  id="profile_image"
-                  type="file"
-                  @change="onFileChange"
-                  accept="image/*"
-                  class="form-control"
-                />
-                <div v-if="profile.previewImage" class="mb-3">
-                  <img
-                    :src="profile.previewImage"
-                    alt="프로필 미리보기"
-                    class="img-thumbnail"
-                    style="max-width: 200px"
-                  />
-                </div>
-              </div>
-              <div class="mb-3">
-                <label for="username" class="form-label">아이디:</label>
-                <input
-                  id="username"
-                  :value="accountStore.user?.username"
-                  class="form-control"
-                  disabled
-                />
-              </div>
-              <div class="mb-3">
-                <label for="nickname" class="form-label">닉네임:</label>
-                <input
-                  id="nickname"
-                  v-model="profile.nickname"
-                  type="text"
-                  class="form-control"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label for="birth_date" class="form-label">생년월일:</label>
-                <input
-                  id="birth_date"
-                  v-model="profile.birth_date"
-                  type="date"
-                  class="form-control"
-                />
-              </div>
-              <div class="mb-3">
-                <label for="income" class="form-label">월 수입:</label>
-                <input
-                  id="income"
-                  v-model.number="profile.income"
-                  type="number"
-                  class="form-control"
-                />
-              </div>
-              <div class="mb-3">
-                <label for="assets" class="form-label">보유 자산:</label>
-                <input
-                  id="assets"
-                  v-model.number="profile.assets"
-                  type="number"
-                  step="0.01"
-                  class="form-control"
-                />
-              </div>
-              <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary">
-                  프로필 업데이트
-                </button>
-              </div>
-            </form>
+  <div class="profile-update-container">
+    <div class="update-card">
+      <h2 class="card-title">프로필 수정</h2>
+      
+      <form @submit.prevent="updateProfile" class="update-form">
+        <div class="form-group">
+          <label for="profile_image">프로필 사진</label>
+          <div class="image-upload">
+            <input
+              id="profile_image"
+              type="file"
+              @change="onFileChange"
+              accept="image/*"
+              class="file-input"
+            />
+            <div v-if="profile.previewImage" class="preview-container">
+              <img
+                :src="profile.previewImage"
+                alt="프로필 미리보기"
+                class="preview-image"
+              />
+            </div>
           </div>
         </div>
-      </div>
+
+        <div class="form-group">
+          <label for="username">아이디</label>
+          <input
+            id="username"
+            :value="accountStore.user?.username"
+            disabled
+            class="disabled-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="nickname">닉네임</label>
+          <input
+            id="nickname"
+            v-model="profile.nickname"
+            type="text"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="birth_date">생년월일</label>
+          <input
+            id="birth_date"
+            v-model="profile.birth_date"
+            type="date"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="income">월 수입</label>
+          <input
+            id="income"
+            v-model.number="profile.income"
+            type="number"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="assets">보유 자산</label>
+          <input
+            id="assets"
+            v-model.number="profile.assets"
+            type="number"
+            step="0.01"
+          />
+        </div>
+
+        <button type="submit" class="update-button">프로필 업데이트</button>
+      </form>
     </div>
   </div>
 </template>
@@ -155,4 +147,93 @@ const updateProfile = async () => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.profile-update-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.update-card {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  color: #2E8B57;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 1.8em;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #2E8B57;
+  font-weight: 500;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1em;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #2E8B57;
+}
+
+.disabled-input {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.image-upload {
+  margin-bottom: 15px;
+}
+
+.preview-container {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.preview-image {
+  max-width: 200px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.update-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #2E8B57;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.update-button:hover {
+  background-color: #1a5235;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .update-card {
+    padding: 20px;
+  }
+}
+</style>

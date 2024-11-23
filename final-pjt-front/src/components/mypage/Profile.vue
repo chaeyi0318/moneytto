@@ -1,48 +1,55 @@
 <template>
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-body">
-            <h2 class="card-title text-center mb-4">내 정보</h2>
-            <RouterLink class="text-end" :to="{ name: 'profile-update' }"
-              ><p>프로필 수정</p></RouterLink
-            >
-            <div class="mb-3">
-              <div class="mb-3">
-                <div
-                  v-if="profile.previewImage"
-                  class="profile-image-container"
-                >
-                  <img
-                    :src="getImageUrl(profile.previewImage)"
-                    alt="프로필 이미지"
-                    class="profile-image"
-                  />
-                </div>
-                <div v-else>
-                  <img
-                    :src="getImageUrl(defaultProfile)"
-                    alt="프로필 이미지"
-                    class="profile-image"
-                  />
-                </div>
-              </div>
-              <!-- <p>프로필: {{ profile.previewImage }}</p> -->
-              <div>
-                <p>아이디: {{ profile.username }}</p>
-                <p>닉네임: {{ profile.nickname }}</p>
-                <p>생년월일: {{ formatDate(profile.birth_date) }}</p>
-                <p>월 수입: {{ formatCurrency(profile.income) }}원</p>
-                <p>보유 자산: {{ formatCurrency(profile.assets) }}원</p>
-                <p>보유 포인트: {{ profile.point }}P</p>
-              </div>
-              <RouterLink class="text-end" :to="{ name: 'DeleteAccount' }"
-                ><p>탈퇴</p></RouterLink
-              >
-            </div>
+  <div class="profile-container">
+    <div class="profile-card">
+      <div class="profile-header">
+        <h2>{{ profile.nickname }}님의 프로필</h2>
+        <RouterLink :to="{ name: 'profile-update' }" class="edit-link">
+      <i class="bi bi-pencil"></i> <!-- 연필 아이콘 -->
+    </RouterLink>
+      </div>
+
+      <div class="profile-content">
+        <div class="profile-image-section">
+          <div class="profile-image-wrapper">
+            <img
+              :src="getImageUrl(profile.previewImage || defaultProfile)"
+              alt="프로필 이미지"
+            />
           </div>
         </div>
+
+        <div class="profile-info">
+          <div class="info-item">
+            <span class="label">아이디</span>
+            <span class="value">{{ profile.username }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">닉네임</span>
+            <span class="value">{{ profile.nickname }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">생년월일</span>
+            <span class="value">{{ formatDate(profile.birth_date) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">월 수입</span>
+            <span class="value">{{ formatCurrency(profile.income) }}원</span>
+          </div>
+          <div class="info-item">
+            <span class="label">보유 자산</span>
+            <span class="value">{{ formatCurrency(profile.assets) }}원</span>
+          </div>
+          <div class="info-item">
+            <span class="label">보유 포인트</span>
+            <span class="value point">{{ profile.point }}P</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-footer">
+        <RouterLink :to="{ name: 'DeleteAccount' }" class="delete-account">
+          회원 탈퇴
+        </RouterLink>
       </div>
     </div>
   </div>
@@ -84,7 +91,7 @@ const loadUserProfile = async () => {
 };
 
 const baseURL = "http://localhost:8000";
-const defaultProfile = `${baseURL}/media/profile_images/default_profile.jpg`;
+const defaultProfile = `${baseURL}/static/profile/default_profile.jpg`;
 
 const getImageUrl = (previewImage) => {
   // API 응답의 경로를 그대로 사용
@@ -105,18 +112,105 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.profile-image-container {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  overflow: hidden;
+.profile-container {
+  max-width: 800px;
   margin: 0 auto;
+  padding: 20px;
 }
 
-.profile-image {
-  /* width: 100%; */
+.profile-card {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.profile-header h2 {
+  color: #2E8B57;
+  margin: 0;
+}
+
+.edit-link {
+  color: #2E8B57;
+  text-decoration: none;
+  padding: 8px 15px;
+  border: 2px solid #2E8B57;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.edit-link:hover {
+  background-color: #2E8B57;
+  color: white;
+}
+
+.profile-image-wrapper {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #2E8B57;
+  margin: 0 auto 20px;
+}
+
+.profile-image-wrapper img {
+  width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+}
+
+.profile-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.info-item {
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+}
+
+.label {
+  display: block;
+  color: #666;
+  margin-bottom: 5px;
+  font-size: 0.9em;
+}
+
+.value {
+  color: #2E8B57;
+  font-weight: 500;
+  font-size: 1.1em;
+}
+
+.value.point {
+  color: #ff6b6b;
+}
+
+.profile-footer {
+  margin-top: 30px;
+  text-align: right;
+}
+
+.delete-account {
+  color: #dc3545;
+  text-decoration: none;
+  font-size: 0.9em;
+}
+
+@media (max-width: 768px) {
+  .profile-info {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

@@ -1,9 +1,15 @@
 <template>
-  <div class="saving-view">
-    <RouterLink :to="{ name: 'Recommend' }"><h3>추천 적금 상품</h3></RouterLink>
-    <h2>적금 상품 검색</h2>
+  <div class="saving-container">
+    <div class="header-section">
+      <!-- <RouterLink :to="{ name: 'Recommend' }" class="recommend-link">
+        <button class="btn btn-primary">적금 추천받기</button>
+      </RouterLink> -->
+      <h2 class="main-title text-center">적금 상품 검색</h2>
+    </div>
     <Search @search="performSearch" />
-    <div v-if="store.loading">잠시만 기다려주세요!</div>
+    <div v-if="store.loading" class="loading-message">
+      <span>잠시만 기다려주세요!</span>
+    </div>
     <SavingList
       v-else
       :products="store.products"
@@ -34,4 +40,37 @@ onMounted(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.saving-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header-section {
+  margin-bottom: 30px;
+}
+
+.recommend-link {
+  text-decoration: none;
+  color: #2E8B57;
+  transition: color 0.3s ease;
+}
+
+.recommend-link:hover {
+  color: #1a5235;
+}
+
+.main-title {
+  color: #2E8B57;
+  font-size: 2em;
+  margin: 20px 0;
+}
+
+.loading-message {
+  text-align: center;
+  padding: 20px;
+  color: #2E8B57;
+  font-size: 1.2em;
+}
+</style>

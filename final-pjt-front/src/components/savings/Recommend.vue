@@ -61,10 +61,33 @@ export default {
 </script>
 
 <style scoped>
+.recommended-savings {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  color: #2E8B57;
+  font-size: 2em;
+  margin-bottom: 30px;
+}
+
+h3 {
+  color: #2E8B57;
+  font-size: 1.5em;
+  margin: 20px 0;
+}
+
 .card-container {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
+  margin: 20px 0;
+}
+
+.age-based,
+.income-based {
+  margin-bottom: 40px;
 }
 </style>

@@ -153,71 +153,51 @@ const closeDetails = () => {
 <style scoped>
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   margin-top: 20px;
-}
-
-th,
-td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 th {
-  background-color: #f8f9fa;
-  font-weight: normal;
+  background-color: #2E8B57;
+  color: white;
+  padding: 12px;
+  font-weight: 500;
 }
 
-.check-column {
-  width: 80px;
-  text-align: center;
+td {
+  padding: 12px;
+  border-bottom: 1px solid #e9ecef;
 }
 
 .sortable-header {
   cursor: pointer;
-  position: relative;
-  padding-right: 20px;
-  user-select: none;
+  transition: background-color 0.3s ease;
 }
 
 .sortable-header:hover {
-  background-color: #e9ecef;
-}
-
-.sort-indicator {
-  position: absolute;
-  right: 5px;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.triangle {
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-}
-
-.triangle-up {
-  border-bottom: 4px solid #666;
-}
-
-.triangle-down {
-  border-top: 4px solid #666;
+  background-color: #1a5235;
 }
 
 tbody tr:hover {
-  background-color: #f5f5f5;
+  background-color: #f0f8f4;
 }
 
-/* 반응형 테이블 스타일 */
-@media screen and (max-width: 768px) {
-  table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
+button {
+  background-color: #2E8B57;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #1a5235;
+  transform: translateY(-2px);
 }
 </style>

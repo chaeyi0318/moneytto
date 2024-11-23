@@ -1,61 +1,46 @@
 ﻿﻿<template>
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-body">
-            <h2 class="card-title text-center mb-4">가입을 환영합니다!</h2>
-            <p class="text-center">맞춤형 금융 서비스 제공을 위해 아래 정보를 입력해주세요.</p>
-            <form @submit.prevent="updateAdditionalInfo">
-              <div class="mb-3">
-                <label for="birthDate" class="form-label">생년월일:</label>
-                <input
-                  id="birthDate"
-                  v-model="additionalInfo.birth_date"
-                  type="date"
-                  class="form-control"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label for="assets" class="form-label">보유자산:</label>
-                <input
-                  id="assets"
-                  v-model.number="additionalInfo.assets"
-                  type="number"
-                  class="form-control"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label for="income" class="form-label">월 수입:</label>
-                <input
-                  id="income"
-                  v-model.number="additionalInfo.income"
-                  type="number"
-                  class="form-control"
-                  required
-                />
-              </div>
-              <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary">
-                  추가 정보 업데이트
-                </button>
-                <!-- <button
-                  type="button"
-                  @click="skipUpdate"
-                  class="btn btn-secondary"
-                >
-                  건너뛰기
-                </button> -->
-              </div>
-            </form>
-          </div>
+  <div class="additional-info-container">
+    <div class="info-card">
+      <h2 class="card-title">Welcome to moneytto!</h2>
+      <p class="card-subtitle">맞춤형 금융 서비스 제공을 위해<br>아래 정보를 입력해주세요.</p>
+      
+      <form @submit.prevent="updateAdditionalInfo" class="info-form">
+        <div class="form-group">
+          <label for="birthDate">생년월일</label>
+          <input
+            id="birthDate"
+            v-model="additionalInfo.birth_date"
+            type="date"
+            required
+          >
         </div>
-      </div>
+
+        <div class="form-group">
+          <label for="assets">보유자산</label>
+          <input
+            id="assets"
+            v-model.number="additionalInfo.assets"
+            type="number"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="income">월 수입</label>
+          <input
+            id="income"
+            v-model.number="additionalInfo.income"
+            type="number"
+            required
+          >
+        </div>
+
+        <button type="submit" class="submit-button">추가 정보 업데이트</button>
+      </form>
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted } from "vue";
@@ -93,3 +78,90 @@ const skipUpdate = () => {
   router.push({ name: "MainView" }); // 메인 페이지로 이동
 };
 </script>
+
+<style scoped>
+.additional-info-container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.info-card {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  color: #2E8B57;
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 2em;
+}
+
+.card-subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.info-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #2E8B57;
+  font-weight: 500;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1em;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #2E8B57;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #2E8B57;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.submit-button:hover {
+  background-color: #1a5235;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .additional-info-container {
+    margin: 20px auto;
+  }
+  
+  .info-card {
+    padding: 20px;
+  }
+}
+</style>

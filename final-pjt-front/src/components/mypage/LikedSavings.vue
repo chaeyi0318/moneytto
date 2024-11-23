@@ -1,12 +1,15 @@
 ﻿<template>
-  <div>
-    <h1>찜한 적금 모아보기</h1>
+   <div class="liked-savings-container">
+    <div class="page-header">
+      <h1>찜한 적금 모아보기</h1>
+      <div class="savings-count">
+        <span class="user-name">{{ userNickname }}</span>님이 찜한 상품의 개수: 
+        <span class="count">총 {{ likedSavingsCount }}개</span>
+      </div>
+    </div>
 
-    <div class="liked">
-      <h4>
-        {{ userNickname }}님이 찜한 상품의 개수: 총 {{ likedSavingsCount }}개
-      </h4>
-      <div v-if="likedSavingsCount > 0" class="card-container">
+    <div class="savings-content">
+      <div v-if="likedSavingsCount > 0" class="savings-grid">
         <LikedSavingsItem
           v-for="saving in likedSavings"
           :key="saving.id"
@@ -14,9 +17,10 @@
           @show-details="showDetails"
         />
       </div>
-      <p v-else>찜한 상품이 없습니다. 마음에 드는 적금 상품을 찜해보세요!</p>
+      <div v-else class="empty-state">
+        <p>찜한 상품이 없습니다. 마음에 드는 적금 상품을 찜해보세요!</p>
+      </div>
     </div>
-
     <!-- 상세보기 모달 -->
     <LikedSavingsItemDetail
       v-if="selectedProduct"
@@ -64,10 +68,65 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.card-container {
-  display: flex;
-  justify-content: left;
-  flex-wrap: wrap;
+.liked-savings-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.page-header {
+  margin-bottom: 30px;
+}
+
+.page-header h1 {
+  color: #2E8B57;
+  font-size: 2em;
+  margin-bottom: 15px;
+}
+
+.savings-count {
+  background-color: #f0f8f4;
+  padding: 15px;
+  border-radius: 10px;
+  color: #666;
+}
+
+.user-name {
+  color: #2E8B57;
+  font-weight: 600;
+}
+
+.count {
+  color: #2E8B57;
+  font-weight: 600;
+}
+
+.savings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
+  margin-top: 20px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  color: #666;
+}
+
+.error-message {
+  color: #dc3545;
+  padding: 15px;
+  background-color: #f8d7da;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .savings-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
 }
 </style>

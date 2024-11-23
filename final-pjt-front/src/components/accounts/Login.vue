@@ -1,13 +1,18 @@
 <template>
-  <div>
-    <h1>로그인</h1>
-    <form @submit.prevent="login">
-      <label for="username">ID : </label>
-      <input type="text" v-model.trim="username" id="username" />
+  <div class="login-container">
+    <h1 class="form-title">로그인</h1>
+    <form @submit.prevent="login" class="login-form">
+      <div class="form-group">
+        <label for="username">아이디</label>
+        <input type="text" id="username" v-model.trim="username" required>
+      </div>
 
-      <label for="password">PW : </label>
-      <input type="password" v-model.trim="password" id="password" />
-      <input type="submit" value="로그인" />
+      <div class="form-group">
+        <label for="password">비밀번호</label>
+        <input type="password" id="password" v-model.trim="password" required>
+      </div>
+
+      <button type="submit" class="submit-button">로그인</button>
     </form>
   </div>
 </template>
@@ -40,4 +45,80 @@ const login = async function () {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+/* .login-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+} */
+
+.form-title {
+  color: #2E8B57;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2em;
+}
+
+/* .login-form {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+} */
+
+.form-title {
+  color: #2E8B57;
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 2em;
+}
+
+.signup-form {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #2E8B57;
+  font-weight: 500;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1em;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #2E8B57;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #2E8B57;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #1a5235;
+  transform: translateY(-2px);
+}
+</style>

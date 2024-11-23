@@ -22,21 +22,34 @@ export default {
 
 <style scoped>
 .card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 15px;
-  width: calc(20% - 16px); /* Five cards per row */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
+  background-color: white;
+  border: 2px solid #2E8B57;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* .card h3 {
-  margin-top: 0;
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card h3 {
+  color: #2E8B57;
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.card h5 {
+  color: #666;
   font-size: 1em;
-} */
+  margin-bottom: 15px;
+}
 
 .card p {
-  margin-bottom: 10px;
+  color: #444;
+  margin: 8px 0;
   font-size: 0.9em;
 }
 </style>
