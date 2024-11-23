@@ -1,5 +1,4 @@
-﻿<!-- SavingListItemDetail.vue -->
-<template>
+﻿<template>
   <div
     class="modal fade show"
     tabindex="-1"
@@ -14,23 +13,21 @@
         </div>
         <div class="modal-body">
           <div class="d-flex justify-content-end align-items-center mb-3">
-            <!-- <button class="btn btn-light">이미 보유하고 있어요!</button> -->
             <button
               @click="toggleLike"
               class="btn btn-light star-button"
               :class="{ 'btn-warning': product.is_liked }"
             >
-              <i :class="product.is_liked ? 'bi-star-fill' : 'bi-star'"></i>
+              <i :class="product.liked_by ? 'bi-star-fill' : 'bi-star'"></i>
             </button>
             <!-- <button>
               <i
                 :class="
-                  product.is_owned ? 'plus-square-fill' : 'plus-square-dotted'
+                  isLiked ? 'plus-square-fill' : 'plus-square-dotted'
                 "
               ></i>
             </button> -->
           </div>
-          <hr />
           <div class="detail-info">
             <p>
               <strong>적립방식:</strong>
@@ -96,31 +93,33 @@
           >
             닫기
           </button>
-        </div>
       </div>
     </div>
   </div>
-  <div class="modal-backdrop fade show"></div>
+  </div>
 </template>
 
 <script setup>
-import { useSavingStore } from "@/stores/savingStore";
-import { useAccountStore } from "@/stores/accountStore";
+import { computed } from 'vue';
+import { useSavingStore } from '@/stores/savingStore';
+import { useAccountStore } from '@/stores/accountStore';
+
+const savingStore = useSavingStore()
+const accountStore = useAccountStore()
 
 const props = defineProps({
   product: Object,
-  showPostTaxInterest: Boolean,
 });
-const emit = defineEmits(["close"]);
 
-const savingStore = useSavingStore();
-const accountStore = useAccountStore();
+const isLiked = computed(() => {
+  return props.product.liked_by.includes(accountStore.user.id);
+});
 
 const toggleLike = () => {
   savingStore.toggleLike(props.product.id);
-  // console.log(props.product.liked_by)
-  // console.log(accountStore.user.id)
 };
+
+defineEmits(["close"]);
 </script>
 
 <style scoped>

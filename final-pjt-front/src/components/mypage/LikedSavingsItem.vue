@@ -4,6 +4,12 @@
     <h5>{{ saving.bank_name }}</h5>
     <p>{{ saving.saving_method }}</p>
     <p>최고우대금리: {{ saving.max_preference_rate }}%</p>
+    <button
+      @click="$emit('show-details', saving)"
+      class="btn btn-sm btn-success"
+    >
+      상세보기
+    </button>
   </div>
 </template>
 
@@ -11,6 +17,8 @@
 defineProps({
   saving: Object,
 });
+
+defineEmits(["show-details"]);
 </script>
 
 <style scoped>
@@ -20,13 +28,7 @@ defineProps({
   padding: 15px;
   width: calc(20% - 16px); /* Five cards per row */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
 }
-
-/* .card h3 {
-  margin-top: 0;
-  font-size: 1em;
-} */
 
 .card p {
   margin-bottom: 10px;
