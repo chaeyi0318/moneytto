@@ -140,7 +140,7 @@ const updateProfile = async () => {
 
     await accountStore.updateUserInfo(formData);
     alert("프로필이 업데이트되었습니다.");
-    router.push({ name: "MyPageView" });
+    router.push({ name: "profile" });
   } catch (error) {
     alert("프로필 업데이트에 실패했습니다.");
   }
