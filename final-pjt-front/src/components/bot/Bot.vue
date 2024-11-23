@@ -1,92 +1,112 @@
 <template>
   <div id="app">
     <h1>살말 개구리봇</h1>
-    <form @submit.prevent="handleFormSubmit">
-      <label for="itemName">물건 이름:</label>
-      <input id="itemName" v-model="itemName" type="text" placeholder="물건 이름을 입력하세요" required />
+    <div class="chat-container">
+      <!-- Chat messages -->
+      <div class="chat-box">
+        <div
+          v-for="(message, index) in messages"
+          :key="index"
+          :class="['message', message.sender]"
+        >
+          <p>{{ message.text }}</p>
+        </div>
+      </div>
 
-      <label for="itemCost">물건 가격 (원):</label>
-      <input id="itemCost" v-model.number="itemCost" type="number" placeholder="가격을 입력하세요" required />
-
-      <label for="budget">총 예산 (원):</label>
-      <input id="budget" v-model.number="budget" type="number" placeholder="예산을 입력하세요" required />
-
-      <button type="submit">결정 요청</button>
-    </form>
-
-    <div v-if="result">
-      <h2>결과:</h2>
-      <p>{{ result }}</p>
+      <!-- User input -->
+      <div class="input-box">
+        <input
+          v-model="userInput"
+          type="text"
+          placeholder="메시지를 입력하세요..."
+          @keyup.enter="handleUserInput"
+        />
+        <button @click="handleUserInput">전송</button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from "vue"
-import axios from "axios"
+import { ref } from "vue";
+import axios from "axios";
 
-const props = defineProps({
-  amount: {
-    type: Number,
-    required: true,
+// Chat messages array
+const messages = ref([
+  { sender: "bot", text: "안녕하세요! 당신의 금융 친구 머니또입니다!" },
+  {
+    sender: "bot",
+    text: "오늘의 금전운 보기를 원하시면 1번, 물건 구매 결정에 대한 도움이 필요하시면 2번을 입력해주세요!",
   },
-});
+]);
 
-const itemName = ref("")
-const itemCost = ref(null)
-const budget = ref(props.amount)
-const result = ref(null)
+// User input state
+const userInput = ref("");
 
-watch(
-  () => props.amount,
-  (newAmount) => {
-    budget.value = newAmount;
+// State to manage the current flow
+const state = ref(null);
+
+// Handle user input
+const handleUserInput = async () => {
+  if (!userInput.value.trim()) return;
+
+  // Add user's message to the chat
+  messages.value.push({ sender: "user", text: userInput.value });
+
+  const input = userInput.value.trim();
+  userInput.value = ""; // Clear input field
+
+  // Initial selection logic
+  if (!state.value) {
+    if (input === "1") {
+      state.value = "fortune";
+      messages.value.push({
+        sender: "bot",
+        text: "잠시만 기다려 주세요! 오늘의 금전운을 확인 중입니다...",
+      });
+      await fetchFortune();
+    } else if (input === "2") {
+      state.value = "purchase";
+      messages.value.push({
+        sender: "bot",
+        text: "구매하려는 물건 이름을 입력해주세요!",
+      });
+    } else {
+      messages.value.push({
+        sender: "bot",
+        text: "잘못된 입력입니다. 1번 또는 2번을 입력해주세요!",
+      });
+    }
+    return;
   }
-)
 
-const handleFormSubmit = async () => {
+  // Reset logic for starting over
+  if (input.toLowerCase() === "처음") {
+    reset();
+    return;
+  }
+
+  // Handle purchase decision flow
+  if (state.value === "purchase") {
+    handlePurchaseFlow(input);
+    return;
+  }
+};
+
+// Fetch dynamic fortune using GPT
+const fetchFortune = async () => {
   const prompt = `
-    당신은 "머니또"입니다. 사용자가 물건 구매 여부를 묻습니다.  
-    물건 이름은 "${itemName.value}"이고, 가격은 ${itemCost.value}원입니다.  
-    사용자의 총 예산은 ${budget.value}원입니다.
-
-    사용자는 당신에게 물건을 사야 할지 말아야 할지 조언을 구하고 있습니다. 당신의 역할은 다음과 같습니다:  
-    - 사용자의 재정 상태와 예산 상황을 분석합니다.  
-    - 물건의 가격이 예산 내인지 초과인지 판단합니다.  
-    - 유머러스하고 재치 있는 말투로, 마치 친한 친구처럼 답변하되, 존댓말을 사용합니다.  
-    - 사용자가 웃으면서도 합리적인 결정을 내릴 수 있도록 돕습니다.
-
-    다음 규칙을 따르세요:
-
-    ### **1. 분석 시작**  
-    먼저 사용자의 재정 상태를 간단히 요약하며 대화를 시작하세요.
-    인삿말 예시
-    - 안녕하세요! 당신의 금융 친구 머니또입니다!
-
-    ### **2. 예산 초과일 경우**  
-    - 물건이 생필품(생활용품)이라면 약간의 타박과 함께 긍정적인 조언을 섞어서 답변하세요
-
-    - 생필품이 아니더라도 상황에 따라 허락할 수 있습니다. 단, 허락할 때는 유머러스한 이유를 덧붙이세요:  
-
-    ### **3. 예산 내일 경우**  
-    - 기본적으로 "사셔도 돼요!"라고 긍정적으로 말하세요.  
-    - 하지만 가끔은 "그런데 꼭 사야 할까요?"라고 질문하며, 물건에 대한 필요성을 고민하게 만드세요.  
-
-    ### **4. 추가 요소**  
-    - 항상 친근하고 장난기 있는 말투로 대화하세요. 그러나 존댓말을 유지합니다.  
-    - 필요하다면 물건에 대한 엉뚱한 상상이나 농담을 섞어 대화를 재미있게 만들어주세요.  
-
-    ### **5. 답변 길이**  
-    답변은 간단하지 않게 길고 자세하게 작성하세요. 사용자가 마치 친구와 수다 떠는 기분이 들도록 만들어주세요.
-
-    ### **6. 이모지 사용 최소화**  
-    - 이모지는 최소한으로 사용하며, 꼭 필요한 경우에만 활용하세요.
-
-    이제 아래 정보를 바탕으로 답변을 생성하세요:  
-    - 물건 이름: "${itemName.value}"  
-    - 물건 가격: ${itemCost.value}원  
-    - 사용자 총 예산: ${budget.value}원
-  `
+    당신은 금전운 전문가입니다. 사용자를 위해 오늘의 금전운을 작성해주세요.
+    - 유머러스하고 친근한 말투를 사용하세요.
+    - 사용자가 웃으면서도 오늘 하루를 긍정적으로 시작할 수 있도록 도와주세요.
+    - 금전 관련 조언과 함께 운세를 재미있게 작성해주세요.
+    
+    예시:
+    - 오늘은 작은 사치가 괜찮습니다! 하지만 큰 지출은 피하세요.
+    - 뜻밖의 행운이 찾아올지도 몰라요. 하지만 지갑은 꼭 닫아두세요!
+    
+    이제 오늘의 금전운을 작성해주세요.
+  `;
 
   try {
     const response = await axios.post(
@@ -94,47 +114,137 @@ const handleFormSubmit = async () => {
       {
         model: "gpt-4o-mini",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 1000,
+        max_tokens: 16384,
         temperature: 0.7,
       },
       {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
-        }
+          "Content-Type": "application/json",
+        },
       }
-    )
+    );
 
-    result.value = response.data.choices[0].message.content;
+    const fortune =
+      response.data.choices[0].message.content || "금전운 생성에 실패했습니다.";
+    messages.value.push({ sender: "bot", text: `오늘의 금전운: ${fortune}` });
+    messages.value.push({
+      sender: "bot",
+      text: "'처음'이라고 입력하면 다시 시작할 수 있어요!",
+    });
   } catch (error) {
-    console.error("Error fetching data from OpenAI:", error);
-    result.value = "OpenAI와 통신 중 문제가 발생했습니다. 다시 시도해주세요."
+    console.error("Error fetching fortune:", error);
+    messages.value.push({
+      sender: "bot",
+      text:
+        "금전운을 가져오는 중 문제가 발생했습니다. 다시 시도해주세요.",
+    });
   }
-}
+};
+
+// Handle purchase decision flow
+const handlePurchaseFlow = async (input) => {
+  if (!state.itemName) {
+    state.itemName = input;
+    messages.value.push({
+      sender: "bot",
+      text: `물건 이름이 "${state.itemName}" 맞으신가요? 가격(원)을 입력해주세요!`,
+    });
+  } else if (!state.itemCost) {
+    state.itemCost = parseInt(input);
+    if (isNaN(state.itemCost)) {
+      messages.value.push({
+        sender: "bot",
+        text: "유효한 숫자를 입력해주세요! 물건 가격(원)을 다시 입력해주세요.",
+      });
+      return;
+    }
+    messages.value.push({
+      sender: "bot",
+      text: `가격이 ${state.itemCost}원이라고 하셨네요. 총 예산(원)을 알려주세요!`,
+    });
+  } else if (!state.budget) {
+    state.budget = parseInt(input);
+    if (isNaN(state.budget)) {
+      messages.value.push({
+        sender: "bot",
+        text: "유효한 숫자를 입력해주세요! 총 예산(원)을 다시 입력해주세요.",
+      });
+      return;
+    }
+
+    // Call GPT for purchase advice
+    const prompt = `
+      당신은 '머니또'입니다. 사용자가 물건 구매 여부를 묻습니다.
+      물건 이름은 "${state.itemName}"이고, 가격은 ${state.itemCost}원입니다.
+      사용자의 총 예산은 ${state.budget}원입니다.
+
+      사용자의 재정 상태와 예산 상황을 분석해 유머러스하고 재치 있는 말투로 답변하세요.
+    `;
+
+    try {
+      const response = await axios.post(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          model: "gpt-4o-mini",
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 1000,
+          temperature: 0.7,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const advice =
+        response.data.choices[0].message.content || "결정 생성 실패!";
+      messages.value.push({ sender: "bot", text: advice });
+      messages.value.push({
+        sender: "bot",
+        text:
+          "'처음'이라고 입력하면 다시 시작할 수 있어요!",
+      });
+    } catch (error) {
+      console.error("Error fetching purchase advice:", error);
+      messages.value.push({
+        sender: "bot",
+        text:
+          "구매 결정을 가져오는 중 문제가 발생했습니다. 다시 시도해주세요.",
+      });
+    }
+  }
+};
+
+// Reset the chat flow
+const reset = () => {
+  state.value = null;
+  state.itemName = null;
+  state.itemCost = null;
+  state.budget = null;
+  messages.value.push({
+    sender: "bot",
+    text:
+      "안녕하세요! 저는 당신의 금융 친구 머니또입니다! 오늘의 금전운 보기를 원하시면 1번, 물건 구매 결정에 대한 도움이 필요하시면 2번을 입력해주세요!",
+  });
+};
 </script>
 
 <style scoped>
 #app {
-  text-align: center;
-  margin-top: 50px;
+  max-width: 500px;
+  margin: auto;
 }
-h1 {
-  color: #4caf50;
+.chat-container {
+  display: flex;
+  flex-direction: column;
 }
-form {
-  margin-bottom: 20px;
+.chat-box {
+  border: solid #ddd;
+  height: 400px;
 }
-label {
-  display: block;
-  margin-bottom: 5px;
-}
-input {
-  margin-bottom: 15px;
-}
-button {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-}
+/* .message {}
+.input-box {} */
 </style>
