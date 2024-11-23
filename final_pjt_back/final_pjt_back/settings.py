@@ -80,6 +80,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
+    # 페이지네이션 설정 추가
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',  # 기본 페이지네이션 클래스
+    'PAGE_SIZE': 10,  # 한 페이지에 반환할 데이터 개수
 }
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
