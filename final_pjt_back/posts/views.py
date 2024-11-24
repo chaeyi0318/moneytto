@@ -2,13 +2,19 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import PostSerializer, CalendarMainSerializer, PostDetailSerializer, CommentSerializer
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404, get_list_or_404
 from .models import Post, Comment, Category
+from accounts.models import Budget
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Sum
 from django.http import JsonResponse
+from django.db.models import Sum
+from django.db.models.functions import ExtractYear, ExtractMonth
+from datetime import datetime, timedelta
 
+User = get_user_model()
 
 # Create your views here.
 @api_view(['POST'])
@@ -200,3 +206,71 @@ def is_owner(login_user, post_owner):
         return True
     else:
         return False
+    
+
+def graph_data(request):
+    date_param = request.GET.get('date')
+    login_user_id = request.GET.get('loginUser')
+
+    if not date_param or not login_user_id:
+        return JsonResponse({'error': 'Both date and loginUser parameters are required'}, status=400)
+
+    try:
+        end_year, end_month = map(int, date_param.split('-'))
+        end_date = datetime(end_year, end_month, 1)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid date format. Use YYYY-MM.'}, status=400)
+
+    try:
+        user = get_object_or_404(User, pk=login_user_id)
+    except ValueError:
+        return JsonResponse({'error': 'Invalid user ID format.'}, status=400)
+
+    six_months_ago = end_date - timedelta(days=30 * 5)
+    start_year, start_month = six_months_ago.year, six_months_ago.month
+
+
+    post_data = (
+        Post.objects
+        .filter(user=user)
+        .annotate(year=ExtractYear('expenses_date'), month=ExtractMonth('expenses_date'))
+        .filter(
+            expenses_date__year__gte=start_year,
+            expenses_date__month__gte=start_month,
+            expenses_date__year__lte=end_year,
+            expenses_date__month__lte=end_month
+        )
+        .values('year', 'month')
+        .annotate(total_expenses=Sum('price'))
+    )
+
+    budget_data = (
+        Budget.objects
+        .filter(user=user)
+        .filter(
+            year__gte=start_year,
+            month__gte=start_month,
+            year__lte=end_year,
+            month__lte=end_month
+        )
+        .values('year', 'month')
+        .annotate(total_budget=Sum('amount'))
+    )
+
+    result = []
+    for year in range(start_year, end_year + 1):
+        for month in range(1, 13):
+            if (year == start_year and month < start_month) or (year == end_year and month > end_month):
+                continue
+
+            post_total = next((p['total_expenses'] for p in post_data if p['year'] == year and p['month'] == month), 0)
+
+            budget_total = next((b['total_budget'] for b in budget_data if b['year'] == year and b['month'] == month), 0)
+
+            result.append({
+                'date': f"{year}-{month:02d}",
+                'budget': budget_total,
+                'total_value': post_total,
+            })
+
+    return JsonResponse(result, safe=False)

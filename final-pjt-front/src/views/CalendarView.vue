@@ -2,7 +2,7 @@
   <div class="calendar">
     <!-- 달력 네비게이션 -->
     <nav>
-      <form v-if="calendarOwnerId === loginUser" @submit.prevent="submitBudget">
+      <form @submit.prevent="submitBudget">
         <span>{{ cal.yearText }} - {{ cal.monthText }} 예산 </span>
         <input type="number" v-model="amount" placeholder="예산 입력"/>
         <input type="submit" value="설정">

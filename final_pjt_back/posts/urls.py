@@ -13,4 +13,5 @@ urlpatterns = [
     path('delete-comment/<int:comment_id>/',views.delete_comment),
     path('update-comment/<int:comment_id>/', views.update_comment),
     path('categories/', views.category_list),
+    path('graph-data/', views.graph_data)
 ]
