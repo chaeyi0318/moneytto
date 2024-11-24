@@ -63,6 +63,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { Calendar } from "@/components/calendar/Calendar";
 import Modal from "@/components/calendar/Modal.vue"; // 모달 컴포넌트 가져오기
 import { useCalendarStore } from "@/stores/calendarStore";
@@ -78,6 +79,8 @@ const loginUser = accountStore.user.id
 
 let cal = ref(Calendar.fromYm(currentYear, currentMonth));
 const router = useRouter();
+const route = useRoute();
+
 const dateStore = useCalendarStore();
 
 const posts = ref([])   // 게시글 데이터
@@ -86,12 +89,19 @@ const amount = ref(0)
 const total_price = ref(0)
 const categorySumValue = ref([])
 
+// 쿼리에서 날짜 가져오기 (없으면 오늘 날짜 사용)
+const selectedDate = ref(route.query.date || new Date().toISOString().split("T")[0]);
+
+const handlePostDeleted = (deletedId) => {
+  posts.value = posts.value.filter((post) => post.id !== deletedId);
+};
+
 // 이전 달로 이동
 const prevMonth = () => {
   cal.value = cal.value.prevMonth()
   const yearMonth = cal.value.yearText + '-' + cal.value.monthText
 
-  fetchPosts(yearMonth)
+  fetchPosts(`${cal.value.yearText}-${cal.value.monthText}`)
 };
 
 // 다음 달로 이동
@@ -99,7 +109,7 @@ const nextMonth = () => {
   cal.value = cal.value.nextMonth()
   const yearMonth = cal.value.yearText + '-' + cal.value.monthText
 
-  fetchPosts(yearMonth)
+  fetchPosts(`${cal.value.yearText}-${cal.value.monthText}`)
 }
 
 // 모달 상태 및 선택된 날짜 제목 관리
@@ -189,8 +199,9 @@ const submitBudget = async () => {
 }
 
 onMounted(() => {
-  const yearMonth = `${cal.value.yearText}-${cal.value.monthText}`
-  fetchPosts(yearMonth)
+  const [year, month] = selectedDate.value.split("-");
+  cal.value = Calendar.fromYm(parseInt(year), parseInt(month));
+  fetchPosts(`${year}-${month}`);
   amount,
   total_price
 })

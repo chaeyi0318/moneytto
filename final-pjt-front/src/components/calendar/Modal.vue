@@ -68,7 +68,7 @@ const props = defineProps({
   date: String
 });
 
-const emit = defineEmits(["closeModal"]); // closeModal 이벤트 정의
+const emit = defineEmits(["closeModal", "postDeleted"])
 
 const closeModal = () => {
   emit("closeModal"); // 부모 컴포넌트에 closeModal 이벤트 전달
@@ -132,17 +132,15 @@ const deletePost = async () => {
     await api.delete(`/posts/delete-post/${currentPost.value.id}`); // API 호출
     alert("게시글이 삭제되었습니다.");
 
+    
     // 삭제 후 리스트에서 제거
     posts.value.splice(currentIndex.value, 1);
 
     // 인덱스 조정 (삭제 후 마지막 게시글일 경우)
-    if (currentIndex.value >= posts.value.length && posts.value.length > 0) {
-      currentIndex.value -= 1;
-    }
-    
-    // 모든 게시글이 삭제된 경우 모달 닫기
     if (posts.value.length === 0) {
-      closeModal();
+      closeModal(); // 모든 게시글 삭제 시 모달 닫기
+    } else if (currentIndex.value >= posts.value.length) {
+      currentIndex.value = posts.value.length - 1; // 마지막 게시글로 이동
     }
     
   } catch (err) {

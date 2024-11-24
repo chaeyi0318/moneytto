@@ -115,7 +115,10 @@ const createPost = async function () {
     console.log("작성된 게시글 데이터: ", payload);
     await dateStore.submitPost(payload); // 비동기 함수 호출 시 await 추가
     alert("게시글이 성공적으로 작성 되었습니다.");
-    router.push({ name: "CalendarView" });
+    router.push({
+      name: "CalendarView",
+      query: { date: expenses_date.value }
+    });
   } catch (error) {
     console.log("게시글 작성 중 오류 발생: ", error);
   }
