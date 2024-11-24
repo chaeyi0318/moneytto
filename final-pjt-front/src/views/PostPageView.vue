@@ -1,62 +1,58 @@
 <template>
-  <div>
-    <h1>게시글 작성</h1>
+  <div class="post-container">
+    <h1 class="title">게시글 작성</h1>
 
-    <!-- 소비한 날짜 -->
-    <form @submit.prevent="createPost">
-      <div style="margin-bottom: 10px">
-        <p id="expenses_date">소비한 날짜 : {{ expenses_date }}</p>
-        <label for="privacy_setting">공개범위 : </label>
-        <select
-          name="privacy_setting"
-          v-model.trim="privacySetting"
-          id="privacy_setting">
-          <option value="">공개범위설정</option>
-          <option value="public">전체공개</option>
-          <option value="subscriber">구독자공개</option>
-          <option value="private">비공개</option>
-        </select>
+    <form @submit.prevent="createPost" class="post-form">
+      <div class="form-group top-info">
+        <div class="info-row">
+          <div class="date-wrapper">
+            <span class="label-text">소비한 날짜:</span>
+            <span class="date-text">{{ expenses_date }}</span>
+          </div>
+          <div class="privacy-wrapper">
+            <select name="privacy_setting" v-model.trim="privacySetting" id="privacy_setting" class="privacy-select">
+              <option value="">🔒</option>
+              <option value="public" selected>전체공개</option>
+              <option value="subscriber">구독자공개</option>
+              <option value="private">비공개</option>
+            </select>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="category-wrapper">
+            <span class="label-text">카테고리:</span>
+            <select name="category_id" v-model.trim="category" id="category_id" class="compact-select">
+              <option value="">선택바람</option>
+              <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+                {{ cat.category_name }}
+              </option>
+            </select>
+          </div>
+          <div class="price-wrapper">
+            <span class="label-text">가격:</span>
+            <input type="number" v-model.trim="price" name="price" id="price" class="compact-input" />
+          </div>
+        </div>
       </div>
 
-      <!-- 카테고리 선택 -->
-      <div style="margin-bottom: 10px">
-        <label for="category_id">카테고리 :</label>
-        <select name="category_id" v-model.trim="category" id="category_id">
-          <option value="">선택바람</option>
-          <option v-for="cat in categories" :key="cat.id" :value="cat.id">
-            {{ cat.category_name }}
-          </option>
-        </select>
-      </div>
-
-      <!-- 파일 업로드 -->
-      <div style="margin-bottom: 10px">
+      <div class="form-group">
         <label for="image">파일 업로드 :</label>
-        <input type="file" name="image" id="image" @change="onFileChange" />
+        <input type="file" name="image" id="image" @change="onFileChange" class="file-input" />
       </div>
 
-      <!-- 이미지 미리보기 -->
-      <div v-if="imageUrl">
-        <img
-          :src="imageUrl"
-          alt="이미지 미리보기"
-          style="max-width: 200px; margin-top: 10px"
-        />
+      <div v-if="imageUrl" class="image-preview">
+        <img :src="imageUrl" alt="이미지 미리보기" />
       </div>
 
-      <!-- 가격 입력 -->
-      <div style="margin-bottom: 10px">
-        <label for="price">가격 :</label>
-        <input type="number" v-model.trim="price" name="price" id="price" />
+      <div class="form-group">
+        <label for="content">내용 :</label>
+        <input type="text" v-model.trim="content" name="content" id="content" class="content-input" />
       </div>
 
-      <!-- 내용 입력 -->
-      <label for="content">내용 :</label>
-      <input type="text" v-model.trim="content" name="content" id="content" />
-
-      <!-- 버튼 -->
-      <input type="button" @click.prevent="cancel" value="취소" />
-      <input type="submit" value="저장" />
+      <div class="button-group">
+        <button type="button" @click.prevent="cancel" class="cancel-btn">취소</button>
+        <button type="submit" class="submit-btn">저장</button>
+      </div>
     </form>
   </div>
 </template>
@@ -145,22 +141,201 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-div {
-  margin-bottom: 15px;
+.post-container {
+  background-color: #f8faf6;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(85, 136, 59, 0.1);
+}
+
+.title {
+  color: #2D7A31;
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: 700;
+}
+
+.form-group {
+  background: white;
+  padding: 1.2rem;
+  border-radius: 12px;
+  margin-bottom: 1.2rem;
+  border: 1px solid #E8F3E9;
+}
+
+.top-info {
+  padding: 1rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.date-wrapper, .category-wrapper, .price-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 auto;
+}
+
+.label-text {
+  color: #2D7A31;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.date-text {
+  color: #333;
+  font-weight: 500;
+}
+
+.privacy-wrapper {
+  width: auto;
+}
+
+.privacy-select {
+  width: auto;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #E8F3E9;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.compact-select, .compact-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #E8F3E9;
+  border-radius: 6px;
+  font-size: 0.9rem;
 }
 
 label {
+  color: #2D7A31;
+  font-weight: 600;
   display: inline-block;
-  width: 100px;
+  width: 120px;
+  margin-right: 1rem;
 }
 
-input,
-select {
-  padding: 5px;
-  margin-left: 10px;
+.file-input {
+  background: white;
+  padding: 0.6rem;
+  width: calc(100% - 150px);
 }
 
-input[type="submit"] {
-  margin-right: 10px;
+.content-input {
+  width: calc(100% - 150px);
+  min-height: 100px;
+  padding: 0.8rem;
+  border: 2px solid #E8F3E9;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.image-preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
+}
+
+.image-preview img {
+  max-width: 80%;
+  border-radius: 8px;
+  margin-top: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.image-preview img:hover {
+  transform: scale(1.02);
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.submit-btn, .cancel-btn {
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.submit-btn {
+  background-color: #2D7A31;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #E8F3E9;
+  color: #2D7A31;
+}
+
+.submit-btn:hover {
+  background-color: #246627;
+}
+
+.cancel-btn:hover {
+  background-color: #D1E6D3;
+}
+
+@media (max-width: 600px) {
+  .post-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  .info-row {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .date-wrapper, .category-wrapper, .price-wrapper {
+    width: 100%;
+  }
+
+  .file-input, .content-input {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .submit-btn, .cancel-btn {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+
+  .compact-select, .compact-input {
+    max-width: none;
+  }
 }
 </style>
