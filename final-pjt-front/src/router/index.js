@@ -1,3 +1,5 @@
+import Login from "@/components/accounts/Login.vue";
+import Bot from "@/components/bot/Bot.vue";
 import AdditionalInfo from "@/components/mypage/AdditionalInfo.vue";
 import DeleteAccount from "@/components/mypage/DeleteAccount.vue";
 import LikedSavings from "@/components/mypage/LikedSavings.vue";
@@ -46,6 +48,17 @@ const routes = [
     path: "/quiz",
     name: "QuizView",
     component: QuizView,
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: Login,
+  },
+  {
+    path: '/bot/:type',
+    name: 'Bot',
+    component: Bot,
+    props: true
   },
   {
     path: "/mypage",

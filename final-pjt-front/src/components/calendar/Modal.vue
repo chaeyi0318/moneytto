@@ -359,6 +359,24 @@ const updatePost = () => {
   box-shadow: var(--shadow);
 }
 
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F9F6;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2E8B57;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1B5E20;
+}
+
 @media (max-width: 768px) {
   .modal-content {
     width: 95%;

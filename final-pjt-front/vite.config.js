@@ -13,6 +13,17 @@ export default defineConfig(({ mode }) => {
       vue(),
       vueDevTools(),
     ],
+    server: {
+      proxy: {
+        '/api': {
+          target: 'https://api.perplexity.ai',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, ''),
+          secure: false,
+          ws: true
+        }
+      }
+    },
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),

@@ -15,6 +15,7 @@
     "bootstrap-icons": "^1.11.3",
     "chart.js": "^4.4.6",
     "dotenv": "^16.4.5",
+    "groq-sdk": "^0.8.0",
     "pinia": "^2.2.6",
     "vue": "^3.5.12",
     "vue-chartjs": "^5.3.2",
