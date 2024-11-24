@@ -2,21 +2,21 @@
   <div class="main">
     <!-- 달력 -->
     <div class="calendar">
-      <nav>
-        <form @submit.prevent="submitBudget">
+      <nav class="nav-container">
+        <form @submit.prevent="submitBudget" class="budget-form">
           <span>{{ cal.yearText }} - {{ cal.monthText }} 예산 </span>
           <input type="number" v-model="amount" placeholder="예산 입력" />
-          <input type="submit" value="설정">
+          <input type="submit" value="설정" class='submit-btn'>
         </form>
-        <span>{{ cal.monthText }}월 총 소비 금액 : {{ total_price }}</span>
-
-        <h3>{{ cal.yearText }} - {{ cal.monthText }}</h3>
-        <div class="navs">
-          <button @click="prevMonth">이전</button>
-          <button @click="nextMonth">다음</button>
+        <div class="total-price-div">
+          <span>{{ cal.monthText }}월 총 소비 금액 : {{ total_price }} 원</span>
         </div>
       </nav>
-
+      <div class="navs">
+          <button @click="prevMonth" class="option-btn">이전</button>
+          <span class="date-span">{{ cal.yearText }} - {{ cal.monthText }}</span>
+          <button @click="nextMonth" class="option-btn">다음</button>
+      </div>
       <!-- 요일 표시 -->
       <section class="dow">
         <div v-for="day in days" :key="day" class="day">{{ day }}</div>
@@ -199,11 +199,14 @@ onMounted(() => {
 <style scoped>
 * {
   font-family: 'Roboto', sans-serif;
+  font-weight: bold;
 }
 
 .main {
-  height: 657px;
+  height: 100%;
   position: relative;
+  width: 70%;
+  margin: 0 auto;
 }
 
 .calendar {
@@ -216,6 +219,7 @@ onMounted(() => {
 
 .navs {
   display: flex;
+  width: 100%;
   justify-content: space-between;
   margin-bottom: 10px;
 }
@@ -228,6 +232,10 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
+  background-color: #f8faf6;
+  border-radius: 10px;
+  padding-top: 8px;
+  z-index: -1;
 }
 
 .dow .day {
@@ -266,20 +274,20 @@ onMounted(() => {
 }
 
 .today .date {
-  background-color: lightblue;
+  background-color: #c0d8a8;
 }
 
 .sunday .date {
-  color: red;
+  color: rgb(255, 96, 96);
 }
 
 .saturday .date {
-  color: blue;
+  color: rgb(76, 76, 255);
 }
 
 /* 마우스 오버 시 날짜 셀 강조 */
 .cell:hover .date {
-  background-color: rgba(0, 0, 255, 0.1);
+  border: #2E8B57 2px solid;
 }
 
 .post-image img {
@@ -288,10 +296,76 @@ onMounted(() => {
   border-radius: 50%;
 }
 .waterwave-overlay {
-  position: absolute;
-  bottom: 0;
   left: 0;
   width: 100%;
   pointer-events: none;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  position: absolute;
+  z-index: -1;
+}
+
+.option-btn {
+  margin: 20px;
+  padding: 10px 20px;
+  border: 2px solid #2E8B57;
+  background-color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #2E8B57;
+}
+
+.submit-btn {
+  text-align: center;
+  background-color: #2E8B57;
+  color: white;
+  padding: 5px;
+  margin: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: all 0.3s ease;
+}
+
+input[type="number"] {
+  width: 200px;
+  padding: 3px;
+  border: 2px solid #2E8B57;
+  border-radius: 8px;
+  font-size: 1em;
+}
+
+.nav-container {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+/* 총 소비 금액 스타일 */
+.total-price-div {
+  font-size: 1rem;
+  /* font-weight: bold; */
+}
+
+form > span {
+  /* font-weight: bold; */
+  font-size: 1.1rem;
+}
+
+.budget-form {
+  margin-right: 30px;
+}
+
+.date-span {
+  font-size: 2rem;
+  /* font-weight: bold; */
 }
 </style>
