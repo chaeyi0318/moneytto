@@ -1,6 +1,9 @@
 <template>
   <div id="app">
     <div class="chat-container">
+      <div class="close-button">
+        <button @click="goToFortuneView">X</button>
+      </div>
       <div class="chat-box" ref="chatBox">
         <div v-for="(message, index) in messages" :key="index" :class="['message', message.sender]">
           <p>{{ message.text }}</p>
@@ -17,11 +20,18 @@
 <script setup>
 import axios from "axios";
 import { ref, watch, nextTick, onMounted } from "vue";
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useAccountStore } from "@/stores/accountStore";
+import api from "@/stores/api";
 
-const route = useRoute()
+
+const route = useRoute();
+const router = useRouter();
 const botType = ref(route.params.type);
+
+const goToFortuneView = () => {
+  router.push({name: 'FortuneView'});
+};
 
 const accountStore = useAccountStore();
 const user = ref(null)
@@ -43,23 +53,6 @@ const getUserProfile = async () => {
     });
   }
 };
-
-const props = defineProps({
-  amount: {
-    type: Number,
-    required: true,
-  }
-})
-
-watch(
-  () => props.amount,
-  (newAmount) => {
-    amount.value = newAmount;
-  }
-)   
-
-const amount = ref(props.amount)
-// console.log(amount.value)
 
 // Chat messages array
 const messages = ref([
@@ -146,7 +139,7 @@ const fetchFortune = async () => {
     - 이름: ${user.value.nickname}
     - 생년월일: ${user.value.birth_date}
 
-    위 정보를 바탕으로 오늘의 금전운을 작성해주세요.
+    위 정보를 바탕으로 ${today}의 금전운을 작성해주세요.
   `;
 
   try {
@@ -167,7 +160,7 @@ const fetchFortune = async () => {
 
     const fortune =
       response.data.choices[0].message.content || "금전운 생성에 실패했습니다.";
-    messages.value.push({ sender: "bot", text: `${fortune}` });
+    messages.value.push({ sender: "bot", text: fortune.replace(/([.!])\s+/g, '$1\n') });
     messages.value.push({
       sender: "bot",
       text: "'처음'이라고 입력하면 다시 시작할 수 있어요!",
@@ -201,19 +194,6 @@ const handlePurchaseFlow = async (input) => {
       });
       return;
     }
-    messages.value.push({
-      sender: "bot",
-      text: `가격이 ${state.itemCost}원이라고 하셨네요. 총 예산(원)을 알려주세요!`,
-    });
-  } else if (!state.budget) {
-    state.budget = parseInt(input);
-    if (isNaN(state.budget)) {
-      messages.value.push({
-        sender: "bot",
-        text: "유효한 숫자를 입력해주세요! 총 예산(원)을 다시 입력해주세요.",
-      });
-      return;
-    }
 
     // Call GPT for purchase advice
     const prompt = `
@@ -244,8 +224,9 @@ const handlePurchaseFlow = async (input) => {
 
       5. 주어진 정보:
         - 사용자 이름: ${user.value.nickname}
-        - 이번 달 예산: ${state.budget}원
-        - 현재까지 지출: 50,000원
+        - ${yearMonth} 예산: ${budget.value}
+        - ${today}까지 지출: ${totalPrice.value}
+        - 카테고리별 상세 지출 내역: ${categorySumValue.value}
         - 구매 고려 항목: "${state.itemName}"
         - 항목 가격: ${state.itemCost}원
 
@@ -276,7 +257,7 @@ const handlePurchaseFlow = async (input) => {
 
       const advice =
         response.data.choices[0].message.content || "결정 생성 실패!";
-      messages.value.push({ sender: "bot", text: advice });
+      messages.value.push({ sender: "bot", text: advice.replace(/([.!])\s+/g, '$1\n') });
       messages.value.push({
         sender: "bot",
         text:
@@ -341,15 +322,57 @@ watch(() => messages.value, () => {
 }, { deep: true });
 
 onMounted(async () => {
-  await getUserProfile();
-  if (botType.value === 'salmal') {
-    messages.value.push({
-      sender: "bot",
-      text: "구매를 고민 중인 내역을 입력해주세요.",
-    });
-    state.value = "purchase";
+  try {
+    // fetchPosts를 먼저 실행
+    await fetchPosts(yearMonth);
+
+    // 그 다음 getUserProfile 실행
+    await getUserProfile();
+    
+    if (botType.value === 'salmal') {
+      messages.value.push({
+        sender: "bot",
+        text: "구매를 고민 중인 내역을 입력해주세요.",
+      });
+      state.value = "purchase";
+    }
+  } catch (error) {
+    console.error('Error in onMounted hook:', error);
   }
 });
+
+const currentYear = new Date().getFullYear()
+const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0')
+const yearMonth = `${currentYear}-${currentMonth}`
+const categorySumValue = ref(null)
+const budget = ref(0)
+const totalPrice = ref(0)
+
+const today = new Date()
+// console.log(today)
+
+const fetchPosts = async (yearMonth) => {
+  try {
+    const response = await api.get('/posts/post-list/', { params: { yearMonth } });
+    const categoryData = response.data.category_totals;
+    const postsData = response.data.posts || [];
+    categorySumValue.value = categoryData;
+    if (postsData.length > 0) {
+      budget.value = postsData[0].amount || 0;
+    }
+    totalPrice.value = response.data.total_price || 0;
+
+    // 데이터 로드 후 콘솔 로그 출력
+    // console.log('현재년월', yearMonth);
+    // console.log('카테고리별소비', categorySumValue.value);
+    // console.log('예산', budget.value);
+    // console.log('소비총액', totalPrice.value);
+  } catch (error) {
+    console.error('API 요청 실패:', error);
+    // 에러 처리
+  }
+};
+
 
 </script>
 
@@ -378,6 +401,7 @@ h1 {
 .chat-container {
   display: flex;
   flex-direction: column;
+  position: relative;
   gap: 16px;
   width: 80%;
   background: #F5F9F6;
@@ -404,6 +428,8 @@ h1 {
   border-radius: 12px;
   max-width: 80%;
   overflow-anchor: none;
+  white-space: pre-line;  /* 줄바꿈 허용 */
+  line-height: 1.5;       /* 줄간격 늘리기 */
 }
 
 .message:last-child {
@@ -415,6 +441,7 @@ h1 {
   color: #1B5E20;
   align-self: flex-start;
   position: relative;
+  padding: 16px 20px;    /* 패딩 늘리기 */
 }
 
 .bot::before {
@@ -465,6 +492,39 @@ button {
 
 button:hover {
   background: #1B5E20;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+}
+
+.close-button button {
+  background: #2E8B57;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.close-button button:hover {
+  background: #1B5E20;
+  transform: scale(1.1);
+}
+
+.close-button button:active {
+  transform: scale(0.95);
 }
 
 ::-webkit-scrollbar {

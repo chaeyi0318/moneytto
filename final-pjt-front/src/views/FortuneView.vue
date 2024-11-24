@@ -12,14 +12,28 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAccountStore } from '@/stores/accountStore';
 
 const router = useRouter();
+const accountStore = useAccountStore();
 
-const navigateTo = (type) => {
+onMounted(async () => {
+  await accountStore.fetchUserProfile(); // 페이지 로드 시 사용자 프로필 가져오기
+});
+
+const navigateTo = async (type) => {
   if (confirm('머니또와 상담 시 10P가 소요됩니다. 계속하시겠습니까?')) {
-    if (true) {
-      router.push({ name: 'Bot', params: { type } });
+    await accountStore.fetchUserProfile(); // 최신 사용자 프로필 정보 가져오기
+    // console.log(accountStore.user.point)
+    if (accountStore.user.point >= 10) { // 포인트 확인
+      const success = await accountStore.deductPoints(10); // 포인트 차감 시도
+      if (success) {
+        router.push({ name: 'Bot', params: { type } }); // 성공적으로 차감되면 이동
+      } else {
+        alert('포인트 차감에 실패했습니다. 다시 시도해주세요.');
+      }
     } else {
       alert('포인트가 부족합니다.');
     }
@@ -52,8 +66,8 @@ const navigateTo = (type) => {
 }
 
 .tarot-card {
-  width: 280px;
-  height: 80px;
+  width: 300px;
+  height: 100px;
   position: relative;
   cursor: pointer;
   padding: 4px;

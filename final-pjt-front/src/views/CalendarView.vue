@@ -1,70 +1,61 @@
 <template>
-  <div class="calendar">
-    <!-- 달력 네비게이션 -->
-    <nav>
-      <form @submit.prevent="submitBudget">
-        <span>{{ cal.yearText }} - {{ cal.monthText }} 예산 </span>
-        <input type="number" v-model="amount" placeholder="예산 입력"/>
-        <input type="submit" value="설정">
-      </form>
-      <span>{{ cal.monthText }}월 총 소비 금액 : {{ total_price }}</span>
-      <div v-for="categoryValue in categorySumValue" :key="categoryValue.id">
-        <p>{{ categoryValue.category_name }} : {{ categoryValue.total_price }}
-          <br>
-          비율 : {{ total_price === 0 ? 0  : (Math.round((categoryValue.total_price / total_price) * 100 * 100) / 100).toFixed(2)}}%
-        </p>
-      </div>
+  <nav>
+    <form @submit.prevent="submitBudget">
+      <span>{{ cal.yearText }} - {{ cal.monthText }} 예산 </span>
+      <input type="number" v-model="amount" placeholder="예산 입력" />
+      <input type="submit" value="설정">
+    </form>
+    <span>{{ cal.monthText }}월 총 소비 금액 : {{ total_price }}</span>
 
+    <h3>{{ cal.yearText }} - {{ cal.monthText }}</h3>
+    <div class="navs">
+      <button @click="prevMonth">이전</button>
+      <button @click="nextMonth">다음</button>
+    </div>
+  </nav>
+  <div class="main">
+    <div class="calendar">
+      <!-- 달력 네비게이션 -->
+      <!-- 요일 표시 -->
+      <section class="dow">
+        <div v-for="day in days" :key="day" class="day">{{ day }}</div>
+      </section>
 
-      <h3>{{ cal.yearText }} - {{ cal.monthText }}</h3>
-      <div class="navs">
-        <button @click="prevMonth">이전</button>
-        <button @click="nextMonth">다음</button>
-      </div>
-    </nav>
-
-    <!-- 요일 표시 -->
-    <section class="dow">
-      <div v-for="day in days" :key="day" class="day">{{ day }}</div>
-    </section>
-
-    <!-- 달력 본문 -->
-    <section class="body">
-      <div v-for="week in cal.getWeeks()" :key="week" class="week">
-        <div
-          v-for="date in week.days()"
-          :key="date.ymdText"
-          class="cell"
-          :class="{
+      <!-- 달력 본문 -->
+      <section class="body">
+        <div v-for="week in cal.getWeeks()" :key="week" class="week">
+          <div v-for="date in week.days()" :key="date.ymdText" class="cell" :class="{
             oob: !cal.containsDate(date),
             today: cal.isToday(date),
             sunday: date.weekOffset === 0,
             saturday: date.weekOffset === 6,
-          }"
-        >
-          <!-- 날짜 표시 -->
-          <span class="date" @click.stop="goToNewPost(date)">
-            {{ date.date }}
-          </span>
-          <div v-if="getImageForDate(date)" class="post-image">
-            <img :src="getImageForDate(date)" alt="Post Image" @click.prevent="toggleDetailModal(date)"/>
+          }">
+            <!-- 날짜 표시 -->
+            <span class="date" @click.stop="goToNewPost(date)">
+              {{ date.date }}
+            </span>
+            <div v-if="getImageForDate(date)" class="post-image">
+              <img :src="getImageForDate(date)" alt="Post Image" @click.prevent="toggleDetailModal(date)" />
+            </div>
           </div>
         </div>
+      </section>
+    </div>
+
+    <div class="container">
+      <!-- 항아리 -->
+      <div class="jar">
+        <div class="water" :style="{ height: fillLevel + '%', backgroundColor: overflow ? 'red' : 'lightblue' }"></div>
       </div>
-    </section>
-    <Bot :amount="amount"/>
-    
-    <!-- 모달 컴포넌트 -->
-    <Modal
-      v-if="isModalOpen"
-      :date="selectedDateTitle"
-      @closeModal="toggleDetailModal()"
-    />
+    </div>
   </div>
+  <Waterwave />
+  <!-- 모달 컴포넌트 -->
+  <Modal v-if="isModalOpen" :date="selectedDateTitle" @closeModal="toggleDetailModal()" />
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import { Calendar } from "@/components/calendar/Calendar";
 import Modal from "@/components/calendar/Modal.vue"; // 모달 컴포넌트 가져오기
@@ -72,14 +63,13 @@ import { useCalendarStore } from "@/stores/calendarStore";
 import { useAccountStore } from "@/stores/accountStore";
 import api from "@/stores/api";
 import Bot from "@/components/bot/Bot.vue";
+import Waterwave from "@/components/calendar/Waterwave.vue";
 
 const accountStore = useAccountStore()
 const days = ["일", "월", "화", "수", "목", "금", "토"];
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
 const loginUser = accountStore.user.id
-// console.log(currentMonth, " 월입니다");
-// console.log(currentYear, " 년 입니다.");
 
 let cal = ref(Calendar.fromYm(currentYear, currentMonth));
 const router = useRouter();
@@ -93,20 +83,18 @@ const categorySumValue = ref([])
 
 // 이전 달로 이동
 const prevMonth = () => {
-    cal.value = cal.value.prevMonth();
-    const yearMonth = cal.value.yearText + '-' + cal.value.monthText;
-    // console.log(`${yearMonth}`);
+  cal.value = cal.value.prevMonth()
+  const yearMonth = cal.value.yearText + '-' + cal.value.monthText
 
-    fetchPosts(yearMonth); // API 호출
+  fetchPosts(yearMonth)
 };
 
 // 다음 달로 이동
 const nextMonth = () => {
-    cal.value = cal.value.nextMonth();
-    const yearMonth = cal.value.yearText + '-' + cal.value.monthText
-    // console.log(`다음 달: ${yearMonth}`)
+  cal.value = cal.value.nextMonth()
+  const yearMonth = cal.value.yearText + '-' + cal.value.monthText
 
-    fetchPosts(yearMonth)
+  fetchPosts(yearMonth)
 }
 
 // 모달 상태 및 선택된 날짜 제목 관리
@@ -136,21 +124,17 @@ const goToNewPost = (date) => {
 }
 
 const fetchPosts = (yearMonth) => {
-    api.get('/posts/post-list/', {
-        params: { yearMonth }
-    })
+  api.get('/posts/post-list/', {
+    params: { yearMonth }
+  })
     .then((response) => {
-        // console.log(response.data)
-        const categoryData = response.data.category_totals
-        const postsData = response.data.posts || []
-        // console.log(response.data.category_totals)
+      const categoryData = response.data.category_totals
+      const postsData = response.data.posts || []
 
-        posts.value = postsData
-        categorySumValue.value = categoryData
+      posts.value = postsData
+      categorySumValue.value = categoryData
 
-        // console.log(categorySumValue.value)
-
-        if (postsData.length > 0) {
+      if (postsData.length > 0) {
         calendarOwnerId.value = postsData[0].owner || 0
         amount.value = postsData[0].amount || 0
       } else {
@@ -174,31 +158,23 @@ const baseURL = "http://localhost:8000"
 const getImageForDate = (date) => {
   const formattedDate = `${date.year}-${String(date.month).padStart(2, "0")}-${String(date.date).padStart(2, "0")}`
 
-  // posts 데이터에서 해당 날짜의 게시글 찾기
   const post = posts.value.find(post => post.expenses_date === formattedDate);
 
-  // API 응답의 경로를 그대로 사용
   return post ? `${baseURL}${post.image}` : null;
 }
 
-
-
-
 const submitBudget = async () => {
   try {
-    // console.log("현재 연도:", cal.value.yearText);
-    // console.log("현재 월:", cal.value.monthText);
-    const data= {
+    const data = {
       year: parseInt(cal.value.yearText),
       month: parseInt(cal.value.monthText),
       amount: amount.value,
     }
     const response = await api.post('/accounts/update-budget/', data)
-    
+
     if (response.status === 201 || response.status === 200) {
       alert("예산 저장 성공")
       amount.value = response.data.amount
-      // console.log(response.data)
     } else {
       alert("예산 저장 실패")
     }
@@ -209,15 +185,38 @@ const submitBudget = async () => {
 }
 
 onMounted(() => {
-    const yearMonth = `${cal.value.yearText}-${cal.value.monthText}`
-    fetchPosts(yearMonth)
-    amount
+  const yearMonth = `${cal.value.yearText}-${cal.value.monthText}`
+  fetchPosts(yearMonth)
+  amount
 })
+
+const fillLevel = computed(() => {
+  if (amount.value === 0) return 0; // 예산이 0이면 물 높이를 0으로 설정
+  return Math.min((total_price.value / amount.value) * 100, 100); // 최대 100%
+});
+
+// 물이 넘치는지 여부
+const overflow = computed(() => {
+  return total_price.value > amount.value; // 소비 금액이 예산을 초과하면 true
+});
 
 </script>
 
 <style scoped>
+.main {
+  border: yellow 5px solid;
+  display: flex;
+  /* Flexbox 사용 */
+  justify-content: space-between;
+  /* 두 요소 간 간격 조정 */
+  align-items: flex-start;
+  /* 세로 정렬 */
+  gap: 20px;
+  /* 달력과 항아리 간격 */
+}
+
 .calendar {
+  width: 75%;
   display: flex;
   flex-direction: column;
 }
@@ -294,5 +293,37 @@ onMounted(() => {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+}
+
+.container {
+  width: 25%;
+  height: 100%;
+  border: #000 solid 1px;
+}
+
+.jar {
+  position: relative;
+  width: 200px;
+  height: 300px;
+  border: 2px solid #000;
+  margin: auto;
+  overflow: hidden;
+  /* 물 넘침 방지 */
+}
+
+.water {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  transition: height 0.5s ease, background-color 0.5s ease;
+  /* 부드러운 애니메이션 */
+}
+
+.controls {
+  margin-top: 20px;
+}
+
+.warning {
+  color: red;
 }
 </style>

@@ -130,6 +130,17 @@ export const useAccountStore = defineStore("accountStore", () => {
     }
   };
 
+  const deductPoints = async (amount) => {
+    try {
+      const response = await api.post('/accounts/deduct-points/', { amount });
+      user.value.point = response.data.point; // 차감 후 남은 포인트 업데이트
+      return true;
+    } catch (error) {
+      console.error('포인트 차감 오류:', error.response?.data || error.message);
+      return false;
+    }
+  };
+
   // 스토어 초기화 시 로그인 상태 확인
   checkLoginStatus();
 
@@ -144,5 +155,6 @@ export const useAccountStore = defineStore("accountStore", () => {
     updateAdditionalInfo,
     deleteAccount,
     fetchUserProfile,
+    deductPoints,
   };
 });

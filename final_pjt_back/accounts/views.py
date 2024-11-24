@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render, get_list_or_404, get_object_or_404
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
@@ -12,6 +13,7 @@ from dj_rest_auth.registration.views import RegisterView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import parser_classes
 from rest_framework.parsers import MultiPartParser, FormParser
+
 
 from .serializers import UserSerializer, LoginSerializer, CustomRegisterSerializer, UserAdditionalInfoSerializer, UserUpdateSerializer, UserDeleteSerializer, BudgetSerializer
 from .models import Budget
@@ -187,3 +189,18 @@ def update_budget(request):
     except Exception as e:
         print("Exception occurred:", str(e))  # 에러 메시지 출력
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])  # 로그인된 사용자만 접근 가능
+def deduct_points(request):
+    data = request.data
+    amount = data.get('amount', 10)
+    
+    print(request.user.point)
+    if request.user.point >= amount:
+        request.user.point -= amount
+        request.user.save()
+        return JsonResponse({'points': request.user.point})
+    else:
+        return JsonResponse({'error': 'Insufficient points'}, status=400)
