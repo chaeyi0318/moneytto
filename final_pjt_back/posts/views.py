@@ -54,18 +54,6 @@ def detail_post(request):
         return Response({'msg': '게시글 주인이 아님'})
 
 
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def post_list(request):
-#     year_month = request.query_params.get('yearMonth')
-#     print(year_month)
-#     user_post = Post.objects.filter(user=request.user, expenses_date__startswith=year_month)
-
-#     serializer = CalendarMainSerializer(user_post, many=True)
-
-#     return Response(serializer.data)
-
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def post_list(request):
@@ -201,6 +189,7 @@ def category_list(request):
     categories = Category.objects.all().values('id', 'category_name')  # 필요한 필드만 가져오기
     return JsonResponse(list(categories), safe=False)  # JSON 데이터 반환
 
+
 def is_owner(login_user, post_owner):
     if login_user == post_owner:
         return True
@@ -274,3 +263,27 @@ def graph_data(request):
             })
 
     return JsonResponse(result, safe=False)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_post(request, post_id):
+    print(request.data)
+    try:
+        # 게시글 가져오기
+        post = get_object_or_404(Post, id=post_id)
+
+        # 작성자 확인 (is_owner 함수 활용)
+        if not is_owner(request.user, post.user):
+            return Response({'error': '게시글 작성자만 수정할 수 있습니다.'}, status=status.HTTP_403_FORBIDDEN)
+
+        # 데이터 검증 및 업데이트
+        serializer = PostSerializer(post, data=request.data, partial=True)  # partial=True로 일부 필드만 업데이트 가능
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response({'message': '게시글이 수정되었습니다.', 'data': serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

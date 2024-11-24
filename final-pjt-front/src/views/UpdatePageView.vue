@@ -1,8 +1,8 @@
 <template>
   <div class="post-container">
-    <h1 class="title">게시글 작성</h1>
+    <h1 class="title">게시글 수정</h1>
 
-    <form @submit.prevent="createPost" class="post-form">
+    <form @submit.prevent="updatePost" class="post-form">
       <div class="form-group top-info">
         <div class="info-row">
           <div class="date-wrapper">
@@ -51,7 +51,7 @@
 
       <div class="button-group">
         <button type="button" @click.prevent="cancel" class="cancel-btn">취소</button>
-        <button type="submit" class="submit-btn">저장</button>
+        <button type="submit" class="submit-btn">수정</button>
       </div>
     </form>
   </div>
@@ -59,21 +59,21 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useCalendarStore } from "@/stores/calendarStore";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import api from "@/stores/api";
 
-const router = useRouter();
-const dateStore = useCalendarStore();
+const route = useRoute(); // 현재 라우트 정보 가져오기
+const router = useRouter(); // 라우터 객체
 
-const categories = ref([])
-const expenses_date = ref(dateStore.expenses_date); // expenses_date
-const privacySetting = ref("");
-const category = ref("");
-const price = ref("");
-const content = ref("");
-const imageFile = ref(null);
-const imageUrl = ref("");
+// 폼 데이터 상태 관리
+const categories = ref([]);
+const expenses_date = ref(""); // 소비 날짜
+const privacySetting = ref(""); // 공개 범위
+const category = ref(""); // 카테고리 ID
+const price = ref(""); // 가격
+const content = ref(""); // 내용
+const imageFile = ref(null); // 이미지 파일
+const imageUrl = ref(""); // 이미지 미리보기 URL
 
 // 파일 선택 시 처리
 const onFileChange = (event) => {
@@ -90,55 +90,65 @@ const onFileChange = (event) => {
   }
 };
 
-const createPost = async function () {
-  // 필수 값 체크
-  if (
-    !expenses_date.value ||
-    !category.value ||
-    !price.value ||
-    !content.value
-  ) {
-    console.log("필수 항목이 누락되었습니다.");
+// 라우트에서 전달된 데이터를 초기화
+onMounted(async () => {
+  const query = route.query;
+
+  expenses_date.value = query.expenses_date || "";
+  privacySetting.value = query.privacy_setting || "";
+  category.value = query.category || "";
+  price.value = query.price || "";
+  content.value = query.content || "";
+  imageUrl.value = query.image || "";
+
+  try {
+    const response = await api.get("/posts/categories/");
+    if (response.status === 200) {
+      categories.value = response.data;
+    }
+  } catch (error) {
+    console.error("카테고리 데이터를 가져오는 중 오류 발생:", error);
+  }
+});
+
+// 게시글 수정 요청 보내기
+const updatePost = async () => {
+  if (!expenses_date.value || !category.value || !price.value || !content.value) {
+    alert("필수 항목을 모두 입력해주세요.");
     return;
   }
 
-  const payload = {
-    expenses_date: expenses_date.value, // 소비한 날짜
-    privacy_setting: privacySetting.value, // 공개 범위
-    category: parseInt(category.value), // 카테고리 ID를 정수로 변환
-    price: parseInt(price.value), // 가격을 정수로 변환
-    content: content.value,
-    image: imageFile.value, // 이미지 파일
-  };
+  const formData = new FormData();
+  formData.append("expenses_date", expenses_date.value);
+  formData.append("privacy_setting", privacySetting.value);
+  formData.append("category", category.value);
+  formData.append("price", price.value);
+  formData.append("content", content.value);
 
-  try {
-    console.log("작성된 게시글 데이터: ", payload);
-    await dateStore.submitPost(payload); // 비동기 함수 호출 시 await 추가
-    alert("게시글이 성공적으로 작성 되었습니다.");
-    router.push({ name: "CalendarView" });
-  } catch (error) {
-    console.log("게시글 작성 중 오류 발생: ", error);
+  if (imageFile.value) {
+    formData.append("image", imageFile.value); // 이미지 파일 추가
   }
-};
 
-const cancel = () => {
-  dateStore.clearState();
-  router.push({ name: "CalendarView" });
-};
-
-onMounted(async () => {
   try {
-    const response = await api.get("/posts/categories/"); // Django API 호출
-    if (response.status === 200) { // 상태 코드가 200인지 확인
-      console.log("Fetched categories:", response.data); // 응답 데이터 출력
-      categories.value = response.data; // JSON 데이터를 Vue 데이터에 저장
-    } else {
-      console.error(`Failed to fetch categories: ${response.status}`); // 상태 코드 출력
+    const postId = route.query.id; // 게시글 ID 가져오기
+    const response = await api.put(`/posts/update-post/${postId}/`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    if (response.status === 200) {
+      alert("게시글이 성공적으로 수정되었습니다.");
+      router.push({ name: "CalendarView" }); // 수정 후 캘린더 화면으로 이동
     }
   } catch (error) {
-    console.error("Error fetching categories:", error); // 네트워크 오류 출력
+    console.error("게시글 수정 중 오류 발생:", error);
+    alert("게시글 수정에 실패했습니다. 다시 시도해주세요.");
   }
-});
+};
+
+// 수정 취소 시 캘린더 화면으로 이동
+const cancelUpdate = () => {
+  router.push({ name: "CalendarView" });
+};
 </script>
 
 <style scoped>

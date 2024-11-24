@@ -161,7 +161,7 @@ const updatePost = () => {
 
   // PostPageView로 이동하면서 게시글 데이터를 전달
   router.push({
-    name: "PostPageView", // 라우트 이름
+    name: "UpdatePageView", // 라우트 이름
     query: {
       id: currentPost.value.id, // 게시글 ID
       expenses_date: props.date, // 소비 날짜

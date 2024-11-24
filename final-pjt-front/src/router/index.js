@@ -16,6 +16,7 @@ import PostPageView from "@/views/PostPageView.vue";
 import QuizView from "@/views/QuizView.vue";
 import SavingView from "@/views/SavingView.vue";
 import SignupView from "@/views/SignupView.vue";
+import UpdatePageView from "@/views/UpdatePageView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
@@ -114,6 +115,11 @@ const routes = [
     path: "/quiz",
     name: "Quiz",
     component: QuizView,
+  },
+  {
+    path: "/update-post",
+    name: "UpdatePageView",
+    component: UpdatePageView,
   },
 ];
 
