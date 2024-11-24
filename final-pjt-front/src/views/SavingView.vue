@@ -4,7 +4,7 @@
       <!-- <RouterLink :to="{ name: 'Recommend' }" class="recommend-link">
         <button class="btn btn-primary">적금 추천받기</button>
       </RouterLink> -->
-      <h2 class="main-title text-center">적금 상품 검색</h2>
+      <!-- <h2 class="main-title text-center">적금 상품 검색</h2> -->
     </div>
     <Search @search="performSearch" />
     <div v-if="store.loading" class="loading-message">

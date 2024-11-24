@@ -1,24 +1,4 @@
-﻿<!-- <template>
-  <div class="saving-card">
-    <div class="card-header">
-      <h3 class="product-name">{{ saving.product_name }}</h3>
-      <h5 class="bank-name">{{ saving.bank_name }}</h5>
-    </div>
-    
-    <div class="card-body">
-      <div class="saving-info">
-        <p class="saving-method">{{ saving.saving_method }}</p>
-        <p class="interest-rate">
-          <span class="label">최고우대금리</span>
-          <span class="rate">{{ saving.max_preference_rate }}%</span>
-        </p>
-      </div>
-    </div>
-  </div>
-</template> -->
-
-
-<template>
+﻿<template>
   <div class="saving-card">
     <div class="card-header">
       <h3 class="product-name">{{ saving.product_name }}</h3>

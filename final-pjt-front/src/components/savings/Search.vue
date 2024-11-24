@@ -1,11 +1,18 @@
 ﻿<template>
   <form @submit.prevent="search" class="search-form">
-    <!-- 첫 번째 열: 월 저축 금액, 저축 예정 기간, 총 저축 금액 -->
-    <div class="search-row">
+    <div class="header-row">
+      <h2 class="search-title">적금 상품 검색</h2>
+      <button @click.prevent="goToRecommend" class="recommend-button">
+        ✨ {{ accountStore.user.nickname}}님에게 맞는 상품 추천받기
+      </button>
+    </div>
+
+    <div class="search-content">
+      <!-- 첫 번째 열: 월 저축 금액, 저축 예정 기간, 총 저축 금액 -->
       <div class="search-col">
         <div class="amount-input">
-          <label>월 저축 금액</label>
-          <span class="hint">(최소: 1만원)</span>
+          <label>월 저축 금액<span class="hint">(최소: 1만원)</span></label>
+          <!-- <span class="hint">(최소: 1만원)</span> -->
           <div class="input-wrapper">
             <input v-model="amount" type="number" placeholder="금액 입력" />
             <span class="unit">원</span>
@@ -27,9 +34,9 @@
           </div>
         </div>
 
-        <div v-if="totalAmount > 0" class="total-amount">
+        <div class="total-amount">
           <label>총 저축 금액</label>
-          <div class="amount-display">{{ formatNumber(totalAmount) }}원</div>
+          <div v-if="totalAmount > 0" class="amount-display">{{ formatNumber(totalAmount) }}원</div>
         </div>
       </div>
 
@@ -57,8 +64,7 @@
               v-for="method in interestMethods"
               :key="method.value"
               type="button"
-              :class="
-                ['option-btn', { active: interestCalculationMethod === method.value }]"
+              :class="['option-btn', { active: interestCalculationMethod === method.value }]"
               @click="interestCalculationMethod = method.value"
             >
               {{ method.label }}
@@ -73,8 +79,7 @@
               v-for="type in institutionTypes"
               :key="type.value"
               type="button"
-              :class="
-                ['option-btn', { active: institutionType === type.value }]"
+              :class="['option-btn', { active: institutionType === type.value }]"
               @click="institutionType = type.value"
             >
               {{ type.label }}
@@ -85,17 +90,18 @@
     </div>
 
     <!-- 검색 버튼 -->
-     <div class="search-row">
-       <button @click.prevent="goToRecommend" class="search-button">내게 맞는 상품 추천받기</button>
-       <button type="submit" class="search-button">검색</button>
-     </div>
+    <div class="footer-row">
+      <button type="submit" class="search-button">검색하기</button>
+    </div>
   </form>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
+import { useAccountStore } from "@/stores/accountStore";
 
+const accountStore = useAccountStore()
 const router = useRouter()
 
 const amount = ref("");
@@ -136,7 +142,7 @@ const institutionTypes = [
   { label: "전체", value: "" },
   { label: "은행", value: "은행" },
   { label: "저축은행", value: "저축은행" },
-  { label: "신용협동조합", value: "신용협동조합" },
+  { label: "신협조합", value: "신용협동조합" },
 ];
 
 // 이자계산방식 옵션
@@ -179,47 +185,114 @@ const goToRecommend = function() {
   display: flex;
   flex-direction: column;
   background-color: #f8f9fa;
-  padding: 25px;
-  border-radius: 15px;
+  padding: 30px;
+  border-radius: 20px;
   margin-bottom: 30px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(45, 122, 49, 0.1);
 }
 
-/* 행 스타일 */
-.search-row {
+.header-row {
   display: flex;
-  /* justify-content: center; */
-  /* align-items: center; */
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.search-title {
+  color: #2E8B57;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.recommend-button {
+  background-color: white;
+  color: #2E8B57;
+  border: 2px solid #2E8B57;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.recommend-button:hover {
+  background-color: #1a5235;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.search-content {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 30px;
 }
 
 .search-col {
-  flex-grow: 1;
-  margin: 2px;
-  padding: 1px 25px;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
+  gap: 25px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 input[type="number"] {
-  width: 200px;
-  padding: 10px;
+  width: 100%;
+  padding: 12px;
   border: 2px solid #2E8B57;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 1em;
+  transition: all 0.3s ease;
+}
+
+input[type="number"]:focus {
+  outline: none;
+  border-color: #2E8B57;
+  box-shadow: 0 0 0 3px rgba(45, 122, 49, 0.1);
+}
+
+.unit {
+  position: absolute;
+  right: 12px;
+  color: #2E8B57;
+  font-weight: 500;
+}
+
+.hint {
+  color: #666;
+  font-size: 0.9em;
+  margin-left: 8px;
+}
+
+.period-buttons,
+.option-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .period-btn,
 .option-btn {
-  margin: 2px;
   padding: 10px 20px;
   border: 2px solid #2E8B57;
   background-color: white;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
   color: #2E8B57;
-  flex-grow: 1; /* 버튼이 공간을 최대한 채움 */
+  flex: 1;
+  min-width: 80px;
+  font-weight: 500;
+}
+
+.period-btn:hover,
+.option-btn:hover {
+  background-color: rgba(45, 122, 49, 0.05);
 }
 
 .period-btn.active,
@@ -228,28 +301,81 @@ input[type="number"] {
   color: white;
 }
 
+.footer-row {
+  display: flex;
+  justify-content: center;
+}
+
 .search-button {
-  text-align: center;
   background-color: #2E8B57;
   color: white;
-  padding: 12px 24px;
-  margin: 10px;
+  padding: 16px 40px;
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  width: 60%;
+  border-radius: 12px;
   font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(45, 122, 49, 0.2);
+  width: 200px;
 }
 
 .search-button:hover {
   background-color: #1a5235;
   transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(45, 122, 49, 0.25);
+}
+
+.search-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(45, 122, 49, 0.2);
 }
 
 label {
   color: #2E8B57;
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.total-amount {
+  background-color: white;
+  padding: 15px;
+  border-radius: 10px;
+  border: 2px solid #E8F3E9;
+}
+
+.amount-display {
+  color: #2E8B57;
+  font-size: 1.2em;
+  font-weight: 700;
+  margin-top: 5px;
+}
+
+@media (max-width: 768px) {
+  .search-content {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .header-row {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+
+  .recommend-button {
+    width: 100%;
+  }
+
+  .search-button {
+    width: 100%;
+  }
+
+  .search-title {
+    text-align: center;
+  }
 }
 </style>

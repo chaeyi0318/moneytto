@@ -5,18 +5,21 @@
     </div>
     <h2 class="question-text">{{ quizStore.currentQuiz.question }}</h2>
     <div class="answer-buttons">
-      <button @click="submitAnswer('O')" class="answer-btn o-btn">O</button>
-      <button @click="submitAnswer('X')" class="answer-btn x-btn">X</button>
+      <button @click="submitAnswer('O')" class="answer-btn o-btn" :disabled="answered">O</button>
+      <button @click="submitAnswer('X')" class="answer-btn x-btn" :disabled="answered">X</button>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue';
 import { useQuizStore } from "@/stores/quizStore";
 
+const answered = ref(false);
 const quizStore = useQuizStore();
 
 const submitAnswer = (answer) => {
+  answered.value = true;
   quizStore.submitAnswer(answer);
 };
 </script>
@@ -52,6 +55,13 @@ const submitAnswer = (answer) => {
   display: flex;
   justify-content: center;
   gap: 20px;
+}
+
+.answer-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .answer-btn {

@@ -6,6 +6,7 @@
         v-if="product.product_link"
         :href="product.product_link"
         target="_blank"
+        class="product-link"
       >
         {{ product.product_name }}
       </a>
@@ -23,7 +24,7 @@
     <td>
       <button
         @click="$emit('show-details', product)"
-        class="btn btn-sm btn-success"
+        class="details-button"
       >
         상세보기
       </button>
@@ -43,4 +44,48 @@ const formatNumber = (num) => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+tr {
+  transition: background-color 0.2s ease;
+}
+
+tr:hover {
+  background-color: #f8faf6;
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid #e9ecef;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.product-link {
+  color: #2D7A31;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.product-link:hover {
+  text-decoration: underline;
+}
+
+.details-button {
+  background-color: #2E8B57;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.details-button:hover {
+  background-color: #1a5235;
+}
+
+.details-button:active {
+  transform: translateY(1px);
+}
+</style>

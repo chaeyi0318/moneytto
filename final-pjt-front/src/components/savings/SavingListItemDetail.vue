@@ -9,23 +9,23 @@
           </div>
           <div class="action-buttons">
             <button
-              @click="toggleLike"
-              class="like-button"
-              :class="{ 'is-liked': product.is_liked }"
+            @click="toggleLike"
+            class="like-button"
+            :class="{ 'is-liked': product.is_liked }"
             >
-              <i :class="product.is_liked ? 'bi-star-fill' : 'bi-star'"></i>
-            </button>
-          </div>
+            <i :class="product.is_liked ? 'bi-star-fill' : 'bi-star'"></i>
+          </button>
         </div>
-
-        <div class="modal-body">
-          <div class="detail-info">
+      </div>
+      
+      <div class="modal-body">
+        <div class="detail-info">
+          <p class="text-end">비교공시일: {{ product.comparison_disclosure_date }}</p>
             <p><strong>적립방식:</strong> {{ product.saving_method }}</p>
             <p><strong>세전이자율:</strong> {{ product.pre_tax_interest_rate }}%</p>
             <p><strong>세후이자율:</strong> {{ product.post_tax_interest_rate }}%</p>
             <p><strong>최고우대금리:</strong> {{ product.max_preference_rate }}%</p>
             <p><strong>이자계산방식:</strong> {{ product.interest_calculation_method }}</p>
-            <p><strong>비교공시일:</strong> {{ product.comparison_disclosure_date }}</p>
             <p><strong>담당부서 및 연락처:</strong> {{ product.department_contact }}</p>
             <p><strong>우대조건:</strong> {{ product.preferential_conditions }}</p>
             <p><strong>상세 가입대상:</strong> {{ product.detailed_eligibility }}</p>

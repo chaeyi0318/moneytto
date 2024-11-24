@@ -1,10 +1,6 @@
 <template>
   <div class="quiz-container">
     <h1 class="quiz-title">퀴즈 풀고 포인트 겟 겟!</h1>
-    <!-- <p class="quiz-subtitle">퀴즈 풀고 포인트 겟 겟!</p> -->
-    <!-- <button @click="goToSolvedQuizzes" class="history-button">
-      지난 퀴즈
-    </button> -->
     <hr class="divider" />
     <QuizQuestion v-if="quizStore.currentQuiz" />
     <QuizAnswer v-if="quizStore.isCorrect !== null" />
@@ -37,49 +33,33 @@ onMounted(() => {
 .quiz-container {
   max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 30px;
   text-align: center;
+  background-color: #f8faf6;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(45, 122, 49, 0.1);
 }
 
 .quiz-title {
-  color: #2E8B57;
-  font-size: 2.5em;
-  margin-bottom: 10px;
-}
-
-.quiz-subtitle {
-  color: #666;
-  font-size: 1.2em;
+  color: #2D7A31;
+  font-size: 2.0em;
   margin-bottom: 20px;
-}
-
-.history-button {
-  background-color: #2E8B57;
-  color: white;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 25px;
-  font-size: 1.1em;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.history-button:hover {
-  background-color: #1a5235;
-  transform: translateY(-2px);
+  font-weight: 700;
+  text-shadow: 1px 1px 2px rgba(45, 122, 49, 0.1);
 }
 
 .divider {
   border: none;
-  height: 2px;
-  background-color: #e0e0e0;
+  height: 3px;
+  background: linear-gradient(to right, transparent, #2D7A31, transparent);
   margin: 30px 0;
+  opacity: 0.3;
 }
 
 .loading-message {
-  color: #666;
-  font-size: 1.1em;
-  margin: 20px 0;
+  color: #2D7A31;
+  font-size: 1.2em;
+  margin: 30px 0;
+  font-weight: 500;
 }
 </style>

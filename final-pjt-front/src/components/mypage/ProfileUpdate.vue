@@ -7,13 +7,6 @@
         <div class="form-group">
           <label for="profile_image">프로필 사진</label>
           <div class="image-upload">
-            <input
-              id="profile_image"
-              type="file"
-              @change="onFileChange"
-              accept="image/*"
-              class="file-input"
-            />
             <div v-if="profile.previewImage" class="preview-container">
               <img
                 :src="profile.previewImage"
@@ -21,6 +14,13 @@
                 class="preview-image"
               />
             </div>
+            <input
+              id="profile_image"
+              type="file"
+              @change="onFileChange"
+              accept="image/*"
+              class="file-input"
+            />
           </div>
         </div>
 
@@ -199,18 +199,24 @@ input:focus {
 }
 
 .image-upload {
-  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
 }
 
 .preview-container {
-  margin-top: 15px;
+  margin-bottom: 15px;
   text-align: center;
 }
 
 .preview-image {
-  max-width: 200px;
-  border-radius: 8px;
+  width: 150px; /* 고정된 크기 설정 */
+  height: 150px; /* 고정된 크기 설정 */
+  border-radius: 50%; /* 동그란 모양으로 변경 */
+  object-fit: cover; /* 이미지 비율 유지 */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 3px solid #2E8B57; /* 로고 색상과 동일한 테두리 추가 */
 }
 
 .update-button {
