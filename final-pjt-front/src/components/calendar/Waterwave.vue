@@ -19,9 +19,9 @@ const initWaveAnimation = () => {
   canvas.width = canvas.parentElement.offsetWidth;
   canvas.height = canvas.parentElement.offsetHeight;
 
-  let waveHeight = 20; // 물결 높이
-  let waveLength = 0.02; // 물결 길이
-  let waveSpeed = 0.05; // 물결 속도
+  let waveHeight = 12; // 물결 높이
+  let waveLength = 0.04; // 물결 길이
+  let waveSpeed = 0.03; // 물결 속도
   let offset = 0; // 물결 이동 오프셋
 
   const drawWave = () => {
@@ -72,62 +72,8 @@ onUnmounted(() => {
 }
 
 canvas {
+  width: 100%;
+  height: 100%;
   display: block;
 }
 </style>
-
-<!-- <template>
-  <div class=cup></div>
-</template>
-
-<script setup>
-
-</script>
-
-<style scoped>
-.cup{
-	display: block;
-    position: relative;
-    width: 150px;
-    height: 180px;
-    border: 6px solid #000;
-    border-radius: 15px;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-    box-shadow: 0 0 0 6px, 0 20px 35px rgba(0,0,0,1);
-}
-
-.cup::before{
-    content: '';
-    position: absolute;
-    top: 30px;
-    right: -75px;
-    width: 50px;
-    height: 80px;
-    border: 12px solid #000;
-    border-top-right-radius: 35px;
-    border-bottom-right-radius: 35px;
-}
-
-.cup{
-  background: url(https://image.ibb.co/fmHm66/wave.png);
-  background-position: 0 350px;
-  background-repeat: repeat-x;
-}
-
-.cup{
-    transition: ease-in-out;
-    animation: filling 10s infinite;
-}
-
-@keyframes filling {
-    50% {background-position: 3000px 0;}
-    100% {background-position: 6000px 350px;}
-}
-
-@keyframes test_circle{
-    0%{transform: translateX(-500%) scale(0.3) rotate(0deg);}
-    40%{transform: translateX(0) scale(1) rotate(0deg);}
-    100%{transform: translateX(0) scale(1) rotate(720deg);}
-}
-</style> -->

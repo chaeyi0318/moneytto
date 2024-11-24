@@ -1,21 +1,22 @@
 <template>
-  <nav>
-    <form @submit.prevent="submitBudget">
-      <span>{{ cal.yearText }} - {{ cal.monthText }} 예산 </span>
-      <input type="number" v-model="amount" placeholder="예산 입력" />
-      <input type="submit" value="설정">
-    </form>
-    <span>{{ cal.monthText }}월 총 소비 금액 : {{ total_price }}</span>
-
-    <h3>{{ cal.yearText }} - {{ cal.monthText }}</h3>
-    <div class="navs">
-      <button @click="prevMonth">이전</button>
-      <button @click="nextMonth">다음</button>
-    </div>
-  </nav>
   <div class="main">
+    <!-- 달력 -->
     <div class="calendar">
-      <!-- 달력 네비게이션 -->
+      <nav>
+        <form @submit.prevent="submitBudget">
+          <span>{{ cal.yearText }} - {{ cal.monthText }} 예산 </span>
+          <input type="number" v-model="amount" placeholder="예산 입력" />
+          <input type="submit" value="설정">
+        </form>
+        <span>{{ cal.monthText }}월 총 소비 금액 : {{ total_price }}</span>
+
+        <h3>{{ cal.yearText }} - {{ cal.monthText }}</h3>
+        <div class="navs">
+          <button @click="prevMonth">이전</button>
+          <button @click="nextMonth">다음</button>
+        </div>
+      </nav>
+
       <!-- 요일 표시 -->
       <section class="dow">
         <div v-for="day in days" :key="day" class="day">{{ day }}</div>
@@ -24,34 +25,39 @@
       <!-- 달력 본문 -->
       <section class="body">
         <div v-for="week in cal.getWeeks()" :key="week" class="week">
-          <div v-for="date in week.days()" :key="date.ymdText" class="cell" :class="{
-            oob: !cal.containsDate(date),
-            today: cal.isToday(date),
-            sunday: date.weekOffset === 0,
-            saturday: date.weekOffset === 6,
-          }">
+          <div
+            v-for="date in week.days()"
+            :key="date.ymdText"
+            class="cell"
+            :class="{ 
+              oob: !cal.containsDate(date),
+              today: cal.isToday(date),
+              sunday: date.weekOffset === 0,
+              saturday: date.weekOffset === 6 
+            }"
+          >
             <!-- 날짜 표시 -->
             <span class="date" @click.stop="goToNewPost(date)">
               {{ date.date }}
             </span>
             <div v-if="getImageForDate(date)" class="post-image">
-              <img :src="getImageForDate(date)" alt="Post Image" @click.prevent="toggleDetailModal(date)" />
+              <img
+                :src="getImageForDate(date)"
+                alt="Post Image"
+                @click.prevent="toggleDetailModal(date)"
+              />
             </div>
           </div>
         </div>
       </section>
     </div>
 
-    <div class="container">
-      <!-- 항아리 -->
-      <div class="jar">
-        <div class="water" :style="{ height: fillLevel + '%', backgroundColor: overflow ? 'red' : 'lightblue' }"></div>
-      </div>
-    </div>
+    <!-- 물결 애니메이션 -->
+    <Waterwave class="waterwave-overlay" />
+
+    <!-- 모달 컴포넌트 -->
+    <Modal v-if="isModalOpen" :date="selectedDateTitle" @closeModal="toggleDetailModal()" />
   </div>
-  <Waterwave />
-  <!-- 모달 컴포넌트 -->
-  <Modal v-if="isModalOpen" :date="selectedDateTitle" @closeModal="toggleDetailModal()" />
 </template>
 
 <script setup>
@@ -62,7 +68,6 @@ import Modal from "@/components/calendar/Modal.vue"; // 모달 컴포넌트 가�
 import { useCalendarStore } from "@/stores/calendarStore";
 import { useAccountStore } from "@/stores/accountStore";
 import api from "@/stores/api";
-import Bot from "@/components/bot/Bot.vue";
 import Waterwave from "@/components/calendar/Waterwave.vue";
 
 const accountStore = useAccountStore()
@@ -189,36 +194,24 @@ onMounted(() => {
   fetchPosts(yearMonth)
   amount
 })
-
-const fillLevel = computed(() => {
-  if (amount.value === 0) return 0; // 예산이 0이면 물 높이를 0으로 설정
-  return Math.min((total_price.value / amount.value) * 100, 100); // 최대 100%
-});
-
-// 물이 넘치는지 여부
-const overflow = computed(() => {
-  return total_price.value > amount.value; // 소비 금액이 예산을 초과하면 true
-});
-
 </script>
 
 <style scoped>
+* {
+  font-family: 'Roboto', sans-serif;
+}
+
 .main {
-  border: yellow 5px solid;
-  display: flex;
-  /* Flexbox 사용 */
-  justify-content: space-between;
-  /* 두 요소 간 간격 조정 */
-  align-items: flex-start;
-  /* 세로 정렬 */
-  gap: 20px;
-  /* 달력과 항아리 간격 */
+  height: 657px;
+  position: relative;
 }
 
 .calendar {
-  width: 75%;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .navs {
@@ -294,36 +287,11 @@ const overflow = computed(() => {
   height: 40px;
   border-radius: 50%;
 }
-
-.container {
-  width: 25%;
-  height: 100%;
-  border: #000 solid 1px;
-}
-
-.jar {
-  position: relative;
-  width: 200px;
-  height: 300px;
-  border: 2px solid #000;
-  margin: auto;
-  overflow: hidden;
-  /* 물 넘침 방지 */
-}
-
-.water {
+.waterwave-overlay {
   position: absolute;
   bottom: 0;
+  left: 0;
   width: 100%;
-  transition: height 0.5s ease, background-color 0.5s ease;
-  /* 부드러운 애니메이션 */
-}
-
-.controls {
-  margin-top: 20px;
-}
-
-.warning {
-  color: red;
+  pointer-events: none;
 }
 </style>
