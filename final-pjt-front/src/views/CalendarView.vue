@@ -53,7 +53,7 @@
     </div>
 
     <!-- 물결 애니메이션 -->
-    <Waterwave class="waterwave-overlay" />
+    <Waterwave v-if="amount && total_price" class="waterwave-overlay" :amount="amount" :total_price="total_price" />
 
     <!-- 모달 컴포넌트 -->
     <Modal v-if="isModalOpen" :date="selectedDateTitle" @closeModal="toggleDetailModal()" />
@@ -138,16 +138,15 @@ const fetchPosts = (yearMonth) => {
 
       posts.value = postsData
       categorySumValue.value = categoryData
+      total_price.value = response.data.total_price || 0
+      amount.value = postsData[0].amount || 0
 
       if (postsData.length > 0) {
         calendarOwnerId.value = postsData[0].owner || 0
-        amount.value = postsData[0].amount || 0
       } else {
         calendarOwnerId.value = 0
         amount.value = 0
       }
-
-      total_price.value = response.data.total_price || 0
     })
     .catch((error) => {
       console.error('API 요청 실패:', error)
@@ -192,7 +191,8 @@ const submitBudget = async () => {
 onMounted(() => {
   const yearMonth = `${cal.value.yearText}-${cal.value.monthText}`
   fetchPosts(yearMonth)
-  amount
+  amount,
+  total_price
 })
 </script>
 
