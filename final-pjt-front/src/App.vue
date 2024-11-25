@@ -86,19 +86,21 @@ const goToMain = function () {
 
 <style scoped>
 .nav-container {
-  padding: 15px 30px;
-  background-color: #f5f9f7;
+  padding: 20px 50px;
+  background-color: #f5f9f7; /* 기존 #f5f9f7에서 변경 */
   box-shadow: 0 2px 12px rgba(46, 139, 87, 0.1);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  position: sticky;
+  /* justify-content: space-between; */
+  position: sticky; /* sticky에서 fixed로 변경 */
+  width: 100vw;
   top: 0;
   z-index: 1000;
 }
 
 .logo-section {
-  flex: 0 0 auto;
+  flex: 1; /* 변경: 로고 섹션이 남은 공간의 1을 차지 */
+  margin-left: 20px;
 }
 
 .logo-img {
@@ -123,10 +125,12 @@ const goToMain = function () {
 }
 
 .nav-links {
+  flex: 2; /* 변경: 네비게이션 링크가 남은 공간의 2를 차지 */
   display: flex;
   gap: 20px;
   align-items: center;
-  margin: 0 30px;
+  justify-content: center; /* 추가: 내부 항목들을 중앙 정렬 */
+  margin: 0;
 }
 
 .nav-link {
@@ -172,8 +176,10 @@ const goToMain = function () {
 }
 
 .auth-section {
+  flex: 1; /* 변경: 인증 섹션이 남은 공간의 1을 차지 */
   display: flex;
   align-items: center;
+  justify-content: flex-end; /* 추가: 오른쪽 정렬 */
   gap: 15px;
 }
 
@@ -213,6 +219,7 @@ const goToMain = function () {
 
 .login-btn:hover,
 .signup-btn:hover {
+  color: white;
   background-color: #1a5235;
   transform: translateY(-2px);
 }

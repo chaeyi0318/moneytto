@@ -1,15 +1,7 @@
 <template>
   <div class="main-container">
-    <!-- 텍스트 섹션 -->
-    <!-- <div class="content">
-      <h1 class="line" :class="{ visible: currentLine >= 0 }">
-        소비의 시각화부터 맞춤형 재정 조언까지
-      </h1>
-      <h2 class="line" :class="{ visible: currentLine >= 1 }">
-        당신의 금융 친구, 머니또!
-      </h2>
-    </div> -->
-
+    <div class="background-animation"></div>
+    
     <div v-if="!accountStore.isLogin" class="btn-container">
       <button @click="goToSignup" class="signup-btn">Sign up</button>
     </div>
@@ -47,25 +39,74 @@ const goToSignup = function () {
 .main-container {
   height: 100vh;
   width: 100vw;
-  background-image: url("@/assets/logo.jpg");
-  background-size: cover;
-  background-position: center;
+  background-color: rgb(213, 222, 221);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.background-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("@/assets/logo.jpg");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  animation: bounceBackground 1.2s cubic-bezier(0.36, 0, 0.66, 1.5);
+}
+
+@keyframes bounceBackground {
+  0% {
+    opacity: 0;
+    transform: translateY(100px) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-30px) scale(1.1);
+  }
+  75% {
+    transform: translateY(15px) scale(0.95);
+  }
+  90% {
+    transform: translateY(-5px) scale(1.02);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
 }
 
 .btn-container {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  padding-top: 20%; /* 화면 높이의 1/4 지점으로 이동 */
+  position: absolute;
+  bottom: 28%;
+  left: 50%;
+  transform: translateX(-50%);
+  /* z-index: 2; */
+  opacity: 0; /* 처음에는 투명하게 */
+  animation: fadeIn 0.8s ease-out forwards; /* forwards로 마지막 상태 유지 */
+  animation-delay: 1s; /* 배경 애니메이션(1초) 후에 시작 */
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 20px); /* X축은 중앙 정렬 유지하면서 Y축으로만 이동 */
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 .signup-btn {
   background-color: transparent;
-  color: #2e8b57;
-  border: 3px solid #2e8b57;
+  color: #369456;
+  border: 3px solid #369456;
   padding: 20px 50px;
   border-radius: 25px;
   font-size: 22px;

@@ -7,7 +7,7 @@
       +{{ quizStore.pointsEarned }}P
     </div>
     <div class="explanation">
-      <h3>설명</h3>
+      <h3>해설</h3>
       <p>{{ quizStore.explanation }}</p>
     </div>
     <button @click="nextQuiz" class="next-button">다음 문제</button>
