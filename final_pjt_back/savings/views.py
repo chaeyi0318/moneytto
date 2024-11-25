@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 
 from django.utils import timezone
 from django.shortcuts import render
@@ -19,10 +20,16 @@ from datetime import date
 
 User = get_user_model()
 
+
+class CustomPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+
 @api_view(['GET'])
 def search_savings(request):
     products = SavingProduct.objects.all()
     
+    # 필터링 처리
     amount = request.GET.get('amount')
     period = request.GET.get('period')
     saving_method = request.GET.get('saving_method')
@@ -64,32 +71,35 @@ def search_savings(request):
     else:
         # 정렬 옵션이 지정되지 않았거나 잘못된 경우 최고우대금리 내림차순으로 정렬
         products = products.order_by('-max_preference_rate')
-    
-    if products.exists():
-        result = []
-        for product in products:
-            serialized_product = SavingListSerializer(product).data
+
+    # 페이지네이션 처리
+    paginator = CustomPagination()
+    paginated_products = paginator.paginate_queryset(products, request)  # 페이지네이션 적용
+
+    result = []
+    for product in paginated_products:  # 페이지네이션된 데이터만 순회
+        serialized_product = SavingListSerializer(product).data
+        
+        # 세후 이자 정보 추가
+        if amount and period:
+            saving_interest = SavingInterest.objects.filter(
+                saving=product,
+                amount__amount=amount,
+                period__months=period
+            ).first()
             
-            # 세후 이자 정보 추가
-            if amount and period:
-                saving_interest = SavingInterest.objects.filter(
-                    saving=product,
-                    amount__amount=amount,
-                    period__months=period
-                ).first()
-                
-                if saving_interest and saving_interest.post_tax_interest is not None:
-                    serialized_product['post_tax_interest'] = saving_interest.post_tax_interest
-                else:
-                    serialized_product['post_tax_interest'] = "-"
+            if saving_interest and saving_interest.post_tax_interest is not None:
+                serialized_product['post_tax_interest'] = saving_interest.post_tax_interest
             else:
                 serialized_product['post_tax_interest'] = "-"
-            
-            result.append(serialized_product)
+        else:
+            serialized_product['post_tax_interest'] = "-"
         
-        return Response(result, status=status.HTTP_200_OK)
-    else:
-        return Response({"message": "검색 결과가 없습니다."}, status=status.HTTP_200_OK)
+        result.append(serialized_product)
+
+    # 페이지네이션된 응답 반환
+    return paginator.get_paginated_response(result)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

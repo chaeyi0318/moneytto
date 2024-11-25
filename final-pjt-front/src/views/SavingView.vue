@@ -16,12 +16,18 @@
       :error="store.error"
       :showPostTaxInterest="hasSearched"
     />
+    <!-- 페이지네이션 버튼 -->
+    <div class="pagination" v-if="store.pagination.count > 0">
+      <button type="button" @click.prevent="fetchPreviousPage" :disabled="!store.pagination.previous">이전</button>
+      <span>페이지 {{ currentPage }} / {{ totalPages }}</span>
+      <button type="button" @click.prevent="fetchNextPage" :disabled="!store.pagination.next">다음</button>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { RouterLink } from "vue-router";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useSavingStore } from "@/stores/savingStore";
 import Search from "@/components/savings/Search.vue";
 import SavingList from "@/components/savings/SavingList.vue";
@@ -33,6 +39,24 @@ const hasSearched = ref(false);
 const performSearch = (searchParams) => {
   store.getSavings(searchParams);
   hasSearched.value = true;
+};
+
+const currentPage = computed(() => {
+  const nextUrl = store.pagination.next ? new URL(store.pagination.next) : null;
+  const nextPage = nextUrl ? parseInt(nextUrl.searchParams.get("page")) : null;
+  return nextPage ? nextPage - 1 : 1;
+});
+
+const totalPages = computed(() => {
+  return Math.ceil(store.pagination.count / 10);
+});
+
+const fetchNextPage = () => {
+  store.fetchNextPage();
+};
+
+const fetchPreviousPage = () => {
+  store.fetchPreviousPage();
 };
 
 onMounted(() => {
