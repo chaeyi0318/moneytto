@@ -24,7 +24,7 @@
 
     <div class="auth-section">
       <div v-if="accountStore.isLogin" class="user-info">
-        <LoginUsername />
+        <LoginUsername class="user-name"/>
         <button class="logout-btn" @click="logOut">로그아웃</button>
       </div>
       <div v-else class="login-links">
@@ -169,10 +169,31 @@ const goToMain = function () {
 
 .auth-section {
   display: flex;
+  align-items: center;
   gap: 15px;
 }
 
-.logout-btn,
+.logout-btn {
+  /* background-color: #2e8b57; */
+  color: #2e8b57;
+  border: 2px solid #2e8b57;
+  padding: 3px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.logout-btn:hover {
+  background-color: white;
+}
+
+.user-name {
+  display: inline-block;
+  margin-right: 30px;
+}
+
 .login-btn,
 .signup-btn {
   background-color: #2e8b57;
@@ -185,7 +206,6 @@ const goToMain = function () {
   transition: all 0.3s ease;
 }
 
-.logout-btn:hover,
 .login-btn:hover,
 .signup-btn:hover {
   background-color: #1a5235;

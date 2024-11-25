@@ -41,6 +41,8 @@ const login = async function () {
   // 로그인 성공 시 모달 닫기
   if (accountStore.isLogin) {
     emit("closeModal"); // 부모에게 모달 닫기 이벤트 전달
+  } else {
+    alert('로그인에 실패하였습니다.')
   }
 };
 </script>
