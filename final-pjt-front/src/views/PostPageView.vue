@@ -1,6 +1,6 @@
 <template>
   <div class="post-container">
-    <h1 class="title">게시글 작성</h1>
+    <h1 class="title">소비 기록 작성</h1>
 
     <form @submit.prevent="createPost" class="post-form">
       <div class="form-group top-info">
@@ -10,18 +10,27 @@
             <span class="date-text">{{ expenses_date }}</span>
           </div>
           <div class="privacy-wrapper">
-            <select name="privacy_setting" v-model.trim="privacySetting" id="privacy_setting" class="privacy-select">
-              <option value="">🔒</option>
-              <option value="public" selected>전체공개</option>
+            <select
+              name="privacy_setting"
+              v-model.trim="privacySetting"
+              id="privacy_setting"
+              class="privacy-select"
+            >
+              <option value="public">전체공개</option>
               <option value="subscriber">구독자공개</option>
-              <option value="private">비공개</option>
+              <option value="private">🔒</option>
             </select>
           </div>
         </div>
         <div class="info-row">
           <div class="category-wrapper">
             <span class="label-text">카테고리:</span>
-            <select name="category_id" v-model.trim="category" id="category_id" class="compact-select">
+            <select
+              name="category_id"
+              v-model.trim="category"
+              id="category_id"
+              class="compact-select"
+            >
               <option value="">선택바람</option>
               <option v-for="cat in categories" :key="cat.id" :value="cat.id">
                 {{ cat.category_name }}
@@ -30,14 +39,26 @@
           </div>
           <div class="price-wrapper">
             <span class="label-text">가격:</span>
-            <input type="number" v-model.trim="price" name="price" id="price" class="compact-input" />
+            <input
+              type="number"
+              v-model.trim="price"
+              name="price"
+              id="price"
+              class="compact-input"
+            />
           </div>
         </div>
       </div>
 
       <div class="form-group">
         <label for="image">파일 업로드 :</label>
-        <input type="file" name="image" id="image" @change="onFileChange" class="file-input" />
+        <input
+          type="file"
+          name="image"
+          id="image"
+          @change="onFileChange"
+          class="file-input"
+        />
       </div>
 
       <div v-if="imageUrl" class="image-preview">
@@ -46,11 +67,19 @@
 
       <div class="form-group">
         <label for="content">내용 :</label>
-        <input type="text" v-model.trim="content" name="content" id="content" class="content-input" />
+        <input
+          type="text"
+          v-model.trim="content"
+          name="content"
+          id="content"
+          class="content-input"
+        />
       </div>
 
       <div class="button-group">
-        <button type="button" @click.prevent="cancel" class="cancel-btn">취소</button>
+        <button type="button" @click.prevent="cancel" class="cancel-btn">
+          취소
+        </button>
         <button type="submit" class="submit-btn">저장</button>
       </div>
     </form>
@@ -66,9 +95,9 @@ import api from "@/stores/api";
 const router = useRouter();
 const dateStore = useCalendarStore();
 
-const categories = ref([])
+const categories = ref([]);
 const expenses_date = ref(dateStore.expenses_date); // expenses_date
-const privacySetting = ref("");
+const privacySetting = ref("private");
 const category = ref("");
 const price = ref("");
 const content = ref("");
@@ -117,7 +146,7 @@ const createPost = async function () {
     alert("게시글이 성공적으로 작성 되었습니다.");
     router.push({
       name: "CalendarView",
-      query: { date: expenses_date.value }
+      query: { date: expenses_date.value },
     });
   } catch (error) {
     console.log("게시글 작성 중 오류 발생: ", error);
@@ -132,7 +161,8 @@ const cancel = () => {
 onMounted(async () => {
   try {
     const response = await api.get("/posts/categories/"); // Django API 호출
-    if (response.status === 200) { // 상태 코드가 200인지 확인
+    if (response.status === 200) {
+      // 상태 코드가 200인지 확인
       console.log("Fetched categories:", response.data); // 응답 데이터 출력
       categories.value = response.data; // JSON 데이터를 Vue 데이터에 저장
     } else {
@@ -155,7 +185,7 @@ onMounted(async () => {
 }
 
 .title {
-  color: #2D7A31;
+  color: #2d7a31;
   font-size: 1.8rem;
   text-align: center;
   margin-bottom: 2rem;
@@ -167,7 +197,7 @@ onMounted(async () => {
   padding: 1.2rem;
   border-radius: 12px;
   margin-bottom: 1.2rem;
-  border: 1px solid #E8F3E9;
+  border: 1px solid #e8f3e9;
 }
 
 .top-info {
@@ -186,7 +216,9 @@ onMounted(async () => {
   margin-bottom: 0;
 }
 
-.date-wrapper, .category-wrapper, .price-wrapper {
+.date-wrapper,
+.category-wrapper,
+.price-wrapper {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -194,7 +226,7 @@ onMounted(async () => {
 }
 
 .label-text {
-  color: #2D7A31;
+  color: #2d7a31;
   font-size: 0.9rem;
   font-weight: 600;
   white-space: nowrap;
@@ -212,23 +244,24 @@ onMounted(async () => {
 .privacy-select {
   width: auto;
   padding: 0.3rem 0.5rem;
-  border: 1px solid #E8F3E9;
+  border: 1px solid #e8f3e9;
   border-radius: 6px;
   font-size: 0.9rem;
   cursor: pointer;
 }
 
-.compact-select, .compact-input {
+.compact-select,
+.compact-input {
   flex: 1;
   min-width: 0;
   padding: 0.3rem 0.5rem;
-  border: 1px solid #E8F3E9;
+  border: 1px solid #e8f3e9;
   border-radius: 6px;
   font-size: 0.9rem;
 }
 
 label {
-  color: #2D7A31;
+  color: #2d7a31;
   font-weight: 600;
   display: inline-block;
   width: 120px;
@@ -245,7 +278,7 @@ label {
   width: calc(100% - 150px);
   min-height: 100px;
   padding: 0.8rem;
-  border: 2px solid #E8F3E9;
+  border: 2px solid #e8f3e9;
   border-radius: 8px;
   transition: all 0.3s ease;
 }
@@ -277,7 +310,8 @@ label {
   margin-top: 2rem;
 }
 
-.submit-btn, .cancel-btn {
+.submit-btn,
+.cancel-btn {
   padding: 0.8rem 2rem;
   border-radius: 8px;
   font-weight: 600;
@@ -287,13 +321,13 @@ label {
 }
 
 .submit-btn {
-  background-color: #2D7A31;
+  background-color: #2d7a31;
   color: white;
 }
 
 .cancel-btn {
-  background-color: #E8F3E9;
-  color: #2D7A31;
+  background-color: #e8f3e9;
+  color: #2d7a31;
 }
 
 .submit-btn:hover {
@@ -301,7 +335,7 @@ label {
 }
 
 .cancel-btn:hover {
-  background-color: #D1E6D3;
+  background-color: #d1e6d3;
 }
 
 @media (max-width: 600px) {
@@ -315,11 +349,14 @@ label {
     gap: 0.8rem;
   }
 
-  .date-wrapper, .category-wrapper, .price-wrapper {
+  .date-wrapper,
+  .category-wrapper,
+  .price-wrapper {
     width: 100%;
   }
 
-  .file-input, .content-input {
+  .file-input,
+  .content-input {
     width: 100%;
     margin-top: 0.5rem;
   }
@@ -333,12 +370,14 @@ label {
     flex-direction: column;
   }
 
-  .submit-btn, .cancel-btn {
+  .submit-btn,
+  .cancel-btn {
     width: 100%;
     margin: 0.5rem 0;
   }
 
-  .compact-select, .compact-input {
+  .compact-select,
+  .compact-input {
     max-width: none;
   }
 }

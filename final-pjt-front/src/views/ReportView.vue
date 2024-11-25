@@ -1,14 +1,22 @@
 <template>
   <div class="main">
-    <button class="back-btn" @click.prevent="goToCalendar">달력으로 돌아가기</button>
+    <button class="back-btn" @click.prevent="goToCalendar">
+      달력으로 돌아가기
+    </button>
     <div class="navigation">
-      <i class="prev-btn option-btn bi bi-caret-left" @click.prevent="goToPreviousMonth"></i>
-      <span class="current-month">{{ yearMonth }}월 레포트</span>
-      <i class="next-btn option-btn bi bi-caret-right" @click.prevent="goToNextMonth"></i>
+      <i
+        class="prev-btn option-btn bi bi-caret-left-fill"
+        @click.prevent="goToPreviousMonth"
+      ></i>
+      <span class="month-txt">{{ yearMonth }} 소비 분석</span>
+      <i
+        class="next-btn option-btn bi bi-caret-right-fill"
+        @click.prevent="goToNextMonth"
+      ></i>
     </div>
     <div class="chart-container">
-      <CategoryChart :yearMonth="yearMonth" class="category-chart"/>
-      <BarGraph :yearMonth="yearMonth" class="bar-graph"/>
+      <CategoryChart :yearMonth="yearMonth" class="category-chart" />
+      <BarGraph :yearMonth="yearMonth" class="bar-graph" />
     </div>
   </div>
 </template>
@@ -16,10 +24,10 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import CategoryChart from '@/components/calendar/CategoryChart.vue';
-import BarGraph from '@/components/calendar/BarGraph.vue';
+import CategoryChart from "@/components/calendar/CategoryChart.vue";
+import BarGraph from "@/components/calendar/BarGraph.vue";
 
-const router = useRouter()
+const router = useRouter();
 
 const currentYear = new Date().getFullYear();
 const currentMonth = String(new Date().getMonth() + 1).padStart(2, "0"); // 두 자리 형식으로 변환
@@ -44,55 +52,65 @@ const goToNextMonth = () => {
 };
 
 const goToCalendar = () => {
-  router.push({ name: 'CalendarView'})
-}
+  router.push({ name: "CalendarView" });
+};
 </script>
 
 <style scoped>
-* {
-  font-family: 'Roboto', sans-serif;
-  /* font-weight: bold; */
-}
-
 .main {
   width: 70%;
   border-radius: 15px;
   box-shadow: 0 4px 12px rgba(45, 122, 49, 0.1);
-  margin-top: 80px;
+  margin-top: 50px;
   margin-left: auto;
   margin-right: auto;
-  padding-bottom: 50px;
+  padding: 10px;
 }
 
 .navigation {
   display: flex; /* Flexbox로 자식 요소를 가로 배치 */
   align-items: center; /* 세로 중앙 정렬 */
   justify-content: center; /* 가로 중앙 정렬 */
-  gap: 20px; /* 버튼 간 간격 추가 */
+  max-height: 80px;
+  /* gap: 20px; 버튼 간 간격 추가 */
 }
 
 .back-btn {
-  background-color: #2E8B57;
-  color: white;
-  border: none;
-  padding: 5px 10px; /* 버튼 크기를 줄임 */
-  font-size: 0.85rem; /* 글자 크기를 줄임 */
-  border-radius: 15px; /* 둥근 모서리 유지 */
+  margin: 10px;
+  padding: 8px 16px;
+  border: 1.5px solid #2e8b57;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: #2e8b57;
+  background-color: white;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-left: 30px;
-  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(46, 139, 87, 0.1);
 }
 
 .back-btn:hover {
-  background-color: #1a5235;
-  transform: scale(1.05);
+  background-color: #2e8b57;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(46, 139, 87, 0.2);
+}
+
+.back-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(46, 139, 87, 0.1);
 }
 
 /* 두 그래프를 가로로 나란히 배치하는 컨테이너 */
 .chart-container {
   display: flex; /* Flexbox로 자식 요소를 가로 배치 */
   justify-content: space-between; /* 두 그래프 사이에 여유 공간 추가 */
+  align-items: center;
+  margin-top: 50px;
+  margin-bottom: 100px;
 }
 
 .bar-graph {
@@ -108,13 +126,14 @@ const goToCalendar = () => {
   margin-top: 65px;
 }
 
-span {
+.month-txt {
   display: block; /* span을 block 요소로 변경 */
   text-align: center; /* 텍스트를 가로 중앙 정렬 */
-  font-size: 2rem;
-  /* margin-top: 10px; 위쪽 여백 추가 (선택 사항) */
-  color: #2E8B57;
   font-weight: bold;
+  font-size: 2rem;
+  font-family: "Black Han Sans", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 .option-btn {
@@ -125,7 +144,7 @@ span {
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: bold;
-  font-size: 50px;
-  color: #2E8B57;
+  /* font-size: 50px; */
+  /* color: #2e8b57; */
 }
 </style>
