@@ -12,6 +12,9 @@ export const useAccountStore = defineStore("accountStore", () => {
 
   const isLogin = computed(() => token.value !== null);
 
+  const isLoginModalOpen = ref(false)
+  const redirectAfterLogin = ref(null)
+
   const signup = async function (payload) {
     try {
       const response = await api.post("/accounts/signup/", payload);
@@ -39,6 +42,15 @@ export const useAccountStore = defineStore("accountStore", () => {
       localStorage.setItem("token", token.value);
       localStorage.setItem("user", JSON.stringify(user.value));
       console.log("로그인 성공");
+      isLoginModalOpen.value = false;
+
+      if (redirectAfterLogin.value) {
+        router.push(redirectAfterLogin.value);
+        redirectAfterLogin.value = null; // 리다이렉트 후 초기화
+      } else {
+        router.push({ name: "MainView" }); // 기본적으로 MainView로 이동
+      }
+      
     } catch (error) {
       console.error("로그인 실패:", error.response?.data || error.message);
     }
@@ -142,6 +154,10 @@ export const useAccountStore = defineStore("accountStore", () => {
     }
   };
 
+  const setLoginModalOpen = (status) => {
+    isLoginModalOpen.value = status
+  }
+
   // 스토어 초기화 시 로그인 상태 확인
   checkLoginStatus();
 
@@ -157,5 +173,7 @@ export const useAccountStore = defineStore("accountStore", () => {
     deleteAccount,
     fetchUserProfile,
     deductPoints,
+    isLoginModalOpen,
+    setLoginModalOpen
   };
 });

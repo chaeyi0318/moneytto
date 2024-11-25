@@ -40,7 +40,7 @@
 
   <RouterView />
 
-  <div v-if="isLoginModalOpen" class="modal-overlay" @click="toggleLoginModal">
+  <div v-if="accountStore.isLoginModalOpen" class="modal-overlay" @click="toggleLoginModal">
     <div class="modal-content" @click.stop>
       <button class="close-icon" @click="toggleLoginModal">×</button>
       <Login @closeModal="toggleLoginModal" />
@@ -65,8 +65,11 @@ const isLoginModalOpen = ref(false);
 
 // 로그인 모달 열기/닫기 함수
 const toggleLoginModal = () => {
-  isLoginModalOpen.value = !isLoginModalOpen.value; // 모달 상태 토글
+  accountStore.setLoginModalOpen(!accountStore.isLoginModalOpen) // 모달 상태 토글
 };
+// const toggleLoginModal = () => {
+//   isLoginModalOpen.value = !isLoginModalOpen.value; // 모달 상태 토글
+// };
 
 const logOut = () => {
   accountStore.logOut(); // Pinia 스토어의 logOut 함수 호출

@@ -134,17 +134,44 @@ const router = createRouter({
   routes,
 });
 
+// router.beforeEach((to, from, next) => {
+//   const accountStore = useAccountStore();
+
+//   if (to.matched.some((record) => record.meta.requiresAuth)) {
+//     if (!accountStore.isLogin) {
+//       next({ name: "Login", query: { redirect: to.fullPath } });
+//     } else {
+//       next();
+//     }
+//   } else {
+//     next();
+//   }
+// });
 router.beforeEach((to, from, next) => {
   const accountStore = useAccountStore();
+  const isLogin = accountStore.isLogin;
 
+  // 로그인 상태가 아닐 때 허용된 경로
+  const publicPages = ["SignupView", "MainView"];
+
+  if (!isLogin) {
+    // 로그인 상태가 아니고, 접근하려는 페이지가 공개 페이지가 아닌 경우
+    if (!publicPages.includes(to.name)) {
+      accountStore.setLoginModalOpen(true); // 로그인 모달 열기
+      accountStore.redirectAfterLogin = to.fullPath; // 로그인 후 리다이렉트할 경로 저장
+      return;
+    }
+  }
+
+  // 인증이 필요한 페이지 접근 시 로그인 상태 확인
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!accountStore.isLogin) {
-      next({ name: "Login", query: { redirect: to.fullPath } });
+    if (!isLogin) {
+      next({ name: "Login", query: { redirect: to.fullPath } }); // 로그인 페이지로 리다이렉트
     } else {
-      next();
+      next(); // 로그인 상태라면 이동 허용
     }
   } else {
-    next();
+    next(); // 인증이 필요 없는 페이지는 그대로 이동
   }
 });
 export default router;
