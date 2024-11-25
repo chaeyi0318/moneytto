@@ -14,6 +14,7 @@ import MainView from "@/views/MainView.vue";
 import MyPageView from "@/views/MyPageView.vue";
 import PostPageView from "@/views/PostPageView.vue";
 import QuizView from "@/views/QuizView.vue";
+import ReportView from "@/views/ReportView.vue";
 import SavingView from "@/views/SavingView.vue";
 import SignupView from "@/views/SignupView.vue";
 import UpdatePageView from "@/views/UpdatePageView.vue";
@@ -121,6 +122,11 @@ const routes = [
     name: "UpdatePageView",
     component: UpdatePageView,
   },
+  {
+    path: '/report',
+    name: 'ReportView',
+    component: ReportView,
+  }
 ];
 
 const router = createRouter({

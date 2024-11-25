@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>막대그래프</h1>
+    <!-- <span>막대그래프</span> -->
     <BarChart :barGraphData="barGraphData" />
   </div>
 </template>

@@ -1,5 +1,6 @@
 <template>
-    <div class="outer-container">
+  <div class="outer-container">
+      <!-- <span>00월 카테고리별 소비 분석</span> -->
       <div class="chart-container">
         <apexchart type="pie" :options="chartOptions" :series="series"></apexchart>
       </div>

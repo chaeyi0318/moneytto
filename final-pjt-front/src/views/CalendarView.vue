@@ -3,14 +3,18 @@
     <!-- 달력 -->
     <div class="calendar">
       <nav class="nav-container">
-        <form @submit.prevent="submitBudget" class="budget-form">
+        <!-- <div class="total-price-div">
+          <span>{{ cal.monthText }}월 총 소비 금액 : {{ total_price }} 원</span>
+        </div> -->
+        <div class="report">
+          <button @click.prevent="goToReport">월간 레포트 보기</button>
+        </div>
+        <form v-if="isBudgetFormVisible" @submit.prevent="submitBudget" class="budget-form">
           <span>{{ cal.yearText }} - {{ cal.monthText }} 예산 </span>
           <input type="number" v-model="amount" placeholder="예산 입력" />
           <input type="submit" value="설정" class='submit-btn'>
         </form>
-        <div class="total-price-div">
-          <span>{{ cal.monthText }}월 총 소비 금액 : {{ total_price }} 원</span>
-        </div>
+        <button v-if="!isBudgetFormVisible" @click.prevent="showBudgetForm" class="budget-form-btn">예산설정</button>
       </nav>
       <div class="navs">
           <button @click="prevMonth" class="option-btn">이전</button>
@@ -148,6 +152,7 @@ const fetchPosts = (yearMonth) => {
 
       posts.value = postsData
       categorySumValue.value = categoryData
+      console.log(categorySumValue.value)
       total_price.value = response.data.total_price || 0
       amount.value = postsData[0].amount || 0
 
@@ -187,15 +192,25 @@ const submitBudget = async () => {
     const response = await api.post('/accounts/update-budget/', data)
 
     if (response.status === 201 || response.status === 200) {
-      alert("예산 저장 성공")
       amount.value = response.data.amount
+      alert(amount.value + "원으로 예산을 설정했습니다.")
+      isBudgetFormVisible.value = false;
     } else {
-      alert("예산 저장 실패")
+      alert("예산 저장을 실패했습니다.")
     }
   } catch (error) {
     console.error("오류 : ", error)
     alert("서버와 통신 중 문제가 발생했습니다.")
   }
+}
+
+const goToReport = () => {
+  router.push({ name: 'ReportView' })
+}
+
+const isBudgetFormVisible = ref(false)
+const showBudgetForm = () => {
+  isBudgetFormVisible.value = !isBudgetFormVisible.value
 }
 
 onMounted(() => {
@@ -217,7 +232,7 @@ onMounted(() => {
   height: 100%;
   position: relative;
   width: 70%;
-  margin: 0 auto;
+  margin: 40px auto;
 }
 
 .calendar {
@@ -226,6 +241,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   position: relative;
+  /* box-shadow: 0 4px 12px rgba(45, 122, 49, 0.1); */
 }
 
 .navs {
@@ -352,12 +368,14 @@ input[type="number"] {
 .nav-container {
   background-color: #f8f9fa;
   border-radius: 10px;
+  height: 55px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   gap: 20px;
   margin-top: 10px;
   margin-bottom: 20px;
+  /* box-shadow: 0 4px 12px rgba(45, 122, 49, 0.1); */
 }
 
 /* 총 소비 금액 스타일 */
@@ -378,5 +396,35 @@ form > span {
 .date-span {
   font-size: 2rem;
   /* font-weight: bold; */
+}
+
+.report {
+  margin-left: 20px;
+}
+
+.report button {
+  width: 150px;
+  padding: 3px;
+  border: 2px solid #2E8B57;
+  border-radius: 8px;
+  font-size: 1em;
+  background-color: white;
+  color: #2E8B57;
+}
+
+button:hover {
+  color: white;
+  background-color: #2E8B57;
+}
+
+.budget-form-btn {
+  width: 100px;
+  padding: 3px;
+  border: 2px solid #2E8B57;
+  border-radius: 8px;
+  font-size: 1em;
+  background-color: white;
+  color: #2E8B57;
+  margin-right: 20px;
 }
 </style>
