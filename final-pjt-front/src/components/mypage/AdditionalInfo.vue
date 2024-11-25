@@ -2,8 +2,10 @@
   <div class="additional-info-container">
     <div class="info-card">
       <h2 class="card-title">Welcome to moneytto!</h2>
-      <p class="card-subtitle">맞춤형 금융 서비스 제공을 위해<br>아래 정보를 입력해주세요.</p>
-      
+      <p class="card-subtitle">
+        맞춤형 금융 서비스 제공을 위해<br />아래 정보를 입력해주세요.
+      </p>
+
       <form @submit.prevent="updateAdditionalInfo" class="info-form">
         <div class="form-group">
           <label for="birthDate">생년월일</label>
@@ -12,7 +14,7 @@
             v-model="additionalInfo.birth_date"
             type="date"
             required
-          >
+          />
         </div>
 
         <div class="form-group">
@@ -22,7 +24,7 @@
             v-model.number="additionalInfo.assets"
             type="number"
             required
-          >
+          />
         </div>
 
         <div class="form-group">
@@ -32,15 +34,14 @@
             v-model.number="additionalInfo.income"
             type="number"
             required
-          >
+          />
         </div>
 
-        <button type="submit" class="submit-button">추가 정보 업데이트</button>
+        <button type="submit" class="submit-button">금융 정보 등록하기</button>
       </form>
     </div>
   </div>
 </template>
-
 
 <script setup>
 import { ref, onMounted } from "vue";
@@ -94,7 +95,11 @@ const skipUpdate = () => {
 }
 
 .card-title {
-  color: #2E8B57;
+  font-family: "Noto Sans KR", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  color: #2e8b57;
   text-align: center;
   margin-bottom: 15px;
   font-size: 2em;
@@ -119,7 +124,7 @@ const skipUpdate = () => {
 label {
   display: block;
   margin-bottom: 8px;
-  color: #2E8B57;
+  color: #2e8b57;
   font-weight: 500;
 }
 
@@ -134,13 +139,13 @@ input {
 
 input:focus {
   outline: none;
-  border-color: #2E8B57;
+  border-color: #2e8b57;
 }
 
 .submit-button {
   width: 100%;
   padding: 12px;
-  background-color: #2E8B57;
+  background-color: #2e8b57;
   color: white;
   border: none;
   border-radius: 8px;
@@ -159,7 +164,7 @@ input:focus {
   .additional-info-container {
     margin: 20px auto;
   }
-  
+
   .info-card {
     padding: 20px;
   }

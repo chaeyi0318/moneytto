@@ -1,12 +1,25 @@
 <template>
   <nav class="nav-container">
+    <div class="logo-section">
+      <a class="logo-text" @click="goToMain">moneytto</a>
+      <!-- <img src="@/assets/logo.jpg" alt="Moneyto Logo" class="logo-img" /> -->
+    </div>
+
     <div class="nav-links">
-      <RouterLink class="nav-link" :to="{ name: 'MainView' }">홈</RouterLink>
-      <RouterLink class="nav-link" :to="{ name: 'CalendarView' }">머니캘린더</RouterLink>
-      <RouterLink class="nav-link" :to="{ name: 'SavingView' }">적금</RouterLink>
-      <RouterLink class="nav-link" :to="{ name: 'FortuneView' }">운세</RouterLink>
-      <RouterLink class="nav-link" :to="{ name: 'QuizView' }">퀴즈</RouterLink>
-      <RouterLink class="nav-link" :to="{ name: 'profile' }">마이페이지</RouterLink>
+      <RouterLink class="nav-link" :to="{ name: 'MainView' }">Home</RouterLink>
+      <RouterLink class="nav-link" :to="{ name: 'CalendarView' }"
+        >Money Calendar</RouterLink
+      >
+      <RouterLink class="nav-link" :to="{ name: 'SavingView' }"
+        >Savings</RouterLink
+      >
+      <RouterLink class="nav-link" :to="{ name: 'FortuneView' }"
+        >Fortune</RouterLink
+      >
+      <RouterLink class="nav-link" :to="{ name: 'QuizView' }">Quiz</RouterLink>
+      <RouterLink class="nav-link" :to="{ name: 'profile' }"
+        >My Page</RouterLink
+      >
     </div>
 
     <div class="auth-section">
@@ -15,8 +28,12 @@
         <button class="logout-btn" @click="logOut">로그아웃</button>
       </div>
       <div v-else class="login-links">
-        <RouterLink class="nav-link" :to="{ name: 'SignupView' }">회원가입</RouterLink>
-        <a href="#" class="nav-link" @click.prevent="toggleLoginModal">로그인</a>
+        <!-- <RouterLink class="nav-link signup-btn" :to="{ name: 'SignupView' }"
+          >회원가입</RouterLink
+        > -->
+        <a href="#" class="nav-link login-btn" @click.prevent="toggleLoginModal"
+          >로그인</a
+        >
       </div>
     </div>
   </nav>
@@ -25,7 +42,7 @@
 
   <div v-if="isLoginModalOpen" class="modal-overlay" @click="toggleLoginModal">
     <div class="modal-content" @click.stop>
-      <button class="close-icon" @click="toggleLoginModal">×</button> <!-- X 아이콘 추가 -->
+      <button class="close-icon" @click="toggleLoginModal">×</button>
       <Login @closeModal="toggleLoginModal" />
     </div>
   </div>
@@ -37,9 +54,11 @@ import { RouterLink, RouterView } from "vue-router";
 import { useAccountStore } from "@/stores/accountStore";
 import Login from "@/components/accounts/Login.vue";
 import LoginUsername from "@/components/accounts/LoginUsername.vue";
+import { useRouter } from "vue-router";
 
 // Pinia 스토어 인스턴스 가져오기
 const accountStore = useAccountStore();
+const router = useRouter();
 
 // 로그인 모달 상태 관리
 const isLoginModalOpen = ref(false);
@@ -52,90 +71,122 @@ const toggleLoginModal = () => {
 const logOut = () => {
   accountStore.logOut(); // Pinia 스토어의 logOut 함수 호출
 };
+
+const goToMain = function () {
+  router.push({ name: "MainView" });
+};
 </script>
 
 <style scoped>
-body {
-  font-family: 'Roboto', sans-serif;
-}
-
 .nav-container {
-  padding: 20px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px 30px;
+  background-color: #f5f9f7;
+  box-shadow: 0 2px 12px rgba(46, 139, 87, 0.1);
   display: flex;
   align-items: center;
-  justify-content: center; /* 중앙 정렬 */
-  flex-wrap: wrap;
-  gap: 10px;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo-section {
+  flex: 0 0 auto;
+}
+
+.logo-img {
+  height: 40px;
+  transition: transform 0.3s ease;
+}
+
+.logo-img:hover {
+  transform: scale(1.05);
+}
+
+.logo-text {
+  font-family: "Baloo Tamma 2", system-ui;
+  text-decoration: none;
+  cursor: pointer;
+  /* font-family: "Noto Sans", system-ui; */
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: 30px; /* Add this line to set the font size */
+  font-style: normal;
+  color: #1a5235;
 }
 
 .nav-links {
   display: flex;
-  gap: 15px;
+  gap: 20px;
   align-items: center;
+  margin: 0 30px;
 }
 
 .nav-link {
-  color: #2E8B57;
+  color: #2e8b57;
   text-decoration: none;
-  padding: 8px 12px;
-  border-radius: 20px;
+  padding: 10px 20px;
+  border-radius: 25px;
   transition: all 0.3s ease;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 0.95rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-link::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background-color: #2e8b57;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::before {
+  width: 80%;
 }
 
 .nav-link:hover {
-  background-color: #2E8B57;
+  background-color: #e8f5e9;
+  color: #1a5235;
+}
+
+.router-link-active {
+  background-color: #2e8b57;
   color: white;
+}
+
+.router-link-active::before {
+  display: none;
 }
 
 .auth-section {
   display: flex;
-  align-items: center;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.login-links {
-  display: flex;
   gap: 15px;
-  align-items: center;
 }
 
-.logout-btn {
-  background-color: #2E8B57;
+.logout-btn,
+.login-btn,
+.signup-btn {
+  background-color: #2e8b57;
   color: white;
   border: none;
-  padding: 5px 10px; /* 버튼 크기를 줄임 */
-  font-size: 0.85rem; /* 글자 크기를 줄임 */
-  border-radius: 15px; /* 둥근 모서리 유지 */
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.logout-btn:hover {
-  background-color: #1a5235;
-  transform: scale(1.05);
-}
-
-.close-btn {
-  background-color: #2E8B57;
-  color: white;
-  border: none;
-  padding: 8px 16px;
+  padding: 8px 20px;
   border-radius: 20px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.close-btn:hover {
+.logout-btn:hover,
+.login-btn:hover,
+.signup-btn:hover {
   background-color: #1a5235;
-  transform: scale(1.05);
+  transform: translateY(-2px);
 }
 
 .modal-overlay {
@@ -144,62 +195,70 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.6); /* 어두운 배경 */
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
   display: flex;
   justify-content: center;
-  align-items: center; /* 중앙 정렬 */
-}
-
-/* X 아이콘 스타일 */
-.close-icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #2e8b57; /* 로고 색상과 통일 */
-  cursor: pointer;
-}
-
-.close-icon:hover {
-  color: #1a5235; /* 호버 시 색상 변경 */
+  align-items: center;
 }
 
 .modal-content {
-  position: relative; /* 닫기 버튼 위치를 위해 필요 */
-  width: min(90%, 400px); /* 화면 크기에 따라 최대 너비 제한 */
   background-color: white;
-  padding: 30px;
-  border-radius: 15px;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+  width: min(90%, 400px);
+  animation: modalFadeIn 0.3s ease;
 }
 
-.router-link-active {
- background-color: #2E8B57; 
- color:white; 
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@media (max-width:768px) { 
- .nav-container { 
-   flex-direction:column; 
-   text-align:center; 
- } 
- 
- .nav-links { 
-   flex-wrap:wrap; 
-   justify-content:center; 
- } 
- 
- .auth-section { 
-   margin-top :15px; 
-   width :100%; 
-   justify-content:center; 
- } 
- 
- .user-info, .login-links { 
-   flex-direction :column; 
-   gap :10px; 
- } 
+.close-icon {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #2e8b57;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.close-icon:hover {
+  transform: rotate(90deg);
+}
+
+@media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+    padding: 15px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 15px 0;
+  }
+
+  .nav-link {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+
+  .auth-section {
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style>

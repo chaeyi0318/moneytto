@@ -3,7 +3,7 @@
     <div class="header-row">
       <h2 class="search-title">적금 상품 검색</h2>
       <button @click.prevent="goToRecommend" class="recommend-button">
-        ✨ {{ accountStore.user.nickname}}님에게 맞는 상품 추천받기
+        ✨ {{ accountStore.user.nickname }}님에게 맞는 상품 추천받기
       </button>
     </div>
 
@@ -36,7 +36,9 @@
 
         <div class="total-amount">
           <label>총 저축 금액</label>
-          <div v-if="totalAmount > 0" class="amount-display">{{ formatNumber(totalAmount) }}원</div>
+          <div v-if="totalAmount > 0" class="amount-display">
+            {{ formatNumber(totalAmount) }}원
+          </div>
         </div>
       </div>
 
@@ -64,7 +66,10 @@
               v-for="method in interestMethods"
               :key="method.value"
               type="button"
-              :class="['option-btn', { active: interestCalculationMethod === method.value }]"
+              :class="[
+                'option-btn',
+                { active: interestCalculationMethod === method.value },
+              ]"
               @click="interestCalculationMethod = method.value"
             >
               {{ method.label }}
@@ -79,7 +84,10 @@
               v-for="type in institutionTypes"
               :key="type.value"
               type="button"
-              :class="['option-btn', { active: institutionType === type.value }]"
+              :class="[
+                'option-btn',
+                { active: institutionType === type.value },
+              ]"
               @click="institutionType = type.value"
             >
               {{ type.label }}
@@ -101,8 +109,8 @@ import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useAccountStore } from "@/stores/accountStore";
 
-const accountStore = useAccountStore()
-const router = useRouter()
+const accountStore = useAccountStore();
+const router = useRouter();
 
 const amount = ref("");
 const period = ref("");
@@ -175,12 +183,19 @@ const search = () => {
   emit("search", searchParams);
 };
 
-const goToRecommend = function() {
-  router.push({name:'Recommend'})
-}
+const goToRecommend = function () {
+  router.push({ name: "Recommend" });
+};
 </script>
 
 <style scoped>
+.noto-sans-kr-savings {
+  font-family: "Noto Sans KR", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+}
+
 .search-form {
   display: flex;
   flex-direction: column;
@@ -199,7 +214,7 @@ const goToRecommend = function() {
 }
 
 .search-title {
-  color: #2E8B57;
+  color: #2e8b57;
   font-size: 1.8rem;
   font-weight: 700;
   margin: 0;
@@ -207,8 +222,8 @@ const goToRecommend = function() {
 
 .recommend-button {
   background-color: white;
-  color: #2E8B57;
-  border: 2px solid #2E8B57;
+  color: #2e8b57;
+  border: 2px solid #2e8b57;
   padding: 12px 24px;
   border-radius: 10px;
   font-weight: 600;
@@ -244,7 +259,7 @@ const goToRecommend = function() {
 input[type="number"] {
   width: 100%;
   padding: 12px;
-  border: 2px solid #2E8B57;
+  border: 2px solid #2e8b57;
   border-radius: 10px;
   font-size: 1em;
   transition: all 0.3s ease;
@@ -252,14 +267,14 @@ input[type="number"] {
 
 input[type="number"]:focus {
   outline: none;
-  border-color: #2E8B57;
+  border-color: #2e8b57;
   box-shadow: 0 0 0 3px rgba(45, 122, 49, 0.1);
 }
 
 .unit {
   position: absolute;
   right: 12px;
-  color: #2E8B57;
+  color: #2e8b57;
   font-weight: 500;
 }
 
@@ -279,12 +294,12 @@ input[type="number"]:focus {
 .period-btn,
 .option-btn {
   padding: 10px 20px;
-  border: 2px solid #2E8B57;
+  border: 2px solid #2e8b57;
   background-color: white;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: #2E8B57;
+  color: #2e8b57;
   flex: 1;
   min-width: 80px;
   font-weight: 500;
@@ -297,7 +312,7 @@ input[type="number"]:focus {
 
 .period-btn.active,
 .option-btn.active {
-  background-color: #2E8B57;
+  background-color: #2e8b57;
   color: white;
 }
 
@@ -307,7 +322,7 @@ input[type="number"]:focus {
 }
 
 .search-button {
-  background-color: #2E8B57;
+  background-color: #2e8b57;
   color: white;
   padding: 16px 40px;
   border: none;
@@ -332,7 +347,7 @@ input[type="number"]:focus {
 }
 
 label {
-  color: #2E8B57;
+  color: #2e8b57;
   font-weight: 600;
   margin-bottom: 8px;
   display: flex;
@@ -344,11 +359,11 @@ label {
   background-color: white;
   padding: 15px;
   border-radius: 10px;
-  border: 2px solid #E8F3E9;
+  border: 2px solid #e8f3e9;
 }
 
 .amount-display {
-  color: #2E8B57;
+  color: #2e8b57;
   font-size: 1.2em;
   font-weight: 700;
   margin-top: 5px;
