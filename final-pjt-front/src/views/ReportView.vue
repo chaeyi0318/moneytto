@@ -2,9 +2,9 @@
   <div class="main">
     <button class="back-btn" @click.prevent="goToCalendar">달력으로 돌아가기</button>
     <div class="navigation">
-      <button class="prev-btn option-btn" @click.prevent="goToPreviousMonth">이전 달</button>
+      <i class="prev-btn option-btn bi bi-caret-left" @click.prevent="goToPreviousMonth"></i>
       <span class="current-month">{{ yearMonth }}월 레포트</span>
-      <button class="next-btn option-btn" @click.prevent="goToNextMonth">다음 달</button>
+      <i class="next-btn option-btn bi bi-caret-right" @click.prevent="goToNextMonth"></i>
     </div>
     <div class="chart-container">
       <CategoryChart :yearMonth="yearMonth" class="category-chart"/>
@@ -120,14 +120,12 @@ span {
 .option-btn {
   margin-top: 50px;
   margin: 50px;
-  /* margin-right: 50px; */
   padding: 3px;
-  border: 2px solid #2E8B57;
-  background-color: white;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: bold;
-  /* color: #2E8B57; */
+  font-size: 50px;
+  color: #2E8B57;
 }
 </style>
