@@ -5,21 +5,32 @@
     </div>
     <h2 class="question-text">{{ quizStore.currentQuiz.question }}</h2>
     <div class="answer-buttons">
-      <button @click="submitAnswer('O')" class="answer-btn o-btn" :disabled="answered">O</button>
-      <button @click="submitAnswer('X')" class="answer-btn x-btn" :disabled="answered">X</button>
+      <button
+        @click="submitAnswer('O')"
+        class="answer-btn o-btn"
+        :disabled="quizStore.answered"
+      >
+        O
+      </button>
+      <button
+        @click="submitAnswer('X')"
+        class="answer-btn x-btn"
+        :disabled="quizStore.answered"
+      >
+        X
+      </button>
     </div>
   </div>
-</template>
+</template>;
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from "vue";
 import { useQuizStore } from "@/stores/quizStore";
 
-const answered = ref(false);
 const quizStore = useQuizStore();
 
 const submitAnswer = (answer) => {
-  answered.value = true;
+  quizStore.answered = true;
   quizStore.submitAnswer(answer);
 };
 </script>
@@ -36,7 +47,7 @@ const submitAnswer = (answer) => {
 
 .points-badge {
   background-color: #f0f8f4;
-  color: #2E8B57;
+  color: #2e8b57;
   padding: 8px 15px;
   border-radius: 20px;
   display: inline-block;
@@ -76,7 +87,7 @@ const submitAnswer = (answer) => {
 }
 
 .o-btn {
-  background-color: #2E8B57;
+  background-color: #2e8b57;
   color: white;
 }
 

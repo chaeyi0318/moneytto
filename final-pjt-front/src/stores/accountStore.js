@@ -93,6 +93,7 @@ export const useAccountStore = defineStore("accountStore", () => {
         },
       });
       user.value = { ...user.value, ...response.data };
+      localStorage.setItem("user", JSON.stringify(user.value)); // 로컬 스토리지 업데이트
       console.log("사용자 정보 업데이트 성공");
     } catch (error) {
       console.error(
@@ -132,11 +133,11 @@ export const useAccountStore = defineStore("accountStore", () => {
 
   const deductPoints = async (amount) => {
     try {
-      const response = await api.post('/accounts/deduct-points/', { amount });
+      const response = await api.post("/accounts/deduct-points/", { amount });
       user.value.point = response.data.point; // 차감 후 남은 포인트 업데이트
       return true;
     } catch (error) {
-      console.error('포인트 차감 오류:', error.response?.data || error.message);
+      console.error("포인트 차감 오류:", error.response?.data || error.message);
       return false;
     }
   };

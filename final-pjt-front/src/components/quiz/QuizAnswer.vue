@@ -1,6 +1,6 @@
 ﻿﻿<template>
   <div class="answer-box">
-    <div class="result-message" :class="{ 'correct': quizStore.isCorrect }">
+    <div class="result-message" :class="{ correct: quizStore.isCorrect }">
       {{ quizStore.isCorrect ? "정답입니다!" : "틀렸습니다." }}
     </div>
     <div v-if="quizStore.pointsEarned > 0" class="points-earned">
@@ -14,17 +14,16 @@
   </div>
 </template>
 
-
 <script setup>
 import { useQuizStore } from "@/stores/quizStore";
 
 const quizStore = useQuizStore();
 
 const nextQuiz = () => {
+  quizStore.answered = false;
   quizStore.fetchRandomQuiz();
 };
 </script>
-
 
 <style scoped>
 .answer-box {
@@ -45,12 +44,12 @@ const nextQuiz = () => {
 }
 
 .result-message.correct {
-  color: #2E8B57;
+  color: #2e8b57;
 }
 
 .points-earned {
   font-size: 2em;
-  color: #2E8B57;
+  color: #2e8b57;
   margin: 20px 0;
   font-weight: bold;
 }
@@ -64,12 +63,12 @@ const nextQuiz = () => {
 }
 
 .explanation h3 {
-  color: #2E8B57;
+  color: #2e8b57;
   margin-bottom: 10px;
 }
 
 .next-button {
-  background-color: #2E8B57;
+  background-color: #2e8b57;
   color: white;
   padding: 12px 30px;
   border: none;

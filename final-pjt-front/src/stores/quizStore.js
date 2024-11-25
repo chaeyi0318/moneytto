@@ -12,6 +12,7 @@ export const useQuizStore = defineStore("quiz", () => {
   const explanation = ref("");
   const pointsEarned = ref(0);
   const message = ref("");
+  const answered = ref("false");
 
   async function fetchRandomQuiz() {
     try {
@@ -21,6 +22,7 @@ export const useQuizStore = defineStore("quiz", () => {
       isCorrect.value = null;
       explanation.value = "";
       pointsEarned.value = 0;
+      answered.value = false;
     } catch (error) {
       console.error("퀴즈를 가져오는 중 오류 발생:", error);
       message.value = "퀴즈를 가져오는 중 오류가 발생했습니다.";
