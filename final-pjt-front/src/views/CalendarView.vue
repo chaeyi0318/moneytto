@@ -3,9 +3,6 @@
     <!-- 달력 -->
     <div class="calendar">
       <nav class="nav-container">
-        <!-- <div class="total-price-div">
-          <span>{{ cal.monthText }}월 총 소비 금액 : {{ total_price }} 원</span>
-        </div> -->
         <div class="report">
           <button @click.prevent="goToReport">월간 레포트 보기</button>
         </div>
@@ -78,10 +75,11 @@ import Waterwave from "@/components/calendar/Waterwave.vue";
 const accountStore = useAccountStore()
 const days = ["일", "월", "화", "수", "목", "금", "토"];
 const currentYear = new Date().getFullYear();
-const currentMonth = new Date().getMonth() + 1;
+const currentMonth = String(new Date().getMonth() + 1).padStart(2, "0"); // 두 자리 형식으로 변환
 const loginUser = accountStore.user.id
 
 let cal = ref(Calendar.fromYm(currentYear, currentMonth));
+// console.log(currentYear, currentMonth, '날짜날짜')
 const router = useRouter();
 const route = useRoute();
 
@@ -218,7 +216,9 @@ onMounted(() => {
   cal.value = Calendar.fromYm(parseInt(year), parseInt(month));
   fetchPosts(`${year}-${month}`);
   amount,
-  total_price
+  total_price,
+  currentYear,
+  currentMonth
 })
 </script>
 

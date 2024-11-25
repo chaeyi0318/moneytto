@@ -14,9 +14,19 @@ import BarChart from "@/components/calendar/BarChart.vue";
 const accountStore = useAccountStore()
 const loginUser = accountStore.user.id    // 로그인한 유저id
 
-const currentYear = new Date().getFullYear()
-const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0')
-const date = `${currentYear}-${currentMonth}`
+// const currentYear = new Date().getFullYear()
+// const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0')
+
+const props = defineProps({
+  yearMonth: {
+    type: String,
+    required: true,
+  },
+});
+
+// console.log(props.yearMonth)
+
+const date = ref(`${props.yearMonth}`);
 
 const barGraphData = ref([])
 console.log(barGraphData)
@@ -40,19 +50,22 @@ const graphData = async (date, loginUser) => {
   }
 }
 
-onMounted(() => {
-  const loginUser = ref(accountStore.user?.id)
+watch(
+  () => props.yearMonth,
+  (newYearMonth) => {
+    if (loginUser) {
+      graphData(newYearMonth, loginUser); // 변경된 yearMonth와 loginUser를 전달
+    }
+  },
+  { immediate: true } // 컴포넌트가 마운트될 때도 즉시 실행
+);
 
-  watch(
-    loginUser,
-    (newVal) => {
-      if (newVal) {
-        graphData(date, newVal)
-      }
-    },
-    { immediate: true }
-  )
-})
+// 컴포넌트가 처음 마운트될 때 초기 데이터 가져오기
+onMounted(() => {
+  if (loginUser) {
+    graphData(props.yearMonth, loginUser); // 초기 yearMonth와 loginUser를 전달
+  }
+});
 
 </script>
 
