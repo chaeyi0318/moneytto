@@ -145,7 +145,7 @@ const updatePost = async () => {
 };
 
 // 수정 취소 시 캘린더 화면으로 이동
-const cancelUpdate = () => {
+const cancel = () => {
   router.push({ name: "CalendarView" });
 };
 </script>

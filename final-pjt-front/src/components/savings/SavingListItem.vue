@@ -53,6 +53,12 @@ tr:hover {
   background-color: #f8faf6;
 }
 
+/* 첫 두 열을 제외한 모든 열 가운데 정렬 */
+td:nth-child(n+3),
+th:nth-child(n+3) {
+  text-align: center;
+}
+
 td {
   padding: 12px;
   border-bottom: 1px solid #e9ecef;

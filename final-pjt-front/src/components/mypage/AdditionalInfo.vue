@@ -3,7 +3,8 @@
     <div class="info-card">
       <h2 class="card-title">Welcome to moneytto!</h2>
       <p class="card-subtitle">
-        맞춤형 금융 서비스 제공을 위해<br />아래 정보를 입력해주세요.
+        {{ accountStore.user.nickname }}님, 머니또에 오신 것을 환영합니다!<br />
+        맞춤형 금융 서비스 제공을 위해 아래 정보를 입력해주세요.
       </p>
 
       <form @submit.prevent="updateAdditionalInfo" class="info-form">
@@ -37,7 +38,7 @@
           />
         </div>
 
-        <button type="submit" class="submit-button">금융 정보 등록하기</button>
+        <button type="submit" class="submit-button">저장</button>
       </form>
     </div>
   </div>
@@ -82,7 +83,7 @@ const skipUpdate = () => {
 
 <style scoped>
 .additional-info-container {
-  max-width: 500px;
+  max-width: 600px;
   margin: 40px auto;
   padding: 20px;
 }
@@ -95,14 +96,15 @@ const skipUpdate = () => {
 }
 
 .card-title {
-  font-family: "Noto Sans KR", sans-serif;
+  font-family: "Baloo Tamma 2", system-ui;
+  /* font-family: "Noto Sans", system-ui; */
   font-optical-sizing: auto;
-  font-weight: 700;
+  font-weight: 600;
   font-style: normal;
   color: #2e8b57;
   text-align: center;
-  margin-bottom: 15px;
-  font-size: 2em;
+  margin-bottom: 10px;
+  font-size: 2.5em;
 }
 
 .card-subtitle {

@@ -3,7 +3,19 @@
     <div class="modal-content">
       <header class="modal-header">
         <p class="date-text">{{ formattedDate }}의 소비기록</p>
-        <button class="close-button" @click="closeModal">×</button>
+        <div class="action-dropdown">
+          <button class="dropdown-toggle">
+            <i class="bi bi-three-dots-vertical"></i>
+          </button>
+          <div class="dropdown-menu">
+            <div class="dropdown-item" @click="updatePost">
+              <i class="bi bi-pencil"></i> 수정
+            </div>
+            <div class="dropdown-item delete" @click="deletePost">
+              <i class="bi bi-trash"></i> 삭제
+            </div>
+          </div>
+        </div>
       </header>
       
       <main class="modal-main">
@@ -40,14 +52,6 @@
             <div class="info-row">
               <span class="label">소비내용:</span>
               <span class="value">{{ currentPost.content }}</span>
-            </div>
-            <div class="button-group">
-              <button class="action-button update" @click.prevent="updatePost">
-                <i class="fas fa-edit"></i> 수정
-              </button>
-              <button class="action-button delete" @click.prevent="deletePost">
-                <i class="fas fa-trash"></i> 삭제
-              </button>
             </div>
           </div>
         </div>
@@ -184,6 +188,59 @@ const updatePost = () => {
   --text-light: #666666;
   --white: #FFFFFF;
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.action-dropdown {
+  position: relative; /* absolute에서 relative로 변경 */
+  margin-left: auto; /* 우측 정렬을 위해 추가 */
+}
+
+.dropdown-toggle {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: var(--text-light);
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem;
+  min-width: 120px;
+  z-index: 1000; /* 다른 요소 위에 표시되도록 z-index 추가 */
+  display: none; /* 기본적으로 숨김 */
+}
+
+.action-dropdown:hover .dropdown-menu {
+  display: block; /* 호버 시 표시 */
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  color: var(--text-dark);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: var(--light-green);
+}
+
+.dropdown-item.delete {
+  color: var(--error-red);
+}
+
+.dropdown-item.delete:hover {
+  background-color: rgba(255, 82, 82, 0.1);
 }
 
 .modal-overlay {

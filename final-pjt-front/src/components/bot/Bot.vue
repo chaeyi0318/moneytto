@@ -2,8 +2,10 @@
   <div id="app">
     <div class="chat-container">
       <div class="close-button">
-        <button @click="goToFortuneView">X</button>
-      </div>
+  <button @click="goToFortuneView">
+    <i class="bi bi-x-lg"></i>
+  </button>
+</div>
       <div class="chat-box" ref="chatBox">
         <div v-for="(message, index) in messages" :key="index" :class="['message', message.sender]">
           <p>{{ message.text }}</p>
@@ -391,6 +393,12 @@ const fetchPosts = async (yearMonth) => {
   align-items: center;
 }
 
+.bi-x-lg {
+  font-size: 1.2rem;
+  line-height: 1;
+  color: white;
+}
+
 h1 {
   color: #2E8B57;
   text-align: center;
@@ -498,14 +506,14 @@ button:hover {
   position: absolute;
   top: 10px;
   right: 10px;
-  z-index: 1000;
+  z-index: 500;
 }
 
 .close-button button {
   background: #2E8B57;
-  color: white;
+  color: #2E8B57;
   border: none;
-  border-radius: 50%;
+  border-radius: ;
   width: 32px;
   height: 32px;
   font-size: 18px;

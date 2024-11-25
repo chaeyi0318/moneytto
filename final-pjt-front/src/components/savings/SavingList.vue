@@ -1,4 +1,6 @@
 ﻿<template>
+
+  <p v-if="store.pagination.count > 0" class="text-center">총 {{ store.pagination.count }}건의 검색 결과가 있습니다.</p>
   <div class="savings-table-container">
     <div v-if="error" class="error-message">{{ error }}</div>
     <div v-else-if="products.length > 0">
@@ -86,6 +88,12 @@ const closeDetails = () => {
 </script>
 
 <style scoped>
+/* 첫 두 열을 제외한 모든 열 가운데 정렬 */
+td:nth-child(n+3),
+th:nth-child(n+3) {
+  text-align: center;
+}
+
 .savings-table-container {
   background-color: #f8faf6;
   padding: 20px;

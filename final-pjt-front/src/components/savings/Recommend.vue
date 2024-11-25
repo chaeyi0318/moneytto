@@ -6,7 +6,7 @@
     <div v-else class="recommendations-container">
       <div class="recommendation-section age-based">
         <h3 class="section-title">
-          <span class="user-nickname">{{ userNickname }}</span>님과 비슷한 연령대의 고객님들이 많이 가입한 상품
+          <span class="user-nickname">{{ userNickname }}</span>님과 비슷한 연령대의 고객님들이 선택한 인기 적금 상품
         </h3>
         <div class="card-container">
           <RecommendItem
@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="recommendation-section income-based">
-        <h3 class="section-title">수입 기반 추천 상품</h3>
+        <h3 class="section-title"><span class="user-nickname">{{ userNickname }}</span>님의 월 수입에 적합한 베스트셀러 적금 상품</h3>
         <div class="card-container">
           <RecommendItem
             v-for="saving in savingStore.incomeBasedRecommendations.slice(0, 5)"

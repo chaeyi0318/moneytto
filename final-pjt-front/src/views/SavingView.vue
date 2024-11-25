@@ -1,10 +1,6 @@
 <template>
   <div class="saving-container">
     <div class="header-section">
-      <!-- <RouterLink :to="{ name: 'Recommend' }" class="recommend-link">
-        <button class="btn btn-primary">적금 추천받기</button>
-      </RouterLink> -->
-      <!-- <h2 class="main-title text-center">적금 상품 검색</h2> -->
     </div>
     <Search @search="performSearch" />
     <div v-if="store.loading" class="loading-message">
@@ -18,9 +14,9 @@
     />
     <!-- 페이지네이션 버튼 -->
     <div class="pagination" v-if="store.pagination.count > 0">
-      <button type="button" @click.prevent="fetchPreviousPage" :disabled="!store.pagination.previous">이전</button>
-      <span>페이지 {{ currentPage }} / {{ totalPages }}</span>
-      <button type="button" @click.prevent="fetchNextPage" :disabled="!store.pagination.next">다음</button>
+      <button type="button" @click.prevent="fetchPreviousPage" :disabled="!store.pagination.previous"><</button>
+      <span>{{ currentPage }} / {{ totalPages }}</span>
+      <button type="button" @click.prevent="fetchNextPage" :disabled="!store.pagination.next">></button>
     </div>
   </div>
 </template>
@@ -66,7 +62,7 @@ onMounted(() => {
 
 <style scoped>
 .saving-container {
-  max-width: 1300px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -96,5 +92,38 @@ onMounted(() => {
   padding: 20px;
   color: #2E8B57;
   font-size: 1.2em;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background-color: #2E8B57;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin: 0 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 50%;
+  outline: none;
+}
+
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: default;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #1a5235;
+}
+
+.pagination span {
+  font-size: 1.2em;
+  color: #2E8B57;
 }
 </style>
