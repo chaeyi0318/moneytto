@@ -21,8 +21,8 @@ def create_dummy_users():
     for i in range(1, 501):
         username = f'user_{i}'
         nickname = f'닉네임_{i}'
-        birth_date = datetime.now() - timedelta(days=random.randint(19*365, 70*365))
-        income = random.randint(0, 10000000)
+        birth_date = datetime.now() - timedelta(days=random.randint(12*365, 70*365))
+        income = random.randint(0, 20000000)
         assets = round(random.uniform(0, 100000000), 2)
         point = random.randint(0, 1000)
         
