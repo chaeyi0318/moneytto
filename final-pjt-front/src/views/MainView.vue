@@ -11,7 +11,7 @@
     </div> -->
 
     <div v-if="!accountStore.isLogin" class="btn-container">
-      <button @click="goToSignup" class="signup-btn">회원가입</button>
+      <button @click="goToSignup" class="signup-btn">Sign up</button>
     </div>
   </div>
 </template>
@@ -65,10 +65,10 @@ const goToSignup = function () {
 .signup-btn {
   background-color: transparent;
   color: #2e8b57;
-  border: 2px solid #2e8b57;
+  border: 3px solid #2e8b57;
   padding: 20px 50px;
   border-radius: 25px;
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
