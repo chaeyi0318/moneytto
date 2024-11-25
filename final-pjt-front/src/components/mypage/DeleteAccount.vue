@@ -51,7 +51,7 @@ const deleteAccount = async () => {
 
 <style scoped>
 .delete-account-container {
-  max-width: 500px;
+  max-width: 600px;
   margin: 40px auto;
   padding: 20px;
 }

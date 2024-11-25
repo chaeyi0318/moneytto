@@ -11,10 +11,9 @@
           </div>
           <div class="privacy-wrapper">
             <select name="privacy_setting" v-model.trim="privacySetting" id="privacy_setting" class="privacy-select">
-              <option value="">🔒</option>
               <option value="public" selected>전체공개</option>
               <option value="subscriber">구독자공개</option>
-              <option value="private">비공개</option>
+              <option value="private">🔒</option>
             </select>
           </div>
         </div>
@@ -68,7 +67,7 @@ const router = useRouter(); // 라우터 객체
 // 폼 데이터 상태 관리
 const categories = ref([]);
 const expenses_date = ref(""); // 소비 날짜
-const privacySetting = ref(""); // 공개 범위
+const privacySetting = ref("private"); // 공개 범위
 const category = ref(""); // 카테고리 ID
 const price = ref(""); // 가격
 const content = ref(""); // 내용

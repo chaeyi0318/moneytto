@@ -1,12 +1,14 @@
 <template>
-  <div class="quiz-container">
-    <h1 class="quiz-title">퀴즈 풀고 포인트 겟 겟!</h1>
-    <hr class="divider" />
-    <QuizQuestion v-if="quizStore.currentQuiz" />
-    <QuizAnswer v-if="quizStore.isCorrect !== null" />
-    <p v-if="!quizStore.currentQuiz" class="loading-message">
-      {{ quizStore.message || "퀴즈를 불러오는 중..." }}
-    </p>
+  <div class="page-wrapper">
+    <div class="quiz-container">
+      <h1 class="quiz-title">퀴즈 풀고 포인트 겟 겟!</h1>
+      <hr class="divider" />
+      <QuizQuestion v-if="quizStore.currentQuiz" />
+      <QuizAnswer v-if="quizStore.isCorrect !== null" />
+      <p v-if="!quizStore.currentQuiz" class="loading-message">
+        {{ quizStore.message || "퀴즈를 불러오는 중..." }}
+      </p>
+    </div>
   </div>
 </template>
 
@@ -30,9 +32,18 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.page-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 100px); /* 헤더/푸터 고려한 높이 조정 */
+  padding: 20px;
+}
+
 .quiz-container {
   max-width: 800px;
-  margin: 0 auto;
+  min-height: 800px;
+  width: 100%;
   padding: 30px;
   text-align: center;
   background-color: #f8faf6;

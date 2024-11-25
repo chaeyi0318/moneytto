@@ -1,40 +1,37 @@
 <template>
   <div class="my-page-container">
-    <!-- 왼쪽 네비게이션 바 -->
     <nav class="sidebar">
-      <h2 class="sidebar-title">마이페이지</h2>
+      
+      <h2 class="sidebar-title">My Page</h2>
       <ul class="sidebar-menu">
         <li>
-          <RouterLink :to="{ name: 'profile' }" class="sidebar-link">
+          <RouterLink :to="{ name: 'profile' }" class="sidebar-link" active-class="active">
+            <i class="fas fa-user"></i>
             내 프로필
           </RouterLink>
         </li>
-        <!-- <li>
-          <RouterLink :to="{ name: 'profile-update' }" class="sidebar-link">
-            회원정보 수정
-          </RouterLink>
-        </li> -->
         <li>
-          <RouterLink :to="{ name: 'LikedSavings' }" class="sidebar-link">
+          <RouterLink :to="{ name: 'LikedSavings' }" class="sidebar-link" active-class="active">
+            <i class="fas fa-heart"></i>
             찜한 적금 모아보기
           </RouterLink>
         </li>
         <li>
-          <RouterLink :to="{ name: 'SolvedQuizzes' }" class="sidebar-link">
+          <RouterLink :to="{ name: 'SolvedQuizzes' }" class="sidebar-link" active-class="active">
+            <i class="fas fa-quiz"></i>
             지난 퀴즈 모아보기
           </RouterLink>
         </li>
-        <li>
-          <RouterLink :to="{ name: 'AdditionalInfo' }" class="sidebar-link">
-            추가 정보 입력(추후 삭제)
+        <!-- <li>
+          <RouterLink :to="{ name: 'AdditionalInfo' }" class="sidebar-link" active-class="active">
+            <i class="fas fa-info-circle"></i>
+            추가 정보 입력
           </RouterLink>
-        </li>
+        </li> -->
       </ul>
     </nav>
 
-    <!-- 오른쪽 콘텐츠 영역 -->
     <div class="main-content">
-    <!-- <Profile /> -->
       <RouterView />
     </div>
   </div>
@@ -45,28 +42,24 @@ import { RouterLink, RouterView } from "vue-router";
 import { useAccountStore } from "@/stores/accountStore";
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
-import Profile from "@/components/mypage/Profile.vue";
 
 const accountStore = useAccountStore();
 const router = useRouter();
 
 onMounted(() => {
   if (!accountStore.isLogin) {
-    // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
     router.push({ name: "Login" });
   }
 });
 </script>
 
 <style scoped>
-/* 전체 컨테이너 */
 .my-page-container {
   display: flex;
   min-height: 100vh;
   background-color: #f9f9f9;
 }
 
-/* 사이드바 스타일 */
 .sidebar {
   width: 250px;
   background-color: #2e8b57;
@@ -75,9 +68,21 @@ onMounted(() => {
   box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
 }
 
+.logo-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.sidebar-logo {
+  width: 120px;
+  height: auto;
+}
+
 .sidebar-title {
   font-size: 1.5rem;
   margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-menu {
@@ -93,15 +98,34 @@ onMounted(() => {
   color: white;
   text-decoration: none;
   font-size: 1rem;
+  display: block;
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.sidebar-link i {
+  margin-right: 10px;
+  width: 20px;
 }
 
 .sidebar-link:hover {
-  text-decoration: underline;
+  background-color: #3e9b67;
+  transform: translateX(5px);
 }
 
-/* 메인 콘텐츠 스타일 */
+.sidebar-link.active {
+  background-color: #3e9b67;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+}
+
 .main-content {
   flex-grow: 1;
   padding: 30px;
+  background-color: white;
+  margin: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 </style>

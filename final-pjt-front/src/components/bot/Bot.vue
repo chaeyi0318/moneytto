@@ -146,7 +146,7 @@ const fetchFortune = async () => {
     const response = await axios.post(
       "/api/chat/completions",
       {
-        model: "llama-3.1-sonar-small-128k-online",
+        model: "llama-3.1-sonar-huge-128k-online",
         messages: [{ role: "user", content: prompt }],
         max_tokens: 1000
       },
@@ -242,7 +242,7 @@ const handlePurchaseFlow = async (input) => {
       const response = await axios.post(
         "/api/chat/completions",
         {
-          model: "llama-3.1-sonar-small-128k-online",
+          model: "llama-3.1-sonar-huge-128k-online",
           messages: [{ role: "user", content: prompt }],
           max_tokens: 1000,
           temperature: 0.7,

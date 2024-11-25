@@ -262,11 +262,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-* {
-  font-family: "Roboto", sans-serif;
-  font-weight: bold;
-}
-
 .main {
   height: 100%;
   position: relative;

@@ -91,7 +91,7 @@ const loadUserProfile = async () => {
 };
 
 const baseURL = "http://localhost:8000";
-const defaultProfile = `${baseURL}/static/profile/default_profile.jpg`;
+const defaultProfile = `${baseURL}/static/profile/default_profile_1.jpeg`;
 
 const getImageUrl = (previewImage) => {
   // API 응답의 경로를 그대로 사용

@@ -95,9 +95,17 @@ const chartOptions = ref({
     },
   },
   tooltip: {
-    y: {
-      formatter: (value) => `₩${value.toLocaleString()}`,
-    },
+    enabled: true,
+    custom: function({ series, seriesIndex, dataPointIndex }) {
+      const categoryName = chartLabels.value[seriesIndex];
+      const value = series[seriesIndex];
+      return `
+        <div class="custom-tooltip">
+          <span>${categoryName}</span><br>
+          ₩${value.toLocaleString()}
+        </div>
+      `;
+    }
   },
   plotOptions: {
     pie: {
