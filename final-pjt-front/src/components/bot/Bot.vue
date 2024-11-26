@@ -2,17 +2,26 @@
   <div id="app">
     <div class="chat-container">
       <div class="close-button">
-  <button @click="goToFortuneView">
-    <i class="bi bi-x-lg"></i>
-  </button>
-</div>
+        <button @click="goToFortuneView">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
       <div class="chat-box" ref="chatBox">
-        <div v-for="(message, index) in messages" :key="index" :class="['message', message.sender]">
+        <div
+          v-for="(message, index) in messages"
+          :key="index"
+          :class="['message', message.sender]"
+        >
           <p>{{ message.text }}</p>
         </div>
       </div>
       <div class="input-box">
-        <input v-model="userInput" type="text" placeholder="메시지를 입력하세요..." @keyup.enter="handleUserInput" />
+        <input
+          v-model="userInput"
+          type="text"
+          placeholder="메시지를 입력하세요..."
+          @keyup.enter="handleUserInput"
+        />
         <button @click="handleUserInput">전송</button>
       </div>
     </div>
@@ -22,21 +31,20 @@
 <script setup>
 import axios from "axios";
 import { ref, watch, nextTick, onMounted } from "vue";
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute, useRouter } from "vue-router";
 import { useAccountStore } from "@/stores/accountStore";
 import api from "@/stores/api";
-
 
 const route = useRoute();
 const router = useRouter();
 const botType = ref(route.params.type);
 
 const goToFortuneView = () => {
-  router.push({name: 'FortuneView'});
+  router.push({ name: "FortuneView" });
 };
 
 const accountStore = useAccountStore();
-const user = ref(null)
+const user = ref(null);
 const birthDate = ref(null);
 // console.log(accountStore.fetchUserProfile());
 
@@ -44,7 +52,7 @@ const getUserProfile = async () => {
   try {
     const userProfile = await accountStore.fetchUserProfile();
     user.value = userProfile;
-    if (botType.value === 'fortune') {
+    if (botType.value === "fortune") {
       await fetchFortune();
     }
   } catch (error) {
@@ -70,7 +78,7 @@ const state = ref(null);
 // Handle user input
 const handleUserInput = async () => {
   if (!userInput.value.trim()) return;
-  
+
   messages.value.push({ sender: "user", text: userInput.value });
   const input = userInput.value.trim();
   userInput.value = "";
@@ -81,12 +89,12 @@ const handleUserInput = async () => {
     return;
   }
 
-  if (botType.value === 'salmal') {
+  if (botType.value === "salmal") {
     handlePurchaseFlow(input);
-  } else if (botType.value === 'fortune') {
+  } else if (botType.value === "fortune") {
     messages.value.push({
       sender: "bot",
-      text: "'처음'이라고 입력하면 다시 시작할 수 있어요!"
+      text: "'처음'이라고 입력하면 다시 시작할 수 있어요!",
     });
   }
 
@@ -95,9 +103,9 @@ const handleUserInput = async () => {
 
 // Fetch dynamic fortune using GPT
 const fetchFortune = async () => {
-  messages.value.push({ 
-    sender: "bot", 
-    text: `${user.value.nickname}님의 생년월일 ${user.value.birth_date}을 바탕으로 운세 분석 중...` 
+  messages.value.push({
+    sender: "bot",
+    text: `${user.value.nickname}님의 생년월일 ${user.value.birth_date}을 바탕으로 운세 분석 중...`,
   });
 
   const prompt = `
@@ -150,19 +158,22 @@ const fetchFortune = async () => {
       {
         model: "llama-3.1-sonar-huge-128k-online",
         messages: [{ role: "user", content: prompt }],
-        max_tokens: 1000
+        max_tokens: 1000,
       },
       {
         headers: {
-              'Authorization': `Bearer ${import.meta.env.VITE_PERPLEXITY_API_KEY}`,
-              'Content-Type': 'application/json'
-            }
+          Authorization: `Bearer ${import.meta.env.VITE_PERPLEXITY_API_KEY}`,
+          "Content-Type": "application/json",
+        },
       }
     );
 
     const fortune =
       response.data.choices[0].message.content || "금전운 생성에 실패했습니다.";
-    messages.value.push({ sender: "bot", text: fortune.replace(/([.!])\s+/g, '$1\n') });
+    messages.value.push({
+      sender: "bot",
+      text: fortune.replace(/([.!])\s+/g, "$1\n"),
+    });
     messages.value.push({
       sender: "bot",
       text: "'처음'이라고 입력하면 다시 시작할 수 있어요!",
@@ -172,8 +183,7 @@ const fetchFortune = async () => {
     console.error("Error fetching fortune:", error);
     messages.value.push({
       sender: "bot",
-      text:
-        "금전운을 가져오는 중 문제가 발생했습니다. 다시 시도해주세요.",
+      text: "금전운을 가져오는 중 문제가 발생했습니다. 다시 시도해주세요.",
     });
     scrollToBottom();
   }
@@ -185,7 +195,7 @@ const handlePurchaseFlow = async (input) => {
     state.itemName = input;
     messages.value.push({
       sender: "bot",
-      text: `구매를 고민 중인 내역이 "${state.itemName}" 맞으신가요? 가격(원)을 입력해주세요!`,
+      text: `구매를 고민 중인 "${state.itemName}"의 가격(원)을 입력해주세요!`,
     });
   } else if (!state.itemCost) {
     state.itemCost = parseInt(input);
@@ -196,6 +206,12 @@ const handlePurchaseFlow = async (input) => {
       });
       return;
     }
+
+    // "분석 중..." 메시지 추가
+    messages.value.push({
+      sender: "bot",
+      text: "분석 중...",
+    });
 
     // Call GPT for purchase advice
     const prompt = `
@@ -251,26 +267,27 @@ const handlePurchaseFlow = async (input) => {
         },
         {
           headers: {
-              'Authorization': `Bearer ${import.meta.env.VITE_PERPLEXITY_API_KEY}`,
-              'Content-Type': 'application/json'
-            }
+            Authorization: `Bearer ${import.meta.env.VITE_PERPLEXITY_API_KEY}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
       const advice =
         response.data.choices[0].message.content || "결정 생성 실패!";
-      messages.value.push({ sender: "bot", text: advice.replace(/([.!])\s+/g, '$1\n') });
       messages.value.push({
         sender: "bot",
-        text:
-          "'처음'이라고 입력하면 다시 시작할 수 있어요!",
+        text: advice.replace(/([.!])\s+/g, "$1\n"),
+      });
+      messages.value.push({
+        sender: "bot",
+        text: "'처음'이라고 입력하면 다시 시작할 수 있어요!",
       });
     } catch (error) {
       console.error("Error fetching purchase advice:", error);
       messages.value.push({
         sender: "bot",
-        text:
-          "구매 결정을 가져오는 중 문제가 발생했습니다. 다시 시도해주세요.",
+        text: "구매 결정을 가져오는 중 문제가 발생했습니다. 다시 시도해주세요.",
       });
     }
   }
@@ -283,23 +300,23 @@ const reset = () => {
   state.itemCost = null;
   state.budget = null;
   messages.value = [];
-  
-  if (botType.value === 'salmal') {
+
+  if (botType.value === "salmal") {
     messages.value.push(
       {
-      sender: "bot",
-      text: "안녕하세요! 저는 당신의 금융 친구 머니또입니다!"
+        sender: "bot",
+        text: "안녕하세요! 저는 당신의 금융 친구 머니또입니다!",
       },
       {
-      sender: "bot",
-      text: "구매를 고민 중인 내역을 입력해주세요."
-      },
-  );
+        sender: "bot",
+        text: "구매를 고민 중인 내역을 입력해주세요.",
+      }
+    );
     state.value = "purchase";
-  } else if (botType.value === 'fortune') {
+  } else if (botType.value === "fortune") {
     messages.value.push({
       sender: "bot",
-      text: "당신의 금융 친구 머니또입니다! 오늘의 금전운을 알려드릴게요."
+      text: "당신의 금융 친구 머니또입니다! 오늘의 금전운을 알려드릴게요.",
     });
     fetchFortune();
   }
@@ -312,16 +329,20 @@ const scrollToBottom = () => {
     if (chatBox.value) {
       chatBox.value.scrollTo({
         top: chatBox.value.scrollHeight,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
   });
 };
 
 // messages가 변경될 때마다 스크롤
-watch(() => messages.value, () => {
-  scrollToBottom();
-}, { deep: true });
+watch(
+  () => messages.value,
+  () => {
+    scrollToBottom();
+  },
+  { deep: true }
+);
 
 onMounted(async () => {
   try {
@@ -330,8 +351,8 @@ onMounted(async () => {
 
     // 그 다음 getUserProfile 실행
     await getUserProfile();
-    
-    if (botType.value === 'salmal') {
+
+    if (botType.value === "salmal") {
       messages.value.push({
         sender: "bot",
         text: "구매를 고민 중인 내역을 입력해주세요.",
@@ -339,23 +360,25 @@ onMounted(async () => {
       state.value = "purchase";
     }
   } catch (error) {
-    console.error('Error in onMounted hook:', error);
+    console.error("Error in onMounted hook:", error);
   }
 });
 
-const currentYear = new Date().getFullYear()
-const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0')
-const yearMonth = `${currentYear}-${currentMonth}`
-const categorySumValue = ref(null)
-const budget = ref(0)
-const totalPrice = ref(0)
+const currentYear = new Date().getFullYear();
+const currentMonth = String(new Date().getMonth() + 1).padStart(2, "0");
+const yearMonth = `${currentYear}-${currentMonth}`;
+const categorySumValue = ref(null);
+const budget = ref(0);
+const totalPrice = ref(0);
 
-const today = new Date()
+const today = new Date();
 // console.log(today)
 
 const fetchPosts = async (yearMonth) => {
   try {
-    const response = await api.get('/posts/post-list/', { params: { yearMonth } });
+    const response = await api.get("/posts/post-list/", {
+      params: { yearMonth },
+    });
     const categoryData = response.data.category_totals;
     const postsData = response.data.posts || [];
     categorySumValue.value = categoryData;
@@ -370,12 +393,10 @@ const fetchPosts = async (yearMonth) => {
     // console.log('예산', budget.value);
     // console.log('소비총액', totalPrice.value);
   } catch (error) {
-    console.error('API 요청 실패:', error);
+    console.error("API 요청 실패:", error);
     // 에러 처리
   }
 };
-
-
 </script>
 
 <style scoped>
@@ -384,7 +405,7 @@ const fetchPosts = async (yearMonth) => {
   min-height: 100vh;
   margin: 0;
   padding: 32px;
-  background-image: url('@/assets/chat_bg.jpg');
+  background-image: url("@/assets/chat_bg.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -400,7 +421,7 @@ const fetchPosts = async (yearMonth) => {
 }
 
 h1 {
-  color: #2E8B57;
+  color: #2e8b57;
   text-align: center;
   font-size: 24px;
   margin-bottom: 24px;
@@ -412,14 +433,14 @@ h1 {
   position: relative;
   gap: 16px;
   width: 80%;
-  background: #F5F9F6;
+  background: #f5f9f6;
   padding: 20px;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(46, 139, 87, 0.1);
 }
 
 .chat-box {
-  border: 2px solid #2E8B57;
+  border: 2px solid #2e8b57;
   border-radius: 12px;
   height: 400px;
   padding: 25px;
@@ -436,8 +457,8 @@ h1 {
   border-radius: 12px;
   max-width: 80%;
   overflow-anchor: none;
-  white-space: pre-line;  /* 줄바꿈 허용 */
-  line-height: 1.5;       /* 줄간격 늘리기 */
+  white-space: pre-line; /* 줄바꿈 허용 */
+  line-height: 1.5; /* 줄간격 늘리기 */
 }
 
 .message:last-child {
@@ -445,15 +466,15 @@ h1 {
 }
 
 .bot {
-  background: #E8F5E9;
-  color: #1B5E20;
+  background: #e8f5e9;
+  color: #1b5e20;
   align-self: flex-start;
   position: relative;
-  padding: 16px 20px;    /* 패딩 늘리기 */
+  padding: 16px 20px; /* 패딩 늘리기 */
 }
 
 .bot::before {
-  content: '🐸';
+  content: "🐸";
   position: absolute;
   left: -24px;
   top: 50%;
@@ -461,7 +482,7 @@ h1 {
 }
 
 .user {
-  background: #2E8B57;
+  background: #2e8b57;
   color: white;
   align-self: flex-end;
 }
@@ -475,7 +496,7 @@ h1 {
 input {
   flex: 1;
   padding: 12px 16px;
-  border: 2px solid #2E8B57;
+  border: 2px solid #2e8b57;
   border-radius: 8px;
   font-size: 14px;
   outline: none;
@@ -483,12 +504,12 @@ input {
 }
 
 input:focus {
-  border-color: #1B5E20;
+  border-color: #1b5e20;
   box-shadow: 0 0 0 2px rgba(46, 139, 87, 0.2);
 }
 
 button {
-  background: #2E8B57;
+  background: #2e8b57;
   color: white;
   border: none;
   border-radius: 8px;
@@ -499,7 +520,7 @@ button {
 }
 
 button:hover {
-  background: #1B5E20;
+  background: #1b5e20;
 }
 
 .close-button {
@@ -510,8 +531,8 @@ button:hover {
 }
 
 .close-button button {
-  background: #2E8B57;
-  color: #2E8B57;
+  background: #2e8b57;
+  color: #2e8b57;
   border: none;
   border-radius: ;
   width: 32px;
@@ -527,7 +548,7 @@ button:hover {
 }
 
 .close-button button:hover {
-  background: #1B5E20;
+  background: #1b5e20;
   transform: scale(1.1);
 }
 
@@ -540,16 +561,16 @@ button:hover {
 }
 
 ::-webkit-scrollbar-track {
-  background: #F5F9F6;
+  background: #f5f9f6;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2E8B57;
+  background: #2e8b57;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #1B5E20;
+  background: #1b5e20;
 }
 </style>
