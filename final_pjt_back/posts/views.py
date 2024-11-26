@@ -22,7 +22,7 @@ User = get_user_model()
 def create_post(request):
     if request.method == 'POST':
         serializer = PostSerializer(data=request.data)
-        print(request.data)
+        # print(request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -96,7 +96,7 @@ def post_list(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_comment(request):
-    print(request.data)
+    # print(request.data)
     
     serializer = CommentSerializer(data=request.data)
 
@@ -268,7 +268,7 @@ def graph_data(request):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_post(request, post_id):
-    print(request.data)
+    # print(request.data)
     try:
         # 게시글 가져오기
         post = get_object_or_404(Post, id=post_id)

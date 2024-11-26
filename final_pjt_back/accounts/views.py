@@ -82,7 +82,7 @@ class UserAdditionalInfoView(generics.UpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         # 디버깅을 위한 수신 데이터 로그
-        print("Received data:", request.data)
+        # print("Received data:", request.data)
         
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
@@ -93,7 +93,7 @@ class UserAdditionalInfoView(generics.UpdateAPIView):
             return Response(serializer.data)
         else:
             # 유효성 검사 오류 출력
-            print("Validation errors:", serializer.errors)
+            # print("Validation errors:", serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
@@ -101,7 +101,7 @@ class UserAdditionalInfoView(generics.UpdateAPIView):
 def add_info(request):
     user = request.user
     serializer = UserAdditionalInfoSerializer(user, data=request.data, partial=True)
-    print("Received data:", request.data)
+    # print("Received data:", request.data)
     if serializer.is_valid(raise_exception=True):
         # print(serializer)
         serializer.save()
@@ -153,7 +153,7 @@ def profile(request, username):
 def update_budget(request):
     try:
         data = request.data
-        print("Received data:", data)
+        # print("Received data:", data)
 
         # 요청 데이터에서 month와 year를 가져옴
         month = data.get('month')
@@ -169,25 +169,25 @@ def update_budget(request):
             # 기존 데이터가 있으면 업데이트
             serializer = BudgetSerializer(budget_instance, data=data, partial=True)
             if serializer.is_valid():
-                print("Serializer is valid for update.")
+                # print("Serializer is valid for update.")
                 serializer.save()  # 기존 인스턴스 업데이트
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
-                print("Serializer errors during update:", serializer.errors)
+                # print("Serializer errors during update:", serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             # 기존 데이터가 없으면 새로 생성
             serializer = BudgetSerializer(data=data)
             if serializer.is_valid():
-                print("Serializer is valid for creation.")
+                # print("Serializer is valid for creation.")
                 serializer.save(user=request.user)  # 새 인스턴스 생성
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
-                print("Serializer errors during creation:", serializer.errors)
+                # print("Serializer errors during creation:", serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     except Exception as e:
-        print("Exception occurred:", str(e))  # 에러 메시지 출력
+        # print("Exception occurred:", str(e))  # 에러 메시지 출력
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
@@ -197,7 +197,7 @@ def deduct_points(request):
     data = request.data
     amount = data.get('amount', 10)
     
-    print(request.user.point)
+    # print(request.user.point)
     if request.user.point >= amount:
         request.user.point -= amount
         request.user.save()
