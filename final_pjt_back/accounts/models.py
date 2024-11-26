@@ -10,7 +10,7 @@ class User(AbstractUser):
     income = models.IntegerField(default=0)                                                 # 월 수입
     created_at = models.DateTimeField(auto_now_add=True)                                    # 가입일
     updated_at = models.DateTimeField(auto_now=True)                                        # 수정일
-    assets = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)             # 보유자산
+    assets = models.IntegerField(default=0)             # 보유자산
     point = models.IntegerField(default=0)                                                  # 포인트
 
 

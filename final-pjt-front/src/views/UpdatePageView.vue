@@ -127,7 +127,6 @@ const onFileChange = (event) => {
 // 라우트에서 전달된 데이터를 초기화
 onMounted(async () => {
   const query = route.query;
-  console.log(route.query);
   expenses_date.value = query.expenses_date || "";
   privacySetting.value = query.privacy_setting || "";
   // categoryName.value = query.category_name || "";
@@ -180,7 +179,15 @@ const updatePost = async () => {
 
     if (response.status === 200) {
       alert("게시글이 성공적으로 수정되었습니다.");
-      router.push({ name: "CalendarView" }); // 수정 후 캘린더 화면으로 이동
+      // router.push({ name: "PostPageView", params: { id: postId } });
+      // 게시글 모달로 이동
+      router.push({
+        name: 'CalendarView',
+        query: {
+          openModal: true,
+          date: expenses_date.value
+        }
+      })
     }
   } catch (error) {
     console.error("게시글 수정 중 오류 발생:", error);

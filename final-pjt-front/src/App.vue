@@ -157,15 +157,6 @@ const goToMain = function () {
   transition: width 0.3s ease;
 }
 
-.nav-link:hover::before {
-  /* width: 80%; */
-}
-
-.nav-link:hover {
-  /* background-color: #e8f5e9; */
-  /* color: #1a5235; */
-}
-
 .router-link-active {
   background-color: #2e8b57;
   color: white;

@@ -14,9 +14,6 @@ import BarChart from "@/components/calendar/BarChart.vue";
 const accountStore = useAccountStore()
 const loginUser = accountStore.user.id    // 로그인한 유저id
 
-// const currentYear = new Date().getFullYear()
-// const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0')
-
 const props = defineProps({
   yearMonth: {
     type: String,

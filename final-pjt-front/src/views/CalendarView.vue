@@ -109,7 +109,7 @@ const currentMonth = String(new Date().getMonth() + 1).padStart(2, "0"); // 두 
 const loginUser = accountStore.user.id;
 
 let cal = ref(Calendar.fromYm(currentYear, currentMonth));
-// console.log(currentYear, currentMonth, '날짜날짜')
+
 const router = useRouter();
 const route = useRoute();
 
@@ -153,12 +153,16 @@ let selectedDateTitle = ref("");
 // 모달 토글 (열기/닫기)
 const toggleDetailModal = (date) => {
   if (date) {
-    selectedDateTitle.value = `${date.year}-${String(date.month).padStart(
-      2,
-      "0"
-    )}-${String(date.date).padStart(2, "0")}`;
+    if (typeof date === "string") {
+      const [year, month, day] = date.split("-");
+      selectedDateTitle.value = `${year}-${month}-${day}`;
+    } else if (date.year && date.month && date.date) {
+      selectedDateTitle.value = `${date.year}-${String(date.month).padStart(2, "0")}-${String(date.date).padStart(2, "0")}`;
+    }
   }
-  isModalOpen.value = !isModalOpen.value; // 현재 상태에 따라 토글
+
+  // 모달 상태 토글
+  isModalOpen.value = !isModalOpen.value;
 };
 
 // 날짜 클릭 시 게시글 작성 페이지로 이동
@@ -189,7 +193,6 @@ const fetchPosts = (yearMonth) => {
 
       posts.value = postsData;
       categorySumValue.value = categoryData;
-      // console.log(categorySumValue.value);
       total_price.value = response.data.total_price || 0;
       amount.value = postsData[0].amount || 0;
 
@@ -255,9 +258,17 @@ const showBudgetForm = () => {
 
 onMounted(() => {
   const [year, month] = selectedDate.value.split("-");
-  cal.value = Calendar.fromYm(parseInt(year), parseInt(month));
-  fetchPosts(`${year}-${month}`);
-  amount, total_price, currentYear, currentMonth;
+  cal.value = Calendar.fromYm(parseInt(year), parseInt(month))
+  fetchPosts(`${year}-${month}`)
+  amount.value = 0, total_price, currentYear, currentMonth
+  const query = route.query
+
+  if (query.openModal && query.date) {
+    selectedDateTitle.value = query.date
+    toggleDetailModal(query.date)
+    isModalOpen.value = true
+  }
+  // fetchPosts(`${cal.value.yearText}-${cal.value.monthText}`)
 });
 </script>
 

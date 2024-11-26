@@ -26,7 +26,7 @@ onMounted(async () => {
 const navigateTo = async (type) => {
   if (confirm('머니또와 상담 시 10P가 소요됩니다. 계속하시겠습니까?')) {
     await accountStore.fetchUserProfile(); // 최신 사용자 프로필 정보 가져오기
-    // console.log(accountStore.user.point)
+    
     if (accountStore.user.point >= 10) { // 포인트 확인
       const success = await accountStore.deductPoints(10); // 포인트 차감 시도
       if (success) {

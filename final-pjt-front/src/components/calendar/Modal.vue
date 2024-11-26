@@ -129,7 +129,6 @@ const fetchPosts = async () => {
       },
     });
     posts.value = response.data;
-    console.log(response.data);
   } catch (err) {
     error.value = "게시글을 불러오는 데 실패했습니다. 다시 시도해주세요.";
   } finally {
@@ -178,7 +177,6 @@ const updatePost = () => {
   if (!currentPost.value) return;
 
   // PostPageView로 이동하면서 게시글 데이터를 전달
-  console.log(currentPost.value);
   router.push({
     name: "UpdatePageView", // 라우트 이름
     query: {

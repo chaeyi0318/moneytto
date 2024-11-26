@@ -141,7 +141,6 @@ const createPost = async function () {
   };
 
   try {
-    console.log("작성된 게시글 데이터: ", payload);
     await dateStore.submitPost(payload); // 비동기 함수 호출 시 await 추가
     alert("게시글이 성공적으로 작성 되었습니다.");
     router.push({
@@ -163,7 +162,6 @@ onMounted(async () => {
     const response = await api.get("/posts/categories/"); // Django API 호출
     if (response.status === 200) {
       // 상태 코드가 200인지 확인
-      console.log("Fetched categories:", response.data); // 응답 데이터 출력
       categories.value = response.data; // JSON 데이터를 Vue 데이터에 저장
     } else {
       console.error(`Failed to fetch categories: ${response.status}`); // 상태 코드 출력

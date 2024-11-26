@@ -18,7 +18,7 @@ export const useAccountStore = defineStore("accountStore", () => {
   const signup = async function (payload) {
     try {
       const response = await api.post("/accounts/signup/", payload);
-      console.log("회원가입 완료");
+
       await login({
         username: payload.username,
         password: payload.password1,
@@ -41,7 +41,7 @@ export const useAccountStore = defineStore("accountStore", () => {
       };
       localStorage.setItem("token", token.value);
       localStorage.setItem("user", JSON.stringify(user.value));
-      console.log("로그인 성공");
+
       isLoginModalOpen.value = false;
 
       if (redirectAfterLogin.value) {
@@ -62,7 +62,6 @@ export const useAccountStore = defineStore("accountStore", () => {
     if (storedToken && storedUser) {
       token.value = storedToken;
       user.value = JSON.parse(storedUser);
-      console.log("로그인 상태 유지 중");
     } else {
       console.log("로그인 필요");
     }
@@ -106,7 +105,6 @@ export const useAccountStore = defineStore("accountStore", () => {
       });
       user.value = { ...user.value, ...response.data };
       localStorage.setItem("user", JSON.stringify(user.value)); // 로컬 스토리지 업데이트
-      console.log("사용자 정보 업데이트 성공");
     } catch (error) {
       console.error(
         "사용자 정보 업데이트 실패:",
@@ -120,7 +118,6 @@ export const useAccountStore = defineStore("accountStore", () => {
     try {
       const response = await api.put("/accounts/additional-info/", payload);
       user.value = { ...user.value, ...response.data };
-      console.log("추가 정보 업데이트 성공");
     } catch (error) {
       console.error(
         "추가 정보 업데이트 실패:",

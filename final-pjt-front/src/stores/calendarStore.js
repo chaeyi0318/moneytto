@@ -44,10 +44,6 @@ export const useCalendarStore = defineStore("dateStore", () => {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      if (response.status === 200) {
-        console.log("게시글 작성 완료");
-      }
     } catch (error) {
       console.error("게시글 작성 실패:", error);
     }
