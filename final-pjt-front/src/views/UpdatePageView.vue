@@ -10,7 +10,12 @@
             <span class="date-text">{{ expenses_date }}</span>
           </div>
           <div class="privacy-wrapper">
-            <select name="privacy_setting" v-model.trim="privacySetting" id="privacy_setting" class="privacy-select">
+            <select
+              name="privacy_setting"
+              v-model.trim="privacySetting"
+              id="privacy_setting"
+              class="privacy-select"
+            >
               <option value="public" selected>전체공개</option>
               <option value="subscriber">구독자공개</option>
               <option value="private">🔒</option>
@@ -20,23 +25,45 @@
         <div class="info-row">
           <div class="category-wrapper">
             <span class="label-text">카테고리:</span>
-            <select name="category_id" v-model.trim="category" id="category_id" class="compact-select">
+            <select
+              name="category_id"
+              v-model.trim="categoryName"
+              id="category_id"
+              class="compact-select"
+            >
               <option value="">선택바람</option>
-              <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+              <option
+                v-for="cat in categories"
+                :key="cat.id"
+                :value="cat.id"
+                :selected="cat.id === categoryName"
+              >
                 {{ cat.category_name }}
               </option>
             </select>
           </div>
           <div class="price-wrapper">
             <span class="label-text">가격:</span>
-            <input type="number" v-model.trim="price" name="price" id="price" class="compact-input" />
+            <input
+              type="number"
+              v-model.trim="price"
+              name="price"
+              id="price"
+              class="compact-input"
+            />
           </div>
         </div>
       </div>
 
       <div class="form-group">
         <label for="image">파일 업로드 :</label>
-        <input type="file" name="image" id="image" @change="onFileChange" class="file-input" />
+        <input
+          type="file"
+          name="image"
+          id="image"
+          @change="onFileChange"
+          class="file-input"
+        />
       </div>
 
       <div v-if="imageUrl" class="image-preview">
@@ -45,11 +72,19 @@
 
       <div class="form-group">
         <label for="content">내용 :</label>
-        <input type="text" v-model.trim="content" name="content" id="content" class="content-input" />
+        <input
+          type="text"
+          v-model.trim="content"
+          name="content"
+          id="content"
+          class="content-input"
+        />
       </div>
 
       <div class="button-group">
-        <button type="button" @click.prevent="cancel" class="cancel-btn">취소</button>
+        <button type="button" @click.prevent="cancel" class="cancel-btn">
+          취소
+        </button>
         <button type="submit" class="submit-btn">수정</button>
       </div>
     </form>
@@ -68,7 +103,7 @@ const router = useRouter(); // 라우터 객체
 const categories = ref([]);
 const expenses_date = ref(""); // 소비 날짜
 const privacySetting = ref("private"); // 공개 범위
-const category = ref(""); // 카테고리 ID
+const categoryName = ref(""); // 카테고리 ID
 const price = ref(""); // 가격
 const content = ref(""); // 내용
 const imageFile = ref(null); // 이미지 파일
@@ -92,10 +127,10 @@ const onFileChange = (event) => {
 // 라우트에서 전달된 데이터를 초기화
 onMounted(async () => {
   const query = route.query;
-
+  console.log(route.query);
   expenses_date.value = query.expenses_date || "";
   privacySetting.value = query.privacy_setting || "";
-  category.value = query.category || "";
+  // categoryName.value = query.category_name || "";
   price.value = query.price || "";
   content.value = query.content || "";
   imageUrl.value = query.image || "";
@@ -104,6 +139,10 @@ onMounted(async () => {
     const response = await api.get("/posts/categories/");
     if (response.status === 200) {
       categories.value = response.data;
+      const selectedCategory = categories.value.find(
+        (cat) => cat.category_name === query.category_name
+      );
+      categoryName.value = selectedCategory ? selectedCategory.id : "";
     }
   } catch (error) {
     console.error("카테고리 데이터를 가져오는 중 오류 발생:", error);
@@ -112,7 +151,12 @@ onMounted(async () => {
 
 // 게시글 수정 요청 보내기
 const updatePost = async () => {
-  if (!expenses_date.value || !category.value || !price.value || !content.value) {
+  if (
+    !expenses_date.value ||
+    !categoryName.value ||
+    !price.value ||
+    !content.value
+  ) {
     alert("필수 항목을 모두 입력해주세요.");
     return;
   }
@@ -120,7 +164,7 @@ const updatePost = async () => {
   const formData = new FormData();
   formData.append("expenses_date", expenses_date.value);
   formData.append("privacy_setting", privacySetting.value);
-  formData.append("category", category.value);
+  formData.append("category", categoryName.value);
   formData.append("price", price.value);
   formData.append("content", content.value);
 
@@ -161,7 +205,7 @@ const cancel = () => {
 }
 
 .title {
-  color: #2D7A31;
+  color: #2d7a31;
   font-size: 1.8rem;
   text-align: center;
   margin-bottom: 2rem;
@@ -173,7 +217,7 @@ const cancel = () => {
   padding: 1.2rem;
   border-radius: 12px;
   margin-bottom: 1.2rem;
-  border: 1px solid #E8F3E9;
+  border: 1px solid #e8f3e9;
 }
 
 .top-info {
@@ -192,7 +236,9 @@ const cancel = () => {
   margin-bottom: 0;
 }
 
-.date-wrapper, .category-wrapper, .price-wrapper {
+.date-wrapper,
+.category-wrapper,
+.price-wrapper {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -200,7 +246,7 @@ const cancel = () => {
 }
 
 .label-text {
-  color: #2D7A31;
+  color: #2d7a31;
   font-size: 0.9rem;
   font-weight: 600;
   white-space: nowrap;
@@ -218,23 +264,24 @@ const cancel = () => {
 .privacy-select {
   width: auto;
   padding: 0.3rem 0.5rem;
-  border: 1px solid #E8F3E9;
+  border: 1px solid #e8f3e9;
   border-radius: 6px;
   font-size: 0.9rem;
   cursor: pointer;
 }
 
-.compact-select, .compact-input {
+.compact-select,
+.compact-input {
   flex: 1;
   min-width: 0;
   padding: 0.3rem 0.5rem;
-  border: 1px solid #E8F3E9;
+  border: 1px solid #e8f3e9;
   border-radius: 6px;
   font-size: 0.9rem;
 }
 
 label {
-  color: #2D7A31;
+  color: #2d7a31;
   font-weight: 600;
   display: inline-block;
   width: 120px;
@@ -251,7 +298,7 @@ label {
   width: calc(100% - 150px);
   min-height: 100px;
   padding: 0.8rem;
-  border: 2px solid #E8F3E9;
+  border: 2px solid #e8f3e9;
   border-radius: 8px;
   transition: all 0.3s ease;
 }
@@ -283,7 +330,8 @@ label {
   margin-top: 2rem;
 }
 
-.submit-btn, .cancel-btn {
+.submit-btn,
+.cancel-btn {
   padding: 0.8rem 2rem;
   border-radius: 8px;
   font-weight: 600;
@@ -293,13 +341,13 @@ label {
 }
 
 .submit-btn {
-  background-color: #2D7A31;
+  background-color: #2d7a31;
   color: white;
 }
 
 .cancel-btn {
-  background-color: #E8F3E9;
-  color: #2D7A31;
+  background-color: #e8f3e9;
+  color: #2d7a31;
 }
 
 .submit-btn:hover {
@@ -307,7 +355,7 @@ label {
 }
 
 .cancel-btn:hover {
-  background-color: #D1E6D3;
+  background-color: #d1e6d3;
 }
 
 @media (max-width: 600px) {
@@ -321,11 +369,14 @@ label {
     gap: 0.8rem;
   }
 
-  .date-wrapper, .category-wrapper, .price-wrapper {
+  .date-wrapper,
+  .category-wrapper,
+  .price-wrapper {
     width: 100%;
   }
 
-  .file-input, .content-input {
+  .file-input,
+  .content-input {
     width: 100%;
     margin-top: 0.5rem;
   }
@@ -339,12 +390,14 @@ label {
     flex-direction: column;
   }
 
-  .submit-btn, .cancel-btn {
+  .submit-btn,
+  .cancel-btn {
     width: 100%;
     margin: 0.5rem 0;
   }
 
-  .compact-select, .compact-input {
+  .compact-select,
+  .compact-input {
     max-width: none;
   }
 }

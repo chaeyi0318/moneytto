@@ -17,25 +17,38 @@
           </div>
         </div>
       </header>
-      
+
       <main class="modal-main">
         <div v-if="isLoading" class="loading-state">
           <p>로딩 중...</p>
         </div>
-        
+
         <div v-else-if="error" class="error-state">
           <p>{{ error }}</p>
         </div>
-        
+
         <div v-else class="content-container">
           <div class="image-slider" v-if="posts.length > 0">
-            <button class="slider-button left" @click="showPreviousPost" :disabled="currentIndex === 0">
+            <button
+              class="slider-button left"
+              @click="showPreviousPost"
+              :disabled="currentIndex === 0"
+            >
               <span class="arrow">←</span>
             </button>
             <div class="image-wrapper">
-              <img v-if="currentPost.image" :src="currentPost.image" alt="게시글 이미지" class="post-image" />
+              <img
+                v-if="currentPost.image"
+                :src="currentPost.image"
+                alt="게시글 이미지"
+                class="post-image"
+              />
             </div>
-            <button class="slider-button right" @click="showNextPost" :disabled="currentIndex === posts.length - 1">
+            <button
+              class="slider-button right"
+              @click="showNextPost"
+              :disabled="currentIndex === posts.length - 1"
+            >
               <span class="arrow">→</span>
             </button>
           </div>
@@ -57,7 +70,11 @@
         </div>
       </main>
 
-      <Comment v-if="posts.length > 0" :date="props.date" :author_user_pk="posts[0]?.user_pk"/>
+      <Comment
+        v-if="posts.length > 0"
+        :date="props.date"
+        :author_user_pk="posts[0]?.user_pk"
+      />
     </div>
   </div>
 </template>
@@ -69,10 +86,10 @@ import api from "@/stores/api";
 import Comment from "@/components/calendar/Comment.vue";
 
 const props = defineProps({
-  date: String
+  date: String,
 });
 
-const emit = defineEmits(["closeModal", "postDeleted"])
+const emit = defineEmits(["closeModal", "postDeleted"]);
 
 const closeModal = () => {
   emit("closeModal"); // 부모 컴포넌트에 closeModal 이벤트 전달
@@ -107,11 +124,12 @@ const fetchPosts = async () => {
 
   try {
     const response = await api.get(`/posts/detail-post/`, {
-      params: { 
+      params: {
         date: props.date,
-      }
+      },
     });
     posts.value = response.data;
+    console.log(response.data);
   } catch (err) {
     error.value = "게시글을 불러오는 데 실패했습니다. 다시 시도해주세요.";
   } finally {
@@ -120,8 +138,8 @@ const fetchPosts = async () => {
 };
 
 const formattedDate = computed(() => {
-  if (!props.date) return '';
-  const [year, month, day] = props.date.split('-');
+  if (!props.date) return "";
+  const [year, month, day] = props.date.split("-");
   return `${year}년 ${parseInt(month)}월 ${parseInt(day)}일`;
 });
 
@@ -136,7 +154,6 @@ const deletePost = async () => {
     await api.delete(`/posts/delete-post/${currentPost.value.id}`); // API 호출
     alert("게시글이 삭제되었습니다.");
 
-    
     // 삭제 후 리스트에서 제거
     posts.value.splice(currentIndex.value, 1);
 
@@ -146,7 +163,6 @@ const deletePost = async () => {
     } else if (currentIndex.value >= posts.value.length) {
       currentIndex.value = posts.value.length - 1; // 마지막 게시글로 이동
     }
-    
   } catch (err) {
     console.error(err);
     alert("게시글 삭제에 실패했습니다. 다시 시도해주세요.");
@@ -162,13 +178,14 @@ const updatePost = () => {
   if (!currentPost.value) return;
 
   // PostPageView로 이동하면서 게시글 데이터를 전달
+  console.log(currentPost.value);
   router.push({
     name: "UpdatePageView", // 라우트 이름
     query: {
       id: currentPost.value.id, // 게시글 ID
       expenses_date: props.date, // 소비 날짜
       privacy_setting: currentPost.value.privacy_setting, // 공개 범위
-      category: currentPost.value.category_id, // 카테고리 ID
+      category_name: currentPost.value.category_name, // 카테고리 ID
       price: currentPost.value.price, // 가격
       content: currentPost.value.content, // 내용
       image: currentPost.value.image, // 이미지 URL (수정 시 미리보기)
@@ -179,14 +196,14 @@ const updatePost = () => {
 
 <style scoped>
 :root {
-  --primary-green: #2D8B57;
-  --secondary-green: #3CB371;
-  --light-green: #E8F5E9;
-  --hover-green: #1B5E20;
-  --error-red: #FF5252;
+  --primary-green: #2d8b57;
+  --secondary-green: #3cb371;
+  --light-green: #e8f5e9;
+  --hover-green: #1b5e20;
+  --error-red: #ff5252;
   --text-dark: #333333;
   --text-light: #666666;
-  --white: #FFFFFF;
+  --white: #ffffff;
   --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -258,7 +275,7 @@ const updatePost = () => {
 }
 
 .modal-content {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   width: 100%;
   max-height: 90vh; /* 뷰포트 높이의 90%로 제한 */
   max-width: 650px;
@@ -301,7 +318,8 @@ const updatePost = () => {
   flex: 1;
 }
 
-.loading-state, .error-state {
+.loading-state,
+.error-state {
   text-align: center;
   padding: 2rem;
 }
@@ -337,8 +355,12 @@ const updatePost = () => {
   background-color: var(--hover-green);
 }
 
-.slider-button.left { left: 0; }
-.slider-button.right { right: 0; }
+.slider-button.left {
+  left: 0;
+}
+.slider-button.right {
+  right: 0;
+}
 
 .slider-button[disabled] {
   opacity: 0.5;
@@ -419,17 +441,17 @@ const updatePost = () => {
 }
 
 ::-webkit-scrollbar-track {
-  background: #F5F9F6;
+  background: #f5f9f6;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2E8B57;
+  background: #2e8b57;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #1B5E20;
+  background: #1b5e20;
 }
 
 @media (max-width: 768px) {
@@ -437,15 +459,15 @@ const updatePost = () => {
     width: 95%;
     margin: 1rem;
   }
-  
+
   .post-details {
     padding: 1rem;
   }
-  
+
   .info-row {
     flex-direction: column;
   }
-  
+
   .label {
     margin-bottom: 0.5rem;
   }

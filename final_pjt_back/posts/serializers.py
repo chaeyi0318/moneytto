@@ -99,7 +99,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'username', 'user_pk', 'expenses_date', 'image', 'content', 'category_name', 'created_at', 'updated_at', 'price']
+        fields = ['id', 'username', 'user_pk', 'expenses_date', 'image', 'content', 'category_name', 'created_at', 'updated_at', 'price', 'privacy_setting']
 
     def get_image(self, obj):
         if obj.image:
