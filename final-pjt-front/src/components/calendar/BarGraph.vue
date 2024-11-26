@@ -6,13 +6,13 @@
 </template>
 
 <script setup>
-import api from '@/stores/api'
-import { onMounted, watch, ref } from 'vue'
-import { useAccountStore } from '@/stores/accountStore'
+import api from "@/stores/api";
+import { onMounted, watch, ref } from "vue";
+import { useAccountStore } from "@/stores/accountStore";
 import BarChart from "@/components/calendar/BarChart.vue";
 
-const accountStore = useAccountStore()
-const loginUser = accountStore.user.id    // 로그인한 유저id
+const accountStore = useAccountStore();
+const loginUser = accountStore.user.id; // 로그인한 유저id
 
 // const currentYear = new Date().getFullYear()
 // const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0')
@@ -24,31 +24,35 @@ const props = defineProps({
   },
 });
 
-// console.log(props.yearMonth)
+// console.log(props.yearMonth);
+// console.log(loginUser);
 
-const date = ref(`${props.yearMonth}`);
+// const date = ref(`${props.yearMonth}`);
 
-const barGraphData = ref([])
-console.log(barGraphData)
+// console.log(date.value);
+
+const barGraphData = ref([]);
+// console.log(barGraphData);
 
 const graphData = async (date, loginUser) => {
   try {
-    const response = await api.get('/posts/graph-data/', {
-      params: { date, loginUser }
-    })
-    barGraphData.value = response.data
-    console.log(response.data)
+    // console.log(date.value);
+    const response = await api.get("/posts/graph-data/", {
+      params: { date, loginUser },
+    });
+    barGraphData.value = response.data;
+    // console.log(response.data);
   } catch (error) {
     if (error.response) {
-      console.error('Error response:', error.response.data)
-      console.error('Status code:', error.response.status)
+      console.error("Error response:", error.response.data);
+      console.error("Status code:", error.response.status);
     } else if (error.request) {
-      console.error('No response received:', error.request)
+      console.error("No response received:", error.request);
     } else {
-      console.error('Error setting up request:', error.message)
+      console.error("Error setting up request:", error.message);
     }
   }
-}
+};
 
 watch(
   () => props.yearMonth,
@@ -66,9 +70,6 @@ onMounted(() => {
     graphData(props.yearMonth, loginUser); // 초기 yearMonth와 loginUser를 전달
   }
 });
-
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
