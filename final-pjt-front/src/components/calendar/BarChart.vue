@@ -1,15 +1,30 @@
 <template>
   <div>
-    <Bar v-if="barGraphData.length" :data="chartData" :options="chartOptions" />
+    <Bar :data="chartData" :options="chartOptions" />
   </div>
 </template>
 <script setup>
 import { Bar } from "vue-chartjs";
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from "chart.js";
-import { computed } from 'vue'
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+} from "chart.js";
+import { computed } from "vue";
 
 // Chart.js 구성 등록
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale);
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale
+);
 
 // Props 정의
 const props = defineProps({
@@ -34,7 +49,7 @@ const chartData = computed(() => ({
       backgroundColor: "rgba(255, 99, 132, 0.7)",
     },
   ],
-}))
+}));
 
 const chartOptions = computed(() => ({
   responsive: true,
@@ -46,7 +61,7 @@ const chartOptions = computed(() => ({
     x: { title: { display: true, text: "기간" } },
     y: { title: { display: true, text: "금액" } },
   },
-}))
+}));
 </script>
 
 <style scoped>
