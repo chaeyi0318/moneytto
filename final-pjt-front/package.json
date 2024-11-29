@@ -9,9 +9,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "apexcharts": "^4.0.0",
+    "axios": "^1.7.7",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "chart.js": "^4.4.6",
+    "dotenv": "^16.4.5",
+    "groq-sdk": "^0.8.0",
     "pinia": "^2.2.6",
     "vue": "^3.5.12",
-    "vue-router": "^4.4.5"
+    "vue-chartjs": "^5.3.2",
+    "vue-router": "^4.4.5",
+    "vue3-apexcharts": "^1.8.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.4",
